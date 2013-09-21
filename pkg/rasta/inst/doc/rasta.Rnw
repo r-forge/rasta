@@ -1,0 +1,129 @@
+\documentclass[nojss]{jss}
+
+%% need no \usepackage{Sweave}
+\usepackage{thumbpdf}
+
+%% new commands
+\newcommand{\class}[1]{``\code{#1}''}
+\newcommand{\fct}[1]{\code{#1()}}
+
+\SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
+<<options, echo=FALSE>>=
+options(prompt = "R> ", digits = 4, show.signif.stars = FALSE)
+@
+%%\VignetteIndexEntry{Applied Econometrics with R: Package Vignette and Errata}
+%%\VignettePackage{rasta}
+%%\VignetteDepends{rasta}
+%%\VignetteKeywords{spatial, temporal analysis, statistical software, R}
+
+\author{Jan Verbesselt\\Wageningen University
+   \And Loic Dutrieux\\Wageningen University}
+\Plainauthor{Jan Verbesselt, Loic Dutrieux, Ben de vries}
+\title{}
+\Plaintitle{Reproducible and Applied Spatial and Temporal Analysis (RASTA)}
+\Shorttitle{\pkg{RASTA}: Contains Lessons, data, and demo for the course @ WUR}
+
+\Keywords{geo-scripting, spatial, temporal analysis, \proglang{R}}
+\Plainkeywords{geo-scripting, statistical software, R}
+
+\Abstract{
+  Functions, data sets, examples, demos, and vignettes for the Geo-scripting course at Wageningen University
+  This vignette provides an overview of the package contents.
+}
+
+\begin{document}
+
+\section{Package overview}
+
+\subsection[R code from the book]{\proglang{R} code from the book}
+
+The full \proglang{R} code from the book is provided in the demos for the package \pkg{AER}.
+The source scripts can be found in the \code{demo}
+directory of the package and executed interactively by calling
+\fct{demo}, as in
+%
+<<demo, eval=FALSE>>=
+demo("Lesson_1_demo", package = "RASTA")
+@
+%
+One demo per chapter is provided:
+\begin{itemize}
+  \item \code{Ch-Intro} (Chapter~1: Introduction),
+\end{itemize}
+This list of demos is also shown by \code{demo(package = "RASTA")}.
+
+%The same scripts are contained in the \code{tests} directory of the package
+%so that they are automatically checked and compared with the desired output
+%provided in \code{.Rout.save} files.
+
+To make the code fully reproducible and to avoid some lengthy computations
+in the daily checks, a few selected code chunks are commented out in the
+scripts. Also, for technical reasons, some graphics code chunks are repeated,
+once commented out and once without comments.
+
+\subsection{Data sets}
+
+%The \pkg{AER} package includes some 100 data sets from leading applied
+%econometrics journals and popular econometrics textbooks. Many data sets
+%have been obtained from the data archives of the \emph{Journal of Applied
+%Econometrics} and the \emph{Journal of Business \& Economic Statistics}. 
+%Some of these are used in recent textbooks, among them 
+%\cite{aer:Baltagi:2002}, \cite{aer:Davidson+MacKinnon:2004}, \cite{aer:Greene:2003},
+%\cite{aer:Stock+Watson:2007}, and \cite{aer:Verbeek:2004}. In addition, we provide
+%all further data sets from \cite{aer:Baltagi:2002},  \cite{aer:Franses:1998},
+%\cite{aer:Greene:2003}, \cite{aer:Stock+Watson:2007}, and \cite{aer:Winkelmann+Boes:2009}.
+%
+%Detailed information about the source of each data set, descriptions of
+%the variables included, and usually also examples for typical analyses
+%are provided on the respective manual pages. A full list of all data sets
+%in \pkg{AER} can be obtained via
+%%
+%<<data, eval=FALSE>>=
+%data(package = "AER")
+%@
+%%
+%In addition, manual pages corresponding to selected textbooks are available.
+%They list all data sets from the respective book and provide extensive
+%code for replicating many of the empirical examples. See, for example,
+%<<help, eval=FALSE>>=
+%help("Greene2003", package = "AER")
+%@
+%for data sets and code for \cite{aer:Greene:2003}.
+%Currently available manual pages are:
+%
+%\begin{itemize}
+%  \item \code{Baltagi2002} for \cite{aer:Baltagi:2002},
+%  \item \code{CameronTrivedi1998} for \cite{aer:Cameron+Trivedi:1998},
+%  \item \code{Franses1998} for \cite{aer:Franses:1998},
+%  \item \code{Greene2003} for \cite{aer:Greene:2003},
+%  \item \code{StockWatson2007} for \cite{aer:Stock+Watson:2007}.
+%  \item \code{WinkelmannBoes2009} for \cite{aer:Winkelmann+Boes:2009}.
+%\end{itemize}
+
+\subsection[New R functions]{New \proglang{R} functions}
+
+\pkg{RASTA} provides a few new \proglang{R} functions extending
+or complementing methods previously available in \proglang{R}:
+\begin{itemize}
+  \item \fct{my summary} is a demo function to summarise data, and illustrate how a function can be written.
+%  \item \fct{ivreg} fits instrumental-variable regressions
+%        via two-stage least squares. It provides a formula
+%	interface and calls the workhorse function \fct{ivreg.fit}
+%	which in turn calls \fct{lm.fit} twice. In addition to the fitting functions,
+%	the usual set of accessor and extractor functions is
+%	provided, e.g., \fct{print}, \fct{summary}, \fct{anova}, etc.
+%	For more details see \code{?ivreg}, \code{?ivreg.fit},
+%	and \code{?summary.ivreg}, respectively.
+%  \item \fct{dispersiontest} tests the null hypothesis of
+%        equidispersion in Poisson regressions against the alternative
+%	of overdispersion and/or underdispersion. For more details
+%	see \code{?dispersiontest}.
+\end{itemize}
+
+\section{Errata}
+
+Please report any further errors you find to us.
+
+\bibliography{rasta}
+
+\end{document}
