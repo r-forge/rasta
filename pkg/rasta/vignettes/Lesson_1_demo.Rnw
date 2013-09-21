@@ -1,0 +1,157 @@
+\documentclass[11pt,twoside,a4paper]{article}
+
+%% BibTeX settings
+\usepackage[authoryear,round]{natbib}
+%\bibliographystyle{jae}
+\bibpunct{(}{)}{,}{a}{,}{,}
+\newcommand{\doi}[1]{\href{http://dx.doi.org/#1}{\normalfont\texttt{doi:#1}}}
+
+%% markup commands for code/software
+\let\code=\texttt
+\let\pkg=\textbf
+\let\proglang=\textsf
+\newcommand{\file}[1]{`\code{#1}'}
+\newcommand{\email}[1]{\href{mailto:#1}{\normalfont\texttt{#1}}}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide,graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{%
+  pdftitle = {Example Tutorial},
+  pdfsubject = {},
+  pdfkeywords = {MODIS, time series},
+  pdfauthor = {Jan Verbesselt},
+  %% change colorlinks to false for pretty printing
+  colorlinks = {true},
+  linkcolor = {Blue},
+  citecolor = {Blue},
+  urlcolor = {Red},
+  hyperindex = {true},
+  linktocpage = {true},
+}
+
+%%usepackage{Sweave} %% is essentially
+\RequirePackage[T1]{fontenc}
+\RequirePackage{ae,fancyvrb}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
+\DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
+\newenvironment{Schunk}{}{}
+\SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
+
+
+\begin{document}
+
+\title{An introduction to R (demo lesson) }
+\author{Jan Verbesselt}
+
+\maketitle
+
+\begin{abstract}
+This is an example of a lesson and tutorial for the R course. ... Below a short introduction to R can be found.
+\end{abstract}
+
+\section{Getting started with R}
+
+When you open R you will see Fig.~\ref{fig:GUIR}. The window in the top left corner is the R console (e.g. statistical and spatial analysis tools). Go to the menu, click on File > new script and a script window will appear. The interface should now look something like Fig.~\ref{fig:GUIR2}.
+
+\begin{figure}[htp!]
+\centering
+    \includegraphics[height=0.5\textwidth]{figs/GUIR}
+  \caption{The graphical user interface to R}
+  \label{fig:GUIR}
+\end{figure}
+
+\begin{figure}[t!]
+\centering
+    \includegraphics[height=0.5\textwidth]{figs/GUIR2}
+  \caption{The graphical user interface with an empty script}
+  \label{fig:GUIR2}
+\end{figure}
+
+\newpage
+
+Now type the following script in the script window:
+
+a <- 1
+
+a
+
+You are now going to pass what you have written in your script to the console line by line and we will discuss what R is doing with your code. Select the first two lines with your mouse and then type \textbf{Ctrl-r}. The selected lines will be passed to the R console and your console should now look like something like this:
+<<>>=
+a <- 1
+a
+@
+
+The first line you passed to the console created a new object named  $a$ in memory. The symbol '<-' is somewhat equivalent to an equal sign. In the second line you printed $a$ to the console by simply typing it's name. 
+
+Now try to obtain he following output in the R console by writing the commands in the script window and running the via \textbf{Crtl-r} (make sure you remove $>$ and $+$). R commands shown in the following section should be written in your Script file without $>$ and $+$ in front of it, so that you can run them by using \textbf{Crtl-r} and the result in the R console will look like this:
+ 
+<<>>=
+class(a)
+b <- 2 
+a + b
+newfunc <- function(x, y) {
+	2*x + y
+} 
+a2b <- newfunc(2, 4)
+a2b
+rm(a, b, newfunc, a2b)
+@
+
+You now have requested the \textbf{class} attribute of $a$ and the console has returned the attribute: \textbf{numeric}. R possesses a simple mechanism to support an object-oriented style of programming. All objects ($a$ in this case) have a class attribute assigned to them. \textbf{R} is quite forgiving and will assign a class to an object even if you haven't specified one (as you didn't in this case). Classes are a very important feature of the \textbf{R} environment. Any function or method that is applied to an object takes into account its class and uses this information to determine the correct course of action. A simple example should suffice to explain further. Select the next two lines using your mouse and pass these to the console using \textbf{Crtl-r}. The first line passed declares a new object $b$. The second line passed adds $a$ and $b$ together and prints the solution to the console. \textbf{R} has assessed the class attribute of a and b; determined they are both \textbf{numeric} objects, and; carried out the arithmetic calculation as requested.
+
+The 4th line passed declares a new object \textbf{newfunc} (this is just a name and if you like you can give this function another name). It is a new function. Appearing in the first set of brackets is an argument list that specifies (in this case) two names. The value of the function appears within the second set of brackets where the process applied to the named objects from the argument list is defined. 
+
+Next, a new object $a2b$ is created which contains the result of applying \textbf{newfunc} to the two objects you have defined earlier. The second last R command prints this new object to the console. Finally, you can now remove the objects you have created to make room for the next exercise by selecting and running the last line of the code.
+
+\textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console. Try it and see what happens.
+
+<<>>=
+?class
+@
+
+\section{Making a graph in R}
+
+Below a simple example is show of how you create a graph in R. First we load the data.
+
+<<>>=
+attach(mtcars) ## add it to the search path in R
+# you can find more info about the data set via ?mtcars
+# the data itself looks like
+wt # weigth
+mpg # miles per gallon
+@
+
+Now we make a graph where the plot( ) function opens a graph widow and plots weight vs. miles per gallon. 
+The next line of code adds a regression line to this graph. The final line adds a title.
+
+<<fig=TRUE, echo=TRUE>>=
+# Creating a Graph
+plot(wt, mpg) 
+abline(lm(mpg~wt))
+title("Regression of MPG on Weight")
+detach(mtcars) # remove the data from the search path
+@
+
+\section{Defining a function in R}
+
+
+\section{More information}
+
+For more information about R please refer to the following links \url{http://www.statmethods.net/index.html}. 
+This is a great website for learning R function, graphs, and stats. Also visit \url{http://www.r-project.org/} and check out the Manuals i.e an introductions to R. Welcome the Rrrrrr world!
+See also the book on Applied spatial Data analysis with R \url{http://www.asdar-book.org/} \citep{Bivand:2013ux}.
+
+\bibliographystyle{model5-names}
+\bibliography{refs}
+
+\end{document}
