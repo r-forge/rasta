@@ -82,7 +82,6 @@ When you open R you will see Fig.~\ref{fig:GUIR}. The window in the top left cor
 Now type the following script in the script window:
 
 a <- 1
-
 a
 
 You are now going to pass what you have written in your script to the console line by line and we will discuss what R is doing with your code. Select the first two lines with your mouse and then type \textbf{Ctrl-r}. The selected lines will be passed to the R console and your console should now look like something like this:
