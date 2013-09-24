@@ -17,8 +17,8 @@ options(prompt = "R> ", digits = 4, show.signif.stars = FALSE)
 %%\VignetteKeywords{spatial, temporal analysis, statistical software, R}
 
 \author{Jan Verbesselt\\Wageningen University
-   \And Loic Dutrieux\\Wageningen University}
-\Plainauthor{Jan Verbesselt, Loic Dutrieux, Ben de vries}
+   \And Lo\"{i}c Dutrieux\\Wageningen University}
+\Plainauthor{Jan Verbesselt, Lo\"{i}c Dutrieux, Ben de vries}
 \title{}
 \Plaintitle{Reproducible and Applied Spatial and Temporal Analysis (RASTA)}
 \Shorttitle{\pkg{RASTA}: Contains Lessons, data, and demo for the course @ WUR}
@@ -32,6 +32,7 @@ options(prompt = "R> ", digits = 4, show.signif.stars = FALSE)
 }
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 \section{Package overview}
 
