@@ -38,14 +38,14 @@
 }
 
 \usepackage{Sweave} %% is essentially
-% \RequirePackage[T1]{fontenc}
-% \RequirePackage{ae,fancyvrb}
-% \DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
-% \DefineVerbatimEnvironment{Soutput}{Verbatim}{}
-% \DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
-% \DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
-% \newenvironment{Schunk}{}{}
-% \SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
+%  \RequirePackage[T1]{fontenc}
+%  \RequirePackage{ae,fancyvrb}
+%  \DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
+%  \DefineVerbatimEnvironment{Soutput}{Verbatim}{}
+%  \DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
+%  \DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
+%  \newenvironment{Schunk}{}{}
+%  \SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
 
 
 \begin{document}
