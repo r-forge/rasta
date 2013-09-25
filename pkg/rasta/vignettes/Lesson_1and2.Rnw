@@ -1,0 +1,179 @@
+\documentclass[11pt,twoside,a4paper]{article}
+
+%% can we set nice colours to the R code sections?
+
+%% BibTeX settings
+\usepackage[authoryear,round]{natbib}
+%\bibliographystyle{jae}
+\bibpunct{(}{)}{,}{a}{,}{,}
+\newcommand{\doi}[1]{\href{http://dx.doi.org/#1}{\normalfont\texttt{doi:#1}}}
+
+%% markup commands for code/software
+\let\code=\texttt
+\let\pkg=\textbf
+\let\proglang=\textsf
+\newcommand{\file}[1]{`\code{#1}'}
+\newcommand{\email}[1]{\href{mailto:#1}{\normalfont\texttt{#1}}}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide,graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{%
+  pdftitle = {Example Tutorial},
+  pdfsubject = {},
+  pdfkeywords = {},
+  pdfauthor = {Jan Verbesselt},
+  %% change colorlinks to false for pretty printing
+  colorlinks = {true},
+  linkcolor = {Blue},
+  citecolor = {Blue},
+  urlcolor = {Red},
+  hyperindex = {true},
+  linktocpage = {true},
+}
+
+%\usepackage{Sweave} %% is essentially
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage{ae,fancyvrb}
+  \DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
+  \DefineVerbatimEnvironment{Soutput}{Verbatim}{}
+  \DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
+  \DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
+  \newenvironment{Schunk}{}{}
+  \SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
+
+\begin{document}
+
+%\SweaveOpts{concordance=TRUE}
+
+\title{Applied Geo-Scripting}
+
+\author{Jan Verbesselt, et al.}
+
+\maketitle
+
+% can we convert this .Rnw to slides for a presentation? So first a short introduction using slides and then a tutorial section? 
+
+\section{Geo-scripting learning objectives}
+
+\begin{itemize}
+	\item{Handle spatial data using a scripting language (e.g. R)}
+	\item{Understand basic concepts of applied scripting for spatial data}
+	\item{Learn to read, write, and visualize spatial data (vector/raster) using a script}
+	\item{Know how to find help (on spatial data handling functions)}
+	\item{Solve scripting problems (debug, reproducible example, writing functions)}
+	\item{Find libraries which offer spatial data handling functions}
+	\item{Learn to include functions from a library in your script}
+	\item{Apply learned concepts in a case study: learning how to address a spatial/ecological/applied case (e.g. detect forest changes, flood mapping, ocean floor depth analysis, bear movement, etc.) with a raster and vector dataset.}
+\end{itemize}
+
+\section{Today's Learning objectives}
+
+\begin{itemize}
+
+	\item{Understand basic concepts of applied scripting for spatial data}
+	\item{Handle spatial data using a scripting language (e.g. R)}
+		
+\end{itemize}	
+	
+\section{Why geo-scripting?}
+
+\begin{itemize}
+	\item{Reproducible: avoid clicking and you keep track of what you have done}
+	\item{Efficient: you can write a script to do something for you e.g. multiple times e.g. automatically downloading data}
+	% loic can you prepare a nice demo here with your package
+	% of course we need to have the VCF package installed etc. - so maybe a more simple example is necessary
+	\item{Enable collaboration: sharing scripts, functions, and packages}
+	\item{Good for finding errors i.e. debugging}
+	
+	e.g. this course is fully writing with scripting languages (i.e. R and Latex).
+\end{itemize}	
+
+\section{What  is a scripting language?}
+
+A scripting language or script language is a programming language that supports the writing of scripts, programs written for a special runtime environment that can interpret and automate the execution of tasks which could alternatively be executed one-by-one by a human operator.
+Different from compiled languages like C/C++/Fortran.
+
+A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture.
+
+\section{Different scripting languages for geo-scripting}
+
+The main  scripting languages for GIS and Remote sensing currently are: R, Python (stand-alone or integrated within ArcGIS), GRASS. \\
+
+\emph{Sytze, Aldo, ... can you add more info here}
+
+\section{Python versus R}
+
+\emph{Sytze can you help here...}
+
+\section{Course set-up and planning}
+
+\begin{itemize}
+	\item{R package: RASTA package \url{https://r-forge.r-project.org/R/?group_id=1743}}
+	\item{Have look at the Reproducible and Applied Spatial and Temporal Analysis (RASTA) package (package content)}
+	\item{Course set-up is that every lesson there will be a short introduction, followed by a tutorial and an exercise that needs to be handed in before the start of the next lesson.}
+	\item{Course content and overview}
+\end{itemize}
+
+\begin{figure}[htp!]
+\centering
+    \includegraphics[height=0.5\textwidth]{figs/system_overview.png}
+  \caption{The graphical user interface to R}
+  \label{fig:GUIR}
+\end{figure}
+
+%\section{What is an SVN?}
+
+% check out the svn - do package building?
+
+\clearpage
+
+\section{Get Your R On}
+This preliminary section will cover some basic details about R. 
+
+\subsection{Data Structures}
+There are several ways that data are stored in R. Here are the main ones:
+\begin{itemize}
+\item \textbf{Data Frames} The most common format. Similar to a spread sheet. A data.frame() is indexed by rows and columns and store numeric and character data. The data.frame is typically what we use when we read in csv files, do regressions, et cetera.
+
+\item \textbf{Matrices and Arrays} Similar to data.frames but slightly faster computation wise while sacrificing some of the flexibility in terms of what information can be stored. In R a matrix object is a special case of an array that only has 2 dimensions. IE, an array is n-dimensional matrix while a matrix only has rows and columns (2 dimensions)
+
+\item \textbf{Lists} The most common and flexible type of R object. A list is simply a collection of other objects. For example a regression object is a list of: 1)Coefficient estimates 2) Standard Errors 3) The Variance/Covariance matrix 4) The design matrix (data) 5) Various measures of fit, et cetera.
+\end{itemize}
+
+We will look at examples of these objects in the next section
+
+\subsection{Reading Data in and Out}
+
+The most common way to read in data is with the \verb+read.csv()+ command. 
+However you can read in virtually any type of text file. Type ?read.table in your console for some examples.
+If you have really large binary data sets sometimes the \verb+scan()+ function is more efficient. Finally using the foreign package you can read in SPSS, STATA, Matlab, SAS, and a host of other data formats from other stat and math software.
+
+Let's read in a basic csv file. 
+% ## f <- system.file("extdata/kenpop89to99.csv", package="rasta") % does not work while running Latex to compile the file
+
+<<readcsvexample>>=
+#--------------------------READING DATA IN AND OUT------------------------------
+mydat<-read.csv("data/kenpop89to99.csv") 
+@
+We can explore the data using the  names(), summary(), head(), and tail() commands (we will use these frequently through out the exercise)
+<<explore>>=
+names(mydat) #colunm names
+
+summary(mydat) #basic summary information
+
+head(mydat) #first 6 rows
+
+tail(mydat) # last 6 rows
+@
+
+Write you own function to automatise a few tasks. E.g.... 
+
+\end{document}
