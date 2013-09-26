@@ -1,5 +1,6 @@
-import("graphics", "stats", "strucchange", "zoo", "raster")
+import("graphics", "stats", "strucchange", "zoo", "raster", "bitops")
 
 export(
-  "mysummary"
+  "mysummary", "QA2cloud"
 )
+export("taravao")
