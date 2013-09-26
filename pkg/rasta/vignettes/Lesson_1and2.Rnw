@@ -125,7 +125,62 @@ The main  scripting languages for GIS and Remote sensing currently are: R, Pytho
 \clearpage
 
 \section{Get Your R On}
-This preliminary section will cover some basic details about R. 
+
+\subsection{Hello world with Rstudio}
+
+This preliminary section will cover some basic details about R. For this course we will use Rstudio as an IDE to write and run scripts.
+
+When you open Rstudio you will see Fig. x .... The window in the bottom left corner is the R console (e.g. statistical and spatial analysis tools).
+Now type the following script in the R console:
+
+<<>>=
+a <- 1
+a
+print('Hello World')
+@
+
+The first line you passed to the console created a new object named  $a$ in memory. The symbol '<-' is somewhat equivalent to an equal sign. In the second line you printed $a$ to the console by simply typing it's name. 
+
+Now try to obtain he following output in the R console by writing the commands in the script window and running the via \textbf{Crtl-r} (make sure you remove $>$ and $+$). R commands shown in the following section should be written in your Script file without $>$ and $+$ in front of it, so that you can run them by using \textbf{Crtl-r} and the result in the R console will look like this:
+ 
+<<>>=
+class(a)
+class('Hello World')
+@
+
+You now have requested the \textbf{class} attribute of $a$ and the console has returned the attribute: \textbf{numeric}. R possesses a simple mechanism to support an object-oriented style of programming. All objects ($a$ in this case) have a class attribute assigned to them. \textbf{R} is quite forgiving and will assign a class to an object even if you haven't specified one (as you didn't in this case). Classes are a very important feature of the \textbf{R} environment. Any function or method that is applied to an object takes into account its class and uses this information to determine the correct course of action. A simple example should suffice to explain further. 
+
+Select the next two lines using your mouse and pass these to the console using \textbf{Crtl-r}. The first line passed declares a new object $b$. The second line passed adds $a$ and $b$ together and prints the solution to the console. 
+
+<<>>=
+b <- 2 
+a + b
+@
+
+\textbf{R} has assessed the class attribute of a and b; determined they are both \textbf{numeric} objects, and; carried out the arithmetic calculation as requested.
+
+Now we declares a new object \textbf{newfunc} (this is just a name and if you like you can give this function another name). It is a new function. Appearing in the first set of brackets is an argument list that specifies (in this case) two names. The value of the function appears within the second set of brackets where the process applied to the named objects from the argument list is defined. 
+
+<<>>=
+newfunc <- function(x, y) {
+  2*x + y
+} 
+
+a2b <- newfunc(2, 4)
+a2b
+rm(a, b, newfunc, a2b)
+@
+
+Next, a new object $a2b$ is created which contains the result of applying \textbf{newfunc} to the two objects you have defined earlier. The second last R command prints this new object to the console. Finally, you can now remove the objects you have created to make room for the next exercise by selecting and running the last line of the code.
+
+
+\textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console. Try it and see what happens.
+
+<<>>=
+?class
+@
+
+
 
 \subsection{Data Structures}
 There are several ways that data are stored in R. Here are the main ones:
