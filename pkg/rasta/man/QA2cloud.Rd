@@ -8,7 +8,7 @@ Function to generate a cloud mask from the QA layer of Landsat 8 data.
 Landsat 8 data come with a QA layer, providing reliability information of each individual pixels. This information is stored bitwise on 16 bits. The function targets the relevant bit for cloud information and generates a cloud mask from it.
 }
 \usage{
-QA2cloud(x, bitpos = 0x4000)
+QA2cloud(x, bitpos = 0x8000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,7 +16,7 @@ QA2cloud(x, bitpos = 0x4000)
 numeric. A 16 bits integer.
 }
   \item{bitpos}{
-numeric. The bit mask used to target the desired bits in \code{x} The default targets bit #15 so that the resulting cloud mask generated has a cloud detection confidence comprised between 36 and 100 \%
+numeric. The bit mask used to target the desired bits in \code{x} The default (0x8000) targets bit #15 so that the resulting cloud mask generated has a cloud detection confidence comprised between 36 and 100 \%
 }
 }
 \details{
