@@ -1,7 +1,5 @@
 \documentclass[11pt,twoside,a4paper]{article}
-
-%% can we set nice colours to the R code sections?
-
+% !Rnw weave = Sweave
 %% BibTeX settings
 \usepackage[authoryear,round]{natbib}
 %\bibliographystyle{jae}
@@ -39,19 +37,11 @@
   linktocpage = {true},
 }
 
-%\usepackage{Sweave} %% is essentially
-  \RequirePackage[T1]{fontenc}
-  \RequirePackage{ae,fancyvrb}
-  \DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
-  \DefineVerbatimEnvironment{Soutput}{Verbatim}{}
-  \DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
-  \DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\small}
-  \newenvironment{Schunk}{}{}
-  \SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
+\usepackage{Sweave}
 
 \begin{document}
 
-%\SweaveOpts{concordance=TRUE}
+\SweaveOpts{concordance=TRUE}
 
 \title{Applied Geo-Scripting}
 
@@ -130,7 +120,6 @@ The main  scripting languages for GIS and Remote sensing currently are: R, Pytho
 \end{figure}
 
 %\section{What is an SVN?}
-
 % check out the svn - do package building?
 
 \clearpage
@@ -157,11 +146,13 @@ However you can read in virtually any type of text file. Type ?read.table in you
 If you have really large binary data sets sometimes the \verb+scan()+ function is more efficient. Finally using the foreign package you can read in SPSS, STATA, Matlab, SAS, and a host of other data formats from other stat and math software.
 
 Let's read in a basic csv file. 
-% ## f <- system.file("extdata/kenpop89to99.csv", package="rasta") % does not work while running Latex to compile the file
+% ##  % does not work while running Latex to compile the file
 
 <<readcsvexample>>=
 #--------------------------READING DATA IN AND OUT------------------------------
-mydat<-read.csv("data/kenpop89to99.csv") 
+library(rasta) ## load the rasta library
+f <- system.file("extdata/kenpop89to99.csv", package="rasta") ## make a link to the csv file within the 'rasta' package
+mydat<-read.csv(f)
 @
 We can explore the data using the  names(), summary(), head(), and tail() commands (we will use these frequently through out the exercise)
 <<explore>>=
