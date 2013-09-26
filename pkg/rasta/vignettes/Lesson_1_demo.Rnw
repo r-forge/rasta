@@ -125,7 +125,7 @@ mpg # miles per gallon
 Now we make a graph where the plot( ) function opens a graph widow and plots weight vs. miles per gallon. 
 The next line of code adds a regression line to this graph. The final line adds a title.
 
-<<fig=TRUE, echo=TRUE>>=
+<<fig=T, echo=F>>=
 # Creating a Graph
 plot(wt, mpg) 
 abline(lm(mpg~wt))

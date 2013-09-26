@@ -100,6 +100,12 @@ The main  scripting languages for GIS and Remote sensing currently are: R, Pytho
 
 \section{Python versus R}
 
+\begin{itemize}
+  \item{installing packages in Python is challenging}
+\end{itemize}
+
+
+
 \emph{Sytze can you help here...}
 
 \section{Course set-up and planning}
