@@ -1,0 +1,306 @@
+\documentclass[10pt,compress,t,xcolor=table]{beamer}
+\usetheme{Z}
+%% Rnw2pdf Forestslides_GAM.Rnw
+\usepackage{url}
+\usepackage[authoryear,round]{natbib}
+\usepackage{animate}
+\usepackage[table]{xcolor}
+\definecolor{darkgray}{rgb}{0.8,0.8,0.8}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{%
+            pdftitle = {Example Tutorial},
+            pdfsubject = {},
+            pdfkeywords = {},
+            pdfauthor = {Jan Verbesselt},
+            %% change colorlinks to false for pretty printing
+            colorlinks = {true},
+            linkcolor = {Blue},
+            citecolor = {Blue},
+            urlcolor = {Red},
+            hyperindex = {true},
+            linktocpage = {true},
+}
+
+\SweaveOpts{engine = R, eps = FALSE, pdf = FALSE, png = TRUE, resolution = 120, keep.source = TRUE}
+
+<<preliminaries, echo=FALSE, results=hide>>=
+options(width = 70, prompt = "R> ", continue = "+ ")
+@
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+
+\title{Applied Geo-Scripting}
+
+\author{Jan Verbesselt, et al.}
+
+\Logo{figs/forest_small.jpg}
+
+\maketitle
+
+% can we convert this .Rnw to slides for a presentation? So first a short introduction using slides and then a tutorial section? 
+
+\begin{frame}
+\frametitle{Geo-scripting learning objectives}
+
+\begin{itemize}
+	\item{Learn to read, write, and visualize spatial data (vector/raster) using a script}
+	\item{Know how to find help (on spatial data handling functions)}
+	\item{Solve scripting problems (debug, reproducible example, writing functions)}
+	\item{Find libraries which offer spatial data handling functions}
+	\item{Learn to include functions from a library in your script}
+	\item{Apply learned concepts in a case study: learning how to address a spatial/ecological/applied case (e.g. detect forest changes, flood mapping, ocean floor depth analysis, bear movement, etc.) with a raster and vector dataset.}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Today's Learning objectives}
+\begin{itemize}
+	\item{Understand basic concepts of applied scripting for spatial data}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Why geo-scripting?}
+
+\begin{itemize}
+	\item{Reproducible: avoid clicking and you keep track of what you have done}
+	\item{Efficient: you can write a script to do something for you e.g. multiple times e.g. automatically downloading data}
+	% loic can you prepare a nice demo here with your package
+	% of course we need to have the VCF package installed etc. - so maybe a more simple example is necessary
+	\item{Enable collaboration: sharing scripts, functions, and packages}
+	\item{Good for finding errors i.e. debugging}
+	
+	e.g. this course is fully writing with scripting languages (i.e. R and Latex).
+\end{itemize}
+\end{frame}
+
+
+% \section{What  is a scripting language?}
+% 
+% A scripting language or script language is a programming language that supports the writing of scripts, programs written for a special runtime environment that can interpret and automate the execution of tasks which could alternatively be executed one-by-one by a human operator.
+% Different from compiled languages like C/C++/Fortran.
+% 
+% A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture.
+% 
+% \section{Different scripting languages for geo-scripting}
+% 
+% The main  scripting languages for GIS and Remote sensing currently are: R, Python (stand-alone or integrated within ArcGIS), GRASS. \\
+% 
+% \emph{Sytze, Aldo, ... can you add more info here}
+% 
+% \section{Python versus R}
+% 
+% \begin{itemize}
+%   \item{installing packages in Python is challenging}
+% \end{itemize}
+% 
+% 
+% 
+% \emph{Sytze can you help here...}
+% 
+% \section{Course set-up and planning}
+% 
+% \begin{itemize}
+% 	\item{R package: RASTA package \url{https://r-forge.r-project.org/R/?group_id=1743}}
+% 	\item{Have look at the Reproducible and Applied Spatial and Temporal Analysis (RASTA) package (package content)}
+% 	\item{Course set-up is that every lesson there will be a short introduction, followed by a tutorial and an exercise that needs to be handed in before the start of the next lesson.}
+% 	\item{Course content and overview}
+% \end{itemize}
+% 
+% \begin{figure}[htp!]
+% \centering
+%     \includegraphics[height=0.5\textwidth]{figs/system_overview.png}
+%   \caption{The graphical user interface to R}
+%   \label{fig:GUIR}
+% \end{figure}
+% 
+% %\section{What is an SVN?}
+% % check out the svn - do package building?
+% 
+% \clearpage
+% 
+
+\begin{frame}
+\frametitle{Get Your R On}
+
+\textbf{Hello world with Rstudio}
+This preliminary section will cover some basic details about R. For this course we will use Rstudio as an IDE to write and run scripts.
+When you open Rstudio you will see Fig. x .... The window in the bottom left corner is the R console (e.g. statistical and spatial analysis tools).
+Now type the following script in the R console:
+% 
+<<>>=
+a <- 1
+a
+print('Hello World')
+@
+
+% 
+% The first line you passed to the console created a new object named  $a$ in memory. The symbol '<-' is somewhat equivalent to an equal sign. In the second line you printed $a$ to the console by simply typing it's name. 
+% 
+% Now try to obtain he following output in the R console by writing the commands in the script window and running the via \textbf{Crtl-r} (make sure you remove $>$ and $+$). R commands shown in the following section should be written in your Script file without $>$ and $+$ in front of it, so that you can run them by using \textbf{Crtl-r} and the result in the R console will look like this:
+% 
+% <<>>=
+% class(a)
+% class('Hello World')
+% @
+% 
+% sdft
+\end{frame}
+
+
+% 
+% You now have requested the \textbf{class} attribute of $a$ and the console has returned the attribute: \textbf{numeric}. R possesses a simple mechanism to support an object-oriented style of programming. All objects ($a$ in this case) have a class attribute assigned to them. \textbf{R} is quite forgiving and will assign a class to an object even if you haven't specified one (as you didn't in this case). Classes are a very important feature of the \textbf{R} environment. Any function or method that is applied to an object takes into account its class and uses this information to determine the correct course of action. A simple example should suffice to explain further. 
+% 
+% Select the next two lines using your mouse and pass these to the console using \textbf{Crtl-r}. The first line passed declares a new object $b$. The second line passed adds $a$ and $b$ together and prints the solution to the console. 
+% 
+% <<>>=
+% b <- 2 
+% a + b
+% @
+% 
+% \textbf{R} has assessed the class attribute of a and b; determined they are both \textbf{numeric} objects, and; carried out the arithmetic calculation as requested.
+% 
+% \subsection{Custom Functions}
+% It is hard to unleash the full potential of R without writing your own functions. Luckily it's very easy to do. Here are some trivial examples:
+% 
+% <<customfunctions>>=
+% #--------------------------CUSTOM FUNCTIONS-------------------------------------
+% 
+% add<-function(x){ #put the function arguments in () and the evaluation in {}
+%   x+1
+% }
+% add(3)
+% add(4) 
+% 
+% #--Set the default values for your function--
+% add<-function(x=5){
+%   x+1
+% }
+% add() #automatically evaluates x=5
+% add(6) #but you can still change the defaults
+% @
+% That's about all there is too it. The function will generally return the result of the 
+% last line that was evaluated. However you can also use \verb+return()+ to specify exactly what the function will return.
+% 
+% Now, let's declares a new object, a new function, \textbf{newfunc} (this is just a name and if you like you can give this function another name). Appearing in the first set of brackets is an argument list that specifies (in this case) two names. The value of the function appears within the second set of brackets where the process applied to the named objects from the argument list is defined. 
+% 
+% <<>>=
+% newfunc <- function(x, y) {
+%   2*x + y
+% } 
+% 
+% a2b <- newfunc(2, 4)
+% a2b
+% rm(a, b, newfunc, a2b)
+% @
+% 
+% Next, a new object $a2b$ is created which contains the result of applying \textbf{newfunc} to the two objects you have defined earlier. The second last R command prints this new object to the console. Finally, you can now remove the objects you have created to make room for the next exercise by selecting and running the last line of the code.
+% 
+% \subsection{Help?!}
+% 
+% \textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console. Try it and see what happens.
+% 
+% <<>>=
+% # ?class
+% @
+% 
+% \subsection{Data Structures}
+% 
+% There are several ways that data are stored in R. Here are the main ones:
+% \begin{itemize}
+% \item \textbf{Data Frames} The most common format. Similar to a spread sheet. A data.frame() is indexed by rows and columns and store numeric and character data. The data.frame is typically what we use when we read in csv files, do regressions, et cetera.
+% 
+% \item \textbf{Matrices and Arrays} Similar to data.frames but slightly faster computation wise while sacrificing some of the flexibility in terms of what information can be stored. In R a matrix object is a special case of an array that only has 2 dimensions. IE, an array is n-dimensional matrix while a matrix only has rows and columns (2 dimensions)
+% 
+% \item \textbf{Lists} The most common and flexible type of R object. A list is simply a collection of other objects. For example a regression object is a list of: 1)Coefficient estimates 2) Standard Errors 3) The Variance/Covariance matrix 4) The design matrix (data) 5) Various measures of fit, et cetera.
+% \end{itemize}
+% 
+% We will look at examples of these objects in the next section
+% 
+% \subsection{Reading Data in and Out}
+% 
+% The most common way to read in data is with the \verb+read.csv()+ command. 
+% However you can read in virtually any type of text file. Type ?read.table in your console for some examples.
+% If you have really large binary data sets sometimes the \verb+scan()+ function is more efficient. Finally using the foreign package you can read in SPSS, STATA, Matlab, SAS, and a host of other data formats from other stat and math software.
+% 
+% Let's read in a basic csv file. 
+% 
+% <<readcsvexample>>=
+% #--------------------------READING DATA IN AND OUT------------------------------
+% library(rasta) ## load the rasta library
+% f <- system.file("extdata/kenpop89to99.csv", package="rasta") 
+% ## make a link to the csv file within the 'rasta' package
+% mydat<-read.csv(f)
+% @
+% We can explore the data using the  names(), summary(), head(), and tail() commands (we will use these frequently through out the exercise)
+% <<explore>>=
+% names(mydat) #colunm names
+% 
+% summary(mydat) #basic summary information
+% 
+% head(mydat) #first 6 rows
+% 
+% tail(mydat) # last 6 rows
+% @
+% 
+% We will go over ways to index and subscript data.frames later on in the exercise. For now lets do a basic regression so you can see an example of a list
+% 
+% \subsection{Basic Regression (and an example of lists)}
+% We use the \verb+lm()+ command to do a basic linear regression. The \verb+~+ symbol separates the left and right hand sides of the equation and we use `+' to separate terms and `*' to specify interactions.
+% <<regression>>=
+% #--------------------------REGRESSION AND LISTS------------------------------
+% myreg<-lm(Y99Pop~Y89Births+Y89Brate,data=mydat) #Regress the Population in 1999 on the population and birthrate in 1989
+% myreg
+% @
+% 
+% A regression object is an example of a list. We can use the \verb+names()+ command to see what the list contains. We can use the summary() command to get a standard regression output (coefficients, standard errors, et cetera) and we can also create a new object that contains all the elements of a regression summary.
+% 
+% <<exploreregobject>>=
+% #--------------------------EXPLORE A REGRESSION OBJECT------------------------------
+% 
+% names(myreg) #get the names of the items in the regression object
+% 
+% summary(myreg) #print out the key information
+% 
+% myregsum<-summary(myreg) #create a new regression summary object
+% 
+% names(myregsum)
+% 
+% myregsum[['adj.r.squared']] #extract the adjusted r squared
+% 
+% myregsum$adj.r.squared #does the same thing
+% @
+% 
+% That concludes our basic introduction to data.frames and lists. There is alot more material out on the web if you are interested. Later in the exercise we will look at data.frames in more detail.
+% 
+
+\begin{frame}
+% \section{Excercise 1: Write you own function to do something fancy} 
+\frametitle{More information}
+
+For more information about R please refer to the following links \url{http://www.statmethods.net/index.html}. 
+This is a great website for learning R function, graphs, and stats. Also visit \url{http://www.r-project.org/} and check out the Manuals i.e an introductions to R
+See also the book on Applied spatial Data analysis with R \url{http://www.asdar-book.org/} \citep{Bivand:2013ux}.
+
+\end{frame}
+
+\bibliographystyle{model5-names}
+\bibliography{refs}
+
+
+\end{document}

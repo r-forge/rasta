@@ -1,0 +1,161 @@
+%% fonts
+\usefonttheme{structurebold}
+\setbeamerfont{footline}{size=\tiny,parent=normal text}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[scaled=0.92]{helvet}
+
+%% colors
+\setbeamercolor*{structure}{fg=black,bg=white}
+\setbeamercolor*{alerted text}{parent=structure}
+\setbeamercolor*{titlelike}{parent=structure}
+\setbeamercolor*{author in head/foot}{parent=normal text}
+\setbeamercolor*{title in head/foot}{parent=normal text}
+\setbeamercolor*{section in head/foot}{parent=normal text}
+\setbeamercolor*{framenumber in head/foot}{parent=normal text}
+
+%% inner theme
+\setbeamertemplate{items}[ball]
+  
+\defbeamertemplate*{frametitle}{Z}[1][left]
+{
+  \ifbeamercolorempty[bg]{frametitle}{}{\nointerlineskip}%
+  \@tempdima=\textwidth%
+  \advance\@tempdima by\beamer@leftmargin%
+  \advance\@tempdima by\beamer@rightmargin%
+  \begin{beamercolorbox}[sep=0.2cm,#1,wd=\the\@tempdima]{frametitle}
+    \if@tempswa\else\csname beamer@fte#1\endcsname\fi%
+    {\usebeamerfont{frametitle}\rule[-0.5ex]{0pt}{2.3ex}\insertframetitle\par}%
+    {%
+      \ifx\insertframesubtitle\@empty%
+      \else%
+      {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle\par}%
+      \fi
+    }%
+    \if@tempswa\else\vskip-.2cm\fi% set inside beamercolorbox... evil here...
+  \end{beamercolorbox}%
+}
+
+\def\beamer@fteright{\vskip0.35cm\advance\leftskip by 1.7cm\advance\rightskip by1.7cm}
+\setbeamertemplate{frametitle continuation}[from second][{\small/~\insertcontinuationcount}]
+
+%% outer theme
+\setbeamersize{text margin left=0.8cm,text margin right=0.8cm}
+
+% foot line
+\pgfdeclarehorizontalshading{footlineshade}{4mm}{%
+  color(0pt)=(black);%
+  color(1.0\paperwidth)=(structure!50!black)}
+
+%% navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% No head lines
+\defbeamertemplate*{headline}{Z theme}{}
+
+
+
+%% style
+\RequirePackage{colortbl}
+\RequirePackage{graphicx}
+
+\renewcommand{\arraystretch}{1.2}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{array}
+
+% Fix broken symbols
+% (I don't know why, but some symbols do not work correctly)
+\DeclareSymbolFont{mysymbols}{OMS}{cmsy}{m}{n}
+\SetSymbolFont{mysymbols}{bold}{OMS}{cmsy}{b}{n}
+\DeclareMathSymbol{\myRightarrow}{\mathrel}{symbols}{"29}
+\let\Rightarrow\myRightarrow
+
+% R/Sweave
+\definecolor{InputColor}{rgb}{0,0,0.3}
+\definecolor{OutputColor}{rgb}{0.2,0.2,0.2}
+\setkeys{Gin}{width=0.8\textwidth}
+\RequirePackage{fancyvrb,upquote}
+\renewcommand{\ttdefault}{laett}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{formatcom=\color{InputColor}}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{formatcom=\color{OutputColor}}
+\newenvironment{Schunk}{\fontsize{9}{10}\selectfont}{}
+
+\AtBeginLecture{%
+  \section{\inserttitle}%
+  \immediate\write\@auxout {\string \newlabel{lect:@@\thelecture}{{\insertframenumber}}}%
+  \typeout{[LECTURE]=[\thelecture][\insertlecture][\thepage][\theframenumber]}%
+}
+
+% ------------------------------------------------------------------------
+% Make section titles
+
+% we start with section 0 (instead of default 1)
+\setcounter{section}{0}
+
+\AtBeginSection[]{%
+  \begin{frame}
+%%    \begin{center}
+      \usebeamercolor[fg]{structure}
+      
+      \hspace*{-0.8cm}%      
+      \includegraphics[width=12.8cm,keepaspectratio]{\mylogo}
+      
+      \vspace*{1cm}
+      
+      {\fontsize{16}{20}\bfseries\selectfont\inserttitle}\\[0.1cm]
+      {\fontsize{14}{20}\selectfont\insertsubtitle}
+
+      \vspace*{1.2cm}      
+
+      {\Large\insertauthor}
+      
+      \vspace*{0.5cm}
+      
+      {\large \url{\myURL}}
+%%    \end{center}
+  \end{frame}
+}
+
+\setbeamercolor*{subsectionfade}{use={normal text},parent={normal text},fg=structure.fg!30!normal text.bg}
+
+\setbeamertemplate{footline}[frame number]
+
+% hyperref settings
+\hypersetup{%
+  colorlinks = {false},
+  pdfauthor = {\insertshortauthor},
+  pdfsubject = {\insertshorttitle},
+}
+
+
+%% additional commands
+%% text
+\newcommand{\squote}[1]{`{#1}'}
+\newcommand{\dquote}[1]{``{#1}''}
+%% programming
+\makeatletter
+\newcommand\code{\bgroup\@makeother\_\@makeother\~\@makeother\$\@codex}
+\def\@codex#1{{\normalfont\ttfamily\hyphenchar\font=-1 #1}\egroup}
+\makeatother
+\let\proglang=\textsf
+\let\file=\texttt
+\let\dataset=\texttt
+\newcommand{\fct}[1]{\texttt{#1()}}
+\newcommand{\class}[1]{\dquote{\texttt{#1}}}
+\newcommand{\pkg}[1]{{\fontseries{b}\selectfont #1}}
+\newcommand{\email}[1]{\href{mailto:#1}{\normalfont\texttt{#1}}}
+\newcommand{\doi}[1]{\href{http://dx.doi.org/#1}{\normalfont\texttt{doi:#1}}}
+%% mathematics
+\newcommand{\E}{\mathsf{E}}
+\newcommand{\Var}{\mathsf{Var}}
+\newcommand{\Cov}{\mathsf{Cov}}
+\newcommand{\Cor}{\mathsf{Cor}}
+\newcommand{\Prob}{\mathsf{P}}
+%% customization
+\newcommand{\URL}[1]{\gdef\myURL{#1}}
+\newcommand{\Logo}[2][15mm]{%
+  \gdef\mylogoheight{#1}%
+  \gdef\mylogo{#2}}
+%% Z's defaults
+\URL{http://statmath.wu.ac.at/~zeileis/}
+\Logo{Ibk-title}
