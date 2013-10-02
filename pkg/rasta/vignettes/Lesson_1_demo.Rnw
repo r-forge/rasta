@@ -107,7 +107,7 @@ Next, a new object $a2b$ is created which contains the result of applying \textb
 \textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console. Try it and see what happens.
 
 <<>>=
-?class
+# ?class
 @
 
 \section{Making a graph in R}

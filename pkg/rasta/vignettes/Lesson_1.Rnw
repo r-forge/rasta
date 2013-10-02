@@ -49,8 +49,6 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 
 \maketitle
 
-% can we convert this .Rnw to slides for a presentation? So first a short introduction using slides and then a tutorial section? 
-
 \begin{frame}
 \frametitle{Geo-scripting learning objectives}
 
@@ -135,19 +133,20 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 % \clearpage
 % 
 
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{Get Your R On}
 
 \textbf{Hello world with Rstudio}
 This preliminary section will cover some basic details about R. For this course we will use Rstudio as an IDE to write and run scripts.
 When you open Rstudio you will see Fig. x .... The window in the bottom left corner is the R console (e.g. statistical and spatial analysis tools).
 Now type the following script in the R console:
-% 
+
 <<>>=
 a <- 1
 a
 print('Hello World')
 @
+
 
 % 
 % The first line you passed to the console created a new object named  $a$ in memory. The symbol '<-' is somewhat equivalent to an equal sign. In the second line you printed $a$ to the console by simply typing it's name. 
