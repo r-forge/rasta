@@ -147,23 +147,24 @@ a
 print('Hello World')
 @
 
+The first line you passed to the console created a new object named  $a$ in memory. The symbol '<-' is somewhat equivalent to an equal sign. In the second line you printed $a$ to the console by simply typing it's name. 
 
-% 
-% The first line you passed to the console created a new object named  $a$ in memory. The symbol '<-' is somewhat equivalent to an equal sign. In the second line you printed $a$ to the console by simply typing it's name. 
-% 
-% Now try to obtain he following output in the R console by writing the commands in the script window and running the via \textbf{Crtl-r} (make sure you remove $>$ and $+$). R commands shown in the following section should be written in your Script file without $>$ and $+$ in front of it, so that you can run them by using \textbf{Crtl-r} and the result in the R console will look like this:
-% 
-% <<>>=
-% class(a)
-% class('Hello World')
-% @
-% 
-% sdft
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Get Your R On}
+
+<<>>=
+class(a)
+
+@
+
+You now have requested the \textbf{class} attribute of $a$ and the console has returned the attribute: \textbf{numeric}. R possesses a simple mechanism to support an object-oriented style of programming. All objects ($a$ in this case) have a class attribute assigned to them. \textbf{R} is quite forgiving and will assign a class to an object even if you haven't specified one (as you didn't in this case). Classes are a very important feature of the \textbf{R} environment. Any function or method that is applied to an object takes into account its class and uses this information to determine the correct course of action. A simple example should suffice to explain further.
+
 \end{frame}
 
 
-% 
-% You now have requested the \textbf{class} attribute of $a$ and the console has returned the attribute: \textbf{numeric}. R possesses a simple mechanism to support an object-oriented style of programming. All objects ($a$ in this case) have a class attribute assigned to them. \textbf{R} is quite forgiving and will assign a class to an object even if you haven't specified one (as you didn't in this case). Classes are a very important feature of the \textbf{R} environment. Any function or method that is applied to an object takes into account its class and uses this information to determine the correct course of action. A simple example should suffice to explain further. 
+
 % 
 % Select the next two lines using your mouse and pass these to the console using \textbf{Crtl-r}. The first line passed declares a new object $b$. The second line passed adds $a$ and $b$ together and prints the solution to the console. 
 % 
