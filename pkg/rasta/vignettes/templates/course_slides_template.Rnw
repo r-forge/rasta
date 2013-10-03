@@ -1,0 +1,92 @@
+\documentclass[10pt,compress,t,xcolor=table]{beamer}
+\usetheme{Z}
+
+\usepackage{url}
+\usepackage[authoryear,round]{natbib}
+\usepackage{animate}
+\usepackage[table]{xcolor}
+\definecolor{darkgray}{rgb}{0.8,0.8,0.8}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{%
+            pdftitle = {Lesson 1: Geo-scripting},
+            pdfsubject = {},
+            pdfkeywords = {},
+            pdfauthor = {Jan Verbesselt},
+            %% change colorlinks to false for pretty printing
+            colorlinks = {true},
+            linkcolor = {Blue},
+            citecolor = {Blue},
+            urlcolor = {Red},
+            hyperindex = {true},
+            linktocpage = {true},
+}
+
+\SweaveOpts{engine = R, eps = FALSE, pdf = FALSE, png = TRUE, resolution = 120, keep.source = TRUE}
+
+<<preliminaries, echo=FALSE, results=hide>>=
+options(width = 70, prompt = "R> ", continue = "+ ")
+@
+
+\begin{document}
+
+\SweaveOpts{concordance=TRUE}
+
+\title{Applied Geo-Scripting: course template}
+
+\author{Jan Verbesselt, et al.}
+
+\maketitle
+
+\begin{frame}
+\frametitle{Geo-scripting learning objectives}
+
+\begin{itemize}
+	\item{Learn to read, write, and visualize spatial data (vector/raster) using a script}
+	\item{Know how to find help (on spatial data handling functions)}
+	\item{Solve scripting problems (debug, reproducible example, writing functions)}
+	\item{Find libraries which offer spatial data handling functions}
+	\item{Learn to include functions from a library in your script}
+	\item{Apply learned concepts in a case study: learning how to address a spatial/ecological/applied case (e.g. detect forest changes, flood mapping, ocean floor depth analysis, bear movement, etc.) with a raster and vector dataset.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Get Your R On}
+
+\textbf{Getting started with Rstudio and the rasta package}
+This preliminary section will cover some basic details about R. 
+For this course we will use Rstudio as an IDE to write and run scripts. Open Rstudio!
+Now type the following script in the R console:
+<<>>=
+a <- 1
+a
+@
+The first line you passed to the console created a new object named  $a$ in memory. 
+The symbol '<-' is somewhat equivalent to an equal sign. 
+In the second line you printed $a$ to the console by simply typing it's name. 
+\medskip
+
+\textbf{What is the class of this object?}
+\end{frame}
+
+\begin{frame}
+\frametitle{More information}
+For more information about R please refer to the following links \url{http://www.statmethods.net/index.html}. 
+This is a great website for learning R function, graphs, and stats. Also visit \url{http://www.r-project.org/} and check out the Manuals i.e an introductions to R
+See also the book on Applied spatial Data analysis with R \url{http://www.asdar-book.org/} \citep{Bivand:2013ux}.
+\end{frame}
+
+\bibliographystyle{model5-names}
+\bibliography{refs}
+
+\end{document}
