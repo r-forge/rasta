@@ -94,14 +94,19 @@ A scripting language is the glue, between different commands, functions, and obj
 
 \section{Different scripting languages for geo-scripting}
 
-The main  scripting languages for GIS and Remote sensing currently are: R, Python (stand-alone or integrated within ArcGIS), GRASS. \\
+The main  scripting languages for GIS and Remote sensing currently are: R, Python (stand-alone or integrated within ArcGIS, QGIS), GRASS. \\
 
 \emph{Sytze, Aldo, ... can you add more info here}
 
 \section{Python versus R}
 
 \begin{itemize}
-  \item{installing packages in Python is challenging}
+  \item{Python is a general purpose programming language}
+  \item{R is particularly strong in statistical computing and graphics}
+  \item{Installing libraries in Python is sometimes challenging}
+  \item{Syntactic differences can be confusing}
+  \item{There are many R packages for spatial analyses and for dealing with spatial data}
+  \item{Scripts in both languages can be combined}
 \end{itemize}
 
 
@@ -212,6 +217,9 @@ Next, a new object $a2b$ is created which contains the result of applying \textb
 
 There are several ways that data are stored in R. Here are the main ones:
 \begin{itemize}
+
+\item \textbf{Vectors} The most generic data structure. In R, any variable of an atomic data type (numeric, integer, logical, character) is a vector. This will be examplified below.
+
 \item \textbf{Data Frames} The most common format. Similar to a spread sheet. A data.frame() is indexed by rows and columns and store numeric and character data. The data.frame is typically what we use when we read in csv files, do regressions, et cetera.
 
 \item \textbf{Matrices and Arrays} Similar to data.frames but slightly faster computation wise while sacrificing some of the flexibility in terms of what information can be stored. In R a matrix object is a special case of an array that only has 2 dimensions. IE, an array is n-dimensional matrix while a matrix only has rows and columns (2 dimensions)
