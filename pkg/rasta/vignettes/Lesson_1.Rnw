@@ -1,6 +1,6 @@
 \documentclass[10pt,compress,t,xcolor=table]{beamer}
 \usetheme{Z}
-%% Rnw2pdf Forestslides_GAM.Rnw
+
 \usepackage{url}
 \usepackage[authoryear,round]{natbib}
 \usepackage{animate}
@@ -18,10 +18,7 @@
 \definecolor{Red}{rgb}{0.5,0,0}
 \definecolor{Blue}{rgb}{0,0,0.5}
 \hypersetup{%
-            pdftitle = {Example Tutorial},
-            pdfsubject = {},
-            pdfkeywords = {},
-            pdfauthor = {Jan Verbesselt},
+            pdftitle = {Lesson 1: Geo-scripting},
             %% change colorlinks to false for pretty printing
             colorlinks = {true},
             linkcolor = {Blue},
@@ -41,7 +38,7 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 
 \SweaveOpts{concordance=TRUE}
 
-\title{Applied Geo-Scripting}
+\title{Applied Geo-Scripting: Lesson 1}
 
 \author{Jan Verbesselt, et al.}
 
@@ -64,9 +61,13 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 \end{frame}
 
 \begin{frame}
-\frametitle{Today's Learning objectives}
+\frametitle{Today's topics}
 \begin{itemize}
-	\item{Understand basic concepts of applied scripting for spatial data}
+	\item{Intro to basic concepts of applied scripting for spatial data}
+  \item{Why geo-scripting?}
+  \item{Course planning and practical issues}
+  \item{Getting Us up to speed with R and the 'rasta' package}
+% add link to the rasta package
 \end{itemize}
 
 \end{frame}
@@ -78,95 +79,118 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 \begin{itemize}
 	\item{Reproducible: avoid clicking and you keep track of what you have done}
 	\item{Efficient: you can write a script to do something for you e.g. multiple times e.g. automatically downloading data}
-	% loic can you prepare a nice demo here with your package
-	% of course we need to have the VCF package installed etc. - so maybe a more simple example is necessary
 	\item{Enable collaboration: sharing scripts, functions, and packages}
 	\item{Good for finding errors i.e. debugging}
-	
 	e.g. this course is fully writing with scripting languages (i.e. R and Latex).
 \end{itemize}
 \end{frame}
 
-
-% \section{What  is a scripting language?}
-% 
-% A scripting language or script language is a programming language that supports the writing of scripts, programs written for a special runtime environment that can interpret and automate the execution of tasks which could alternatively be executed one-by-one by a human operator.
-% Different from compiled languages like C/C++/Fortran.
-% 
-% A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture.
-% 
-% \section{Different scripting languages for geo-scripting}
-% 
-% The main  scripting languages for GIS and Remote sensing currently are: R, Python (stand-alone or integrated within ArcGIS), GRASS. \\
-% 
-% \emph{Sytze, Aldo, ... can you add more info here}
-% 
-% \section{Python versus R}
-% 
-% \begin{itemize}
-%   \item{installing packages in Python is challenging}
-% \end{itemize}
-% 
-% 
-% 
-% \emph{Sytze can you help here...}
-% 
-% \section{Course set-up and planning}
-% 
-% \begin{itemize}
-% 	\item{R package: RASTA package \url{https://r-forge.r-project.org/R/?group_id=1743}}
-% 	\item{Have look at the Reproducible and Applied Spatial and Temporal Analysis (RASTA) package (package content)}
-% 	\item{Course set-up is that every lesson there will be a short introduction, followed by a tutorial and an exercise that needs to be handed in before the start of the next lesson.}
-% 	\item{Course content and overview}
-% \end{itemize}
-% 
-% \begin{figure}[htp!]
-% \centering
-%     \includegraphics[height=0.5\textwidth]{figs/system_overview.png}
-%   \caption{The graphical user interface to R}
-%   \label{fig:GUIR}
-% \end{figure}
-% 
-% %\section{What is an SVN?}
-% % check out the svn - do package building?
-% 
-% \clearpage
-% 
+%% remaining idea's: demo's Loic?
 
 \begin{frame}[fragile]
 \frametitle{Get Your R On}
 
-\textbf{Hello world with Rstudio}
-This preliminary section will cover some basic details about R. For this course we will use Rstudio as an IDE to write and run scripts.
-When you open Rstudio you will see Fig. x .... The window in the bottom left corner is the R console (e.g. statistical and spatial analysis tools).
+\textbf{Getting started with Rstudio and the rasta package}
+This preliminary section will cover some basic details about R. 
+For this course we will use Rstudio as an IDE to write and run scripts. Open Rstudio!
 Now type the following script in the R console:
-
 <<>>=
 a <- 1
 a
-print('Hello World')
 @
+The first line you passed to the console created a new object named  $a$ in memory. 
+The symbol '<-' is somewhat equivalent to an equal sign. 
+In the second line you printed $a$ to the console by simply typing it's name. 
+\medskip
 
-The first line you passed to the console created a new object named  $a$ in memory. The symbol '<-' is somewhat equivalent to an equal sign. In the second line you printed $a$ to the console by simply typing it's name. 
-
+\textbf{What is the class of this object?}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Get Your R On}
-
 <<>>=
 class(a)
+@
+You now have requested the \textbf{class} attribute of $a$ and the console has returned the attribute: \textbf{numeric}. R possesses a simple mechanism to support an object-oriented style of programming. All objects ($a$ in this case) have a class attribute assigned to them. \textbf{R} is quite forgiving and will assign a class to an object even if you haven't specified one (as you didn't in this case). Classes are a very important feature of the \textbf{R} environment. Any function or method that is applied to an object takes into account its class and uses this information to determine the correct course of action.
+\end{frame}
 
+%% See at Lesson_1and2.Rnw for more details -- Jan
+
+\begin{frame}[fragile]
+\frametitle{The rasta package}
+
+<<rastaintro>>=
+library(rasta) ## load the rasta library
+#?rasta
+@
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Reading Data in and Out}
+The most common way to read in data is with the \verb+read.csv()+ command. 
+% However you can read in virtually any type of text file. 
+Type ?read.table in your console for some other examples.
+
+%% make the font small of these explanation sections.
+% If you have really large binary data sets sometimes the \verb+scan()+ function is more efficient. 
+% Finally using the \textbf{foreign} package you can read in SPSS, STATA, Matlab, SAS, and a host of other data formats from other stat and math software.
+% Let's read in a basic csv file. 
+
+<<readcsvexample>>=
+f <- system.file("extdata/kenpop89to99.csv", package="rasta")
+mydat<-read.csv(f)
+@
+We can explore the data using the  names(), summary(), head(), and tail() commands (we will use these frequently through out the exercise)
+
+<<explore>>=
+names(mydat) #colunm names
+summary(mydat$Y89Pop) 
+head(mydat$Y89Births)   # see ?head
+@
+We will go over ways to index and subscript data.frames later. Lets do a basic regression so you can see an example of a list.
+\end{frame}
+
+\begin{frame}[fragile]
+
+\frametitle{Basic regression and example of a list}
+We use the \verb+lm()+ command to do a basic linear regression. The \verb+~+ symbol separates the left and right hand sides of the equation and we use `+' to separate terms and `*' to specify interactions.
+<<regression>>=
+myreg<-lm(Y99Pop~Y89Births+Y89Brate,data=mydat) 
+#Regress the Population in 1999 on the population and birthrate in 1989
+myreg
 @
 
-You now have requested the \textbf{class} attribute of $a$ and the console has returned the attribute: \textbf{numeric}. R possesses a simple mechanism to support an object-oriented style of programming. All objects ($a$ in this case) have a class attribute assigned to them. \textbf{R} is quite forgiving and will assign a class to an object even if you haven't specified one (as you didn't in this case). Classes are a very important feature of the \textbf{R} environment. Any function or method that is applied to an object takes into account its class and uses this information to determine the correct course of action. A simple example should suffice to explain further.
-
 \end{frame}
+
+% 
+% A regression object is an example of a list. We can use the \verb+names()+ command to see what the list contains. We can use the summary() command to get a standard regression output (coefficients, standard errors, et cetera) and we can also create a new object that contains all the elements of a regression summary.
+% 
+% <<exploreregobject>>=
+% #--------------------------EXPLORE A REGRESSION OBJECT------------------------------
+% 
+% names(myreg) #get the names of the items in the regression object
+% 
+% summary(myreg) #print out the key information
+% 
+% myregsum<-summary(myreg) #create a new regression summary object
+% 
+% names(myregsum)
+% 
+% myregsum[['adj.r.squared']] #extract the adjusted r squared
+% 
+% myregsum$adj.r.squared #does the same thing
+% @
+% 
+% That concludes our basic introduction to data.frames and lists. There is alot more material out on the web if you are interested. Later in the exercise we will look at data.frames in more detail.
+
+ 
  
 \begin{frame}
-% \section{Excercise 1: Write you own function to do something fancy} 
-\frametitle{More information}
+\frametitle{Excercise Lesson 1: Write you own function to find out what the "class" and "average" of all objects in...} 
+\end{frame}
 
+\begin{frame}
+\frametitle{More information}
 For more information about R please refer to the following links \url{http://www.statmethods.net/index.html}. 
 This is a great website for learning R function, graphs, and stats. Also visit \url{http://www.r-project.org/} and check out the Manuals i.e an introductions to R
 See also the book on Applied spatial Data analysis with R \url{http://www.asdar-book.org/} \citep{Bivand:2013ux}.
