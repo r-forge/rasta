@@ -40,7 +40,7 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 
 \title{Applied Geo-Scripting: Lesson 1}
 
-\author{Jan Verbesselt, et al.}
+\author{Jan Verbesselt, Sytze de Bruyn, Loic Dutrieux, Ben De Vries, ...}
 
 \Logo{figs/forest_small.jpg}
 
@@ -50,14 +50,14 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 \frametitle{Geo-scripting learning objectives}
 
 \begin{itemize}
-	\item{Learn to read, write, and visualize spatial data (vector/raster) using a script}
+  \item{Handle spatial data using a scripting language}
+	\item{Read, write, and visualize spatial data (vector/raster) using a script}
 	\item{Know how to find help (on spatial data handling functions)}
 	\item{Solve scripting problems (debug, reproducible example, writing functions)}
 	\item{Find libraries which offer spatial data handling functions}
 	\item{Learn to include functions from a library in your script}
-	\item{Apply learned concepts in a case study: learning how to address a spatial/ecological/applied case (e.g. detect forest changes, flood mapping, ocean floor depth analysis, bear movement, etc.) with a raster and vector dataset.}
+	\item{Apply learned concepts in a case study: learning how to address a spatial/ecological/applied case (e.g. detect forest changes, ocean floor depth analysis, bear movement, etc.) with a raster and vector dataset.}
 \end{itemize}
-
 \end{frame}
 
 \begin{frame}
@@ -66,9 +66,12 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 	\item{Intro to basic concepts of applied scripting for spatial data}
   \item{Why geo-scripting?}
   \item{Course planning and practical issues}
-  \item{Getting Us up to speed with R and the 'rasta' package}
-% add link to the rasta package
+  \item{Getting Us up to speed with R and loading 'rasta' package}
 \end{itemize}
+
+\medskip
+\textbf{RASTA: Reproducible and Applied Spatial and Temporal Analaysis}
+\url{https://r-forge.r-project.org/R/?group_id=1743}
 
 \end{frame}
 
@@ -85,7 +88,58 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 \end{itemize}
 \end{frame}
 
-%% remaining idea's: demo's Loic?
+\begin{frame}
+\frametitle{What  is a scripting language?}
+
+A scripting language or script language is a programming language that supports the writing of scripts, programs written for a special runtime environment that can interpret and automate the execution of tasks which could alternatively be executed one-by-one by a human operator.
+\medskip
+Different from compiled languages like C/C++/Fortran.
+\medskip
+A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Different scripting languages for geo-scripting}
+The main scripting languages for GIS and Remote sensing currently are: R, Python (stand-alone or integrated within ArcGIS, QGIS), GRASS.
+
+\medskip
+\emph{Aldo can you help here}
+\end{frame}
+
+\begin{frame}
+\frametitle{Python versus R}
+\begin{itemize}
+  \item{Python is a general purpose programming language}
+  \item{R is particularly strong in statistical computing and graphics}
+  \item{Installing libraries in Python is sometimes challenging}
+  \item{Syntactic differences can be confusing}
+  \item{There are many R and Python packages for spatial analyses and for dealing with spatial data}
+  \item{Scripts in both languages can be combined}
+\end{itemize}
+
+\medskip
+\emph{Aldo can you help here}
+\end{frame}
+
+\begin{frame}
+\frametitle{Course set-up}
+
+\begin{figure}[htp!]
+\centering
+    \includegraphics[height=0.4\textwidth]{figs/system_overview.png}
+  \caption{Course set-up}
+  \label{fig:systemoverview}
+\end{figure}
+
+\begin{itemize}
+  \item{SVN}
+  \item{R libraries: rgeos, rgdal}
+  \item{GDAL}
+  \item{GEOS}
+%% add url%% add abreviations
+\end{itemize}
+\end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Get Your R On}
@@ -114,15 +168,91 @@ class(a)
 You now have requested the \textbf{class} attribute of $a$ and the console has returned the attribute: \textbf{numeric}. R possesses a simple mechanism to support an object-oriented style of programming. All objects ($a$ in this case) have a class attribute assigned to them. \textbf{R} is quite forgiving and will assign a class to an object even if you haven't specified one (as you didn't in this case). Classes are a very important feature of the \textbf{R} environment. Any function or method that is applied to an object takes into account its class and uses this information to determine the correct course of action.
 \end{frame}
 
-%% See at Lesson_1and2.Rnw for more details -- Jan
+\begin{frame}[fragile]
+\frametitle{Custom Functions}
+It is hard to unleash the full potential of R without writing your own functions. Luckily it's very easy to do. Here are some trivial examples:
+
+<<>>=
+add<-function(x){ 
+#put the function arguments in () and the evaluation in {}
+  x + 1
+}
+add(4) 
+
+# Set the default values for your function--
+add<-function(x = 5){
+  x + 1
+}
+add()  #automatically evaluates x = 5
+add(6) #but you can still change the defaults
+@
+
+That's about all there is too it. The function will generally return the result of the 
+last line that was evaluated. However you can also use \verb+return()+ to specify exactly what the function will return.
+\end{frame}
+
+\begin{frame}[fragile]
+Now, let's declares a new object, a new function, \textbf{newfunc} (this is just a name and if you like you can give this function another name). Appearing in the first set of brackets is an argument list that specifies (in this case) two names. The value of the function appears within the second set of brackets where the process applied to the named objects from the argument list is defined. 
+
+<< echo=FALSE>>=
+newfunc <- function(x, y) {
+  2*x + y
+} 
+
+a2b <- newfunc(2, 4)
+a2b
+rm(a, newfunc, a2b)
+@
+\end{frame}
+
+% Next, a new object $a2b$ is created which contains the result of applying \textbf{newfunc} to the two objects you have defined earlier. The second last R command prints this new object to the console. Finally, you can now remove the objects you have created to make room for the next exercise by selecting and running the last line of the code.
+% 
+% \subsection{Help?!}
+% 
+% \textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console. Try it and see what happens.
+% 
+% <<>>=
+% # ?class
+% @
+% 
+% \subsection{Data Structures}
+% 
+% There are several ways that data are stored in R. Here are the main ones:
+% \begin{itemize}
+% 
+% \item \textbf{Vectors} The most generic data structure. In R, any variable of an atomic data type (numeric, integer, logical, character) is a vector. This will be examplified below.
+% 
+% \item \textbf{Data Frames} The most common format. Similar to a spread sheet. A data.frame() is indexed by rows and columns and store numeric and character data. The data.frame is typically what we use when we read in csv files, do regressions, et cetera.
+% 
+% \item \textbf{Matrices and Arrays} Similar to data.frames but slightly faster computation wise while sacrificing some of the flexibility in terms of what information can be stored. In R a matrix object is a special case of an array that only has 2 dimensions. IE, an array is n-dimensional matrix while a matrix only has rows and columns (2 dimensions)
+% 
+% \item \textbf{Lists} The most common and flexible type of R object. A list is simply a collection of other objects. For example a regression object is a list of: 1)Coefficient estimates 2) Standard Errors 3) The Variance/Covariance matrix 4) The design matrix (data) 5) Various measures of fit, et cetera.
+% \end{itemize}
+% 
+% We will look at examples of these objects in the next section
+% 
+
 
 \begin{frame}[fragile]
 \frametitle{The rasta package}
 
-<<rastaintro>>=
+Now load the rasta package which you can download from:
+\url{https://r-forge.r-project.org/R/?group_id=1743}
+
+<<>>=
 library(rasta) ## load the rasta library
 #?rasta
+#look at course content
 @
+
+\medskip
+Course overview and pdf's are available + Excercise. \\
+\medskip
+
+\emph{
+ Excercise needs to be handed in before 1030 the day after the lesson so that we can provide feedback on the excercise and discuss shortly.
+}
+
 \end{frame}
 
 \begin{frame}[fragile]
@@ -143,51 +273,60 @@ mydat<-read.csv(f)
 We can explore the data using the  names(), summary(), head(), and tail() commands (we will use these frequently through out the exercise)
 
 <<explore>>=
-names(mydat) #colunm names
-summary(mydat$Y89Pop) 
-head(mydat$Y89Births)   # see ?head
+names(mydat)[1:3] #colunm names
+summary(mydat$Y89Pop)[1:3]
+head(mydat$Y89Births)[1:2]
 @
+What is the class of the $mydat$?
 We will go over ways to index and subscript data.frames later. Lets do a basic regression so you can see an example of a list.
 \end{frame}
 
 \begin{frame}[fragile]
-
 \frametitle{Basic regression and example of a list}
 We use the \verb+lm()+ command to do a basic linear regression. The \verb+~+ symbol separates the left and right hand sides of the equation and we use `+' to separate terms and `*' to specify interactions.
+\emph{Regress the Population in 1999 on the population and birthrate in 1989}
 <<regression>>=
-myreg<-lm(Y99Pop~Y89Births+Y89Brate,data=mydat) 
-#Regress the Population in 1999 on the population and birthrate in 1989
-myreg
+myreg<-lm(Y99Pop ~ Y89Births + Y89Brate, data = mydat) 
+myreg[c(1,8)]
 @
 
 \end{frame}
 
-% 
-% A regression object is an example of a list. We can use the \verb+names()+ command to see what the list contains. We can use the summary() command to get a standard regression output (coefficients, standard errors, et cetera) and we can also create a new object that contains all the elements of a regression summary.
-% 
-% <<exploreregobject>>=
-% #--------------------------EXPLORE A REGRESSION OBJECT------------------------------
-% 
-% names(myreg) #get the names of the items in the regression object
-% 
-% summary(myreg) #print out the key information
-% 
-% myregsum<-summary(myreg) #create a new regression summary object
-% 
-% names(myregsum)
-% 
-% myregsum[['adj.r.squared']] #extract the adjusted r squared
-% 
-% myregsum$adj.r.squared #does the same thing
-% @
-% 
-% That concludes our basic introduction to data.frames and lists. There is alot more material out on the web if you are interested. Later in the exercise we will look at data.frames in more detail.
+\begin{frame}[fragile]
+\frametitle{Basic regression and example of a list}
+A regression object is an example of a list. We can use the \verb+names()+ command to see what the list contains. We can use the summary() command to get a standard regression output (coefficients, standard errors, et cetera) and we can also create a new object that contains all the elements of a regression summary.
 
- 
- 
-\begin{frame}
-\frametitle{Excercise Lesson 1: Write you own function to find out what the "class" and "average" of all objects in...} 
+<<>>=
+names(myreg)[1:3]
+myregsum <- summary(myreg)
+names(myregsum)[1:2]
+myregsum[['adj.r.squared']] #extract the adjusted r squared
+myregsum$adj.r.squared # does the same thing
+@
+
+\textbf{why is $myregsum$ a list object? What is the advantage of a list?}
+
+That concludes our basic introduction to data.frames and lists. There is alot more material out on the web if you are interested. Later in the exercise we will look at data.frames in more detail.
 \end{frame}
+
+\begin{frame}
+\frametitle{Excercise Lesson 1: Write you own function}
+Write a function to visualise data and plots different variables
+
+\emph{Submit a documented script to}
+\emph{Using data with the 'rasta' package}
+Submit your code? 
+
+\medskip
+This will be a test to see if your R scripting levels are ok to continue the course in the coming months.
+
+%% R course SVN 
+%% The script needs to contain your name
+%% Title of the script is Ex_lesson_1_yourname.R
+\end{frame}
+
+
+
 
 \begin{frame}
 \frametitle{More information}
