@@ -44,14 +44,14 @@ echo $contents; } ?>
 
 <!-- end of project description -->
 
-Data sets and rasta package for windows:
+<strong> Data sets and rasta package for windows: </strong>
 
 <ul> 
 
-<li> Lesson 4: data set. <a href="http://bfast.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a>
+<li> <strong>Lesson 4:</strong> data set. Bla bla <a href="http://bfast.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a>
 </li>
 
-<li> Rasta package for windows (0.1 version). <a href="http://bfast.r-forge.r-project.org/rasta.zip">rasta.zip</a>
+<li> <strong> Rasta </strong>package for windows (0.1 version). <a href="http://bfast.r-forge.r-project.org/rasta.zip">rasta.zip</a>
 </li> 
 
 </ul>
