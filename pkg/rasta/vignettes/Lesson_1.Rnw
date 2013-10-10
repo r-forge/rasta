@@ -6,7 +6,8 @@
 \usepackage{animate}
 \usepackage[table]{xcolor}
 \definecolor{darkgray}{rgb}{0.8,0.8,0.8}
-
+%% Tune beamer package 
+\setbeamertemplate{caption}[numbered] %% Figs, Tables are now numbered
 %% additional packages
 \usepackage[latin1]{inputenc}
 \usepackage{graphicx,color,thumbpdf}
@@ -66,12 +67,12 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 	\item{Intro to basic concepts of applied scripting for spatial data}
   \item{Why geo-scripting?}
   \item{Course planning and practical issues}
-  \item{Getting Us up to speed with R and loading 'rasta' package}
+  \item{Getting up to speed with R and loading 'rasta' package}
 \end{itemize}
 
 \medskip
 \textbf{RASTA: Reproducible and Applied Spatial and Temporal Analaysis}
-\url{https://r-forge.r-project.org/R/?group_id=1743}
+\url{http://rasta.r-forge.r-project.org}
 
 \end{frame}
 
@@ -90,20 +91,23 @@ options(width = 70, prompt = "R> ", continue = "+ ")
 
 \begin{frame}
 \frametitle{What  is a scripting language?}
-
-A scripting language or script language is a programming language that supports the writing of scripts, programs written for a special runtime environment that can interpret and automate the execution of tasks which could alternatively be executed one-by-one by a human operator.
-\medskip
-Different from compiled languages like C/C++/Fortran.
-\medskip
-A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture.
-
+\begin{itemize}
+  \item{A scripting language or script language is a programming language that supports the writing of scripts, 
+  programs written for a special runtime environment that can interpret and automate the execution of 
+  tasks which could alternatively be executed one-by-one by a human operator}
+  \item{Different from compiled languages like C/C++/Fortran.}
+  \item{A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture}
+\end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{Different scripting languages for geo-scripting}
-The main scripting languages for GIS and Remote sensing currently are: R, Python (stand-alone or integrated within ArcGIS, QGIS), GRASS.
-
-\medskip
+The main scripting languages for GIS and Remote sensing currently are: 
+\begin{itemize} % [<+->]
+  \item R
+  \item Python (stand-alone or integrated within ArcGIS, QGIS), 
+  \item GRASS
+\end{itemize}
 \emph{Aldo can you help here}
 \end{frame}
 
@@ -115,7 +119,11 @@ The main scripting languages for GIS and Remote sensing currently are: R, Python
   \item{Installing libraries in Python is sometimes challenging}
   \item{Syntactic differences can be confusing}
   \item{There are many R and Python packages for spatial analyses and for dealing with spatial data}
-  \item{Scripts in both languages can be combined}
+  \item{Scripts in both languages can be combined:}
+  \begin{itemize}
+   \item {call R from Python using \textbf{RPy}}
+   \item {call Python from R \url{http://rpython.r-forge.r-project.org/}}
+  \end{itemize}
 \end{itemize}
 
 \medskip
@@ -133,18 +141,17 @@ The main scripting languages for GIS and Remote sensing currently are: R, Python
 \end{figure}
 
 \begin{itemize}
-  \item{SVN}
+  \item{SVN (SubVersioN): Version control system for scrits and docs}
   \item{R libraries: rgeos, rgdal}
-  \item{GDAL}
-  \item{GEOS}
-%% add url%% add abreviations
+  \item{GDAL: Geospatial Data Abstraction Library \url{http://www.gdal.org/}}
+  \item{GEOS:  Geometry Engine, Open Source \url{http://trac.osgeo.org/geos/}}
 \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Get Your R On}
 
-\textbf{Getting started with Rstudio and the rasta package}
+\textbf{Getting started with Rstudio}
 This preliminary section will cover some basic details about R. 
 For this course we will use Rstudio as an IDE to write and run scripts. Open Rstudio!
 Now type the following script in the R console:
@@ -194,7 +201,7 @@ last line that was evaluated. However you can also use \verb+return()+ to specif
 \begin{frame}[fragile]
 Now, let's declares a new object, a new function, \textbf{newfunc} (this is just a name and if you like you can give this function another name). Appearing in the first set of brackets is an argument list that specifies (in this case) two names. The value of the function appears within the second set of brackets where the process applied to the named objects from the argument list is defined. 
 
-<< echo=FALSE>>=
+<<echo=TRUE>>=
 newfunc <- function(x, y) {
   2*x + y
 } 
@@ -206,46 +213,47 @@ rm(a, newfunc, a2b)
 \end{frame}
 
 % Next, a new object $a2b$ is created which contains the result of applying \textbf{newfunc} to the two objects you have defined earlier. The second last R command prints this new object to the console. Finally, you can now remove the objects you have created to make room for the next exercise by selecting and running the last line of the code.
-% 
-% \subsection{Help?!}
-% 
-% \textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console. Try it and see what happens.
-% 
-% <<>>=
-% # ?class
-% @
-% 
-% \subsection{Data Structures}
-% 
-% There are several ways that data are stored in R. Here are the main ones:
-% \begin{itemize}
-% 
-% \item \textbf{Vectors} The most generic data structure. In R, any variable of an atomic data type (numeric, integer, logical, character) is a vector. This will be examplified below.
-% 
-% \item \textbf{Data Frames} The most common format. Similar to a spread sheet. A data.frame() is indexed by rows and columns and store numeric and character data. The data.frame is typically what we use when we read in csv files, do regressions, et cetera.
-% 
-% \item \textbf{Matrices and Arrays} Similar to data.frames but slightly faster computation wise while sacrificing some of the flexibility in terms of what information can be stored. In R a matrix object is a special case of an array that only has 2 dimensions. IE, an array is n-dimensional matrix while a matrix only has rows and columns (2 dimensions)
-% 
-% \item \textbf{Lists} The most common and flexible type of R object. A list is simply a collection of other objects. For example a regression object is a list of: 1)Coefficient estimates 2) Standard Errors 3) The Variance/Covariance matrix 4) The design matrix (data) 5) Various measures of fit, et cetera.
-% \end{itemize}
-% 
-% We will look at examples of these objects in the next section
-% 
 
+\begin{frame}
+\frametitle{Help?!}
+\textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console. Try it and see what happens.
+ \end{frame}
 
+\begin{frame}
+\frametitle{Data Structures}
+There are several ways that data are stored in R. Here are the main ones:
+\begin{itemize}
+
+\item \textbf{Vectors} The most generic data structure. In R, any variable of an atomic data type (numeric, integer, logical, character) is a vector. This will be examplified below.
+
+\item \textbf{Data Frames} The most common format. Similar to a spread sheet. A data.frame() is indexed by rows and columns and store numeric and character data. The data.frame is typically what we use when we read in csv files, do regressions, et cetera.
+
+\item \textbf{Matrices and Arrays} Similar to data.frames but slightly faster computation wise while sacrificing some of the flexibility in terms of what information can be stored. In R a matrix object is a special case of an array that only has 2 dimensions. i.e., an array is n-dimensional matrix while a matrix only has rows and columns (2 dimensions)
+
+\item \textbf{Lists} The most common and flexible type of R object. A list is simply a collection of other objects. For example a regression object is a list of: 1)Coefficient estimates 2) Standard Errors 3) The Variance/Covariance matrix ...
+\end{itemize}
+
+We will look at examples of these objects in the next sectionl
+\end{frame}
+ 
 \begin{frame}[fragile]
 \frametitle{The rasta package}
-
 Now load the rasta package which you can download from:
 \url{https://r-forge.r-project.org/R/?group_id=1743}
 
 <<>>=
 library(rasta) ## load the rasta library
-#?rasta
-#look at course content
+@
+
+<<eval=FALSE>>=
+demo("Lesson_1_demo", package = "rasta")
+?mysummary
+example(mysummary)
+mysummary
 @
 
 \medskip
+\emph{What does the function do?}
 Course overview and pdf's are available + Excercise. \\
 \medskip
 
