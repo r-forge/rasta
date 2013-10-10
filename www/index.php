@@ -43,7 +43,20 @@ echo $contents; } ?>
 
 <!-- end of project description -->
 
-<p> No content added. </p>
+Data sets and rasta package for windows:
+
+<ul> 
+
+<li> Lesson 4: data set.
+<a href="http://bfast.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a>
+</li> 
+<li> Rasta package for windows (0.1 version).
+<a href="http://bfast.r-forge.r-project.org/rasta.zip">rasta.zip</a>
+</li> 
+
+</ul>
+
+<p> Contact: Jan.Verbesselt'@'wur.nl. To install the most recent version directly within R type: <strong> install.packages("bfast", repos="http://R-Forge.R-project.org") </strong> </p>
 
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 
