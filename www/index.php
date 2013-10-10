@@ -18,7 +18,8 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
   <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title><?php echo $group_name; ?></title>
-	<link href="http://<?php echo $themeroot; ?>styles/estilo1.css" rel="stylesheet" type="text/css" />
+    <!--<link href="<?php echo $themeroot; ?>styles/estilo1.css" rel="stylesheet" type="text/css" />-->
+    <link rel="stylesheet" href="css/style.css">
   </head>
 
 <body>
@@ -47,11 +48,10 @@ Data sets and rasta package for windows:
 
 <ul> 
 
-<li> Lesson 4: data set.
-<a href="http://bfast.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a>
-</li> 
-<li> Rasta package for windows (0.1 version).
-<a href="http://bfast.r-forge.r-project.org/rasta.zip">rasta.zip</a>
+<li> Lesson 4: data set. <a href="http://bfast.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a>
+</li>
+
+<li> Rasta package for windows (0.1 version). <a href="http://bfast.r-forge.r-project.org/rasta.zip">rasta.zip</a>
 </li> 
 
 </ul>
