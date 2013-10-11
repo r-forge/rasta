@@ -313,17 +313,45 @@ myregsum$adj.r.squared # does the same thing
 @
 
 \textbf{why is $myregsum$ a list object? What is the advantage of a list?}
-
 That concludes our basic introduction to data.frames and lists. There is alot more material out on the web if you are interested. Later in the exercise we will look at data.frames in more detail.
 \end{frame}
 
+%% THE REAL STUFF
+
+\begin{frame}[fragile] 
+\frametitle{Set Your Working Directory and Load Your Libraries}
+\textbf{Set the Working Directory}
+
+Let's do some basic set up first. In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
+
+<<eval=FALSE>>=
+rm(list=ls())  # Clear the workspace, but not run for now
+@ 
+but a good way to start most R scripts
+
+<<eval=FALSE>>=
+getwd()
+@
+
+<<>>=
+datdir <- 'data/' #This is an example of a Mac file path
+# datdir<-'/data/' #This is an example of a PC file path
+# setwd(datdir) 
+# getwd()
+# This sets the working directory (where R looks for files)
+@
+
+\end{frame}
+
+
 \begin{frame}
 \frametitle{Excercise Lesson 1: Write you own function}
-Write a function to visualise data and plots different variables
-
-\emph{Submit a documented script to}
-\emph{Using data with the 'rasta' package}
-Submit your code? 
+\textbf{Write a function to visualise data and plots different variables}
+\begin{itemize}
+\item Submit a documented script to
+\item Using data with the 'rasta' package
+\item Upload your code to... (Loic? Github?)
+\end{itemize}
 
 \medskip
 This will be a test to see if your R scripting levels are ok to continue the course in the coming months.
@@ -336,9 +364,16 @@ This will be a test to see if your R scripting levels are ok to continue the cou
 
 \begin{frame}
 \frametitle{More information}
-For more information about R please refer to the following links \url{http://www.statmethods.net/index.html}. 
-This is a great website for learning R function, graphs, and stats. Also visit \url{http://www.r-project.org/} and check out the Manuals i.e an introductions to R
-See also the book on Applied spatial Data analysis with R \url{http://www.asdar-book.org/} \citep{Bivand:2013ux}.
+For more information about R please refer to the following links:
+
+\begin{itemize}
+\item {\url{http://www.statmethods.net/index.html} This is a great website for learning R function, graphs, and stats.}
+\item {the book on Applied spatial Data analysis with R 
+ \url{http://www.asdar-book.org/} \citep{Bivand:2013ux}.}
+\item  {Visit \url{http://www.r-project.org/} and check out the Manuals i.e an introdutions to R}
+%% R spatial project
+
+\end{itemize}
 
 \end{frame}
 
