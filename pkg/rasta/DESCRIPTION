@@ -1,5 +1,5 @@
 Package: rasta
-Version: 0.1
+Version: 0.2
 Date: 2013-08-28
 Title: Reproducible and Applied Spatial and Temporal Analysis (RASTA)
 Authors@R: c(person(given = "Jan", family = "Verbesselt", role = c("aut", "cre"), email = "Jan.Verbesselt@wur.nl"))
