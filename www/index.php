@@ -45,12 +45,13 @@ echo $contents; } ?>
 <p> <strong> Data sets and rasta package for windows: </strong> </p>
 
 <p> <ul>
+<li> <strong>Lesson 1-2:</strong> shape file kenya <a href="http://rasta.r-forge.r-project.org/kenyashape.zip">kenyashape.zip</a> </li>
 <li> <strong>Lesson 4:</strong> data set. More info here (Sytze) <a href="http://rasta.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a> </li>
 <li> <strong> Rasta </strong>package for windows (0.1 version). <a href="http://rasta.r-forge.r-project.org/rasta.zip">rasta.zip</a> </li>
 </ul> </p>
 
 <p> Contact: Jan.Verbesselt'@'wur.nl. To install the most recent version directly within R type: <strong> install.packages("rasta", repos="http://R-Forge.R-project.org") </strong> </p>
-
+<p> Course developped at Wageningen University </p>
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 
 </div><!-- close container -->
