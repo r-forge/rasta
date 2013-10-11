@@ -44,19 +44,14 @@ echo $contents; } ?>
 
 <!-- end of project description -->
 
-<strong> Data sets and rasta package for windows: </strong>
+<p> <strong> Data sets and rasta package for windows: </strong> </p>
 
-<ul> 
+<p> <ul>
+<li> <strong>Lesson 4:</strong> data set. More info here (Sytze) <a href="http://rasta.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a> </li>
+<li> <strong> Rasta </strong>package for windows (0.1 version). <a href="http://rasta.r-forge.r-project.org/rasta.zip">rasta.zip</a> </li>
+</ul> </p>
 
-<li> <strong>Lesson 4:</strong> data set. Bla bla <a href="http://bfast.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a>
-</li>
-
-<li> <strong> Rasta </strong>package for windows (0.1 version). <a href="http://bfast.r-forge.r-project.org/rasta.zip">rasta.zip</a>
-</li> 
-
-</ul>
-
-<p> Contact: Jan.Verbesselt'@'wur.nl. To install the most recent version directly within R type: <strong> install.packages("bfast", repos="http://R-Forge.R-project.org") </strong> </p>
+<p> Contact: Jan.Verbesselt'@'wur.nl. To install the most recent version directly within R type: <strong> install.packages("rasta", repos="http://R-Forge.R-project.org") </strong> </p>
 
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 
