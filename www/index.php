@@ -24,16 +24,14 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 
 <body>
 
-<!-- R-Forge Logo -->
-<table border="0" width="100%" cellspacing="0" cellpadding="0">
-<tr><td>
-<a href="http://r-forge.r-project.org/"><img src="http://<?php echo $themeroot; ?>/imagesrf/logo.png" border="0" alt="R-Forge Logo" /> </a> </td> </tr>
-</table>
+<div id="container">
 
+<div id="header">
+<a href="/"><img src="<?php echo $themeroot; ?>/images/logo.png" border="0" alt="R-Forge Logo" /> </a>
+</div>
 
 <!-- get project title  -->
 <!-- own website starts here, the following may be changed as you like -->
-
 <?php if ($handle=fopen('http://'.$domain.'/export/projtitl.php?group_name='.$group_name,'r')){
 $contents = '';
 while (!feof($handle)) {
@@ -55,5 +53,6 @@ echo $contents; } ?>
 
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 
+</div><!-- close container -->
 </body>
 </html>
