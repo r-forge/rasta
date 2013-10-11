@@ -4,6 +4,7 @@ CreateLinesDataFrame <- function(OrderedPointRecords, prj_string){
   # in an temporally ordered data frame, with several required column names.
   # Checks the input data frame for required attributes.
   
+  require(sp)
   if (nargs() != 2) 
     stop("\nCreateLinesDataFrame expects two arguments: a data frame and a proj4string")
   required.names <- c("x", "y", "loadnr", "datetime", "workwidth.m.", "date")
