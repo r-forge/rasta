@@ -1,0 +1,286 @@
+\documentclass[11pt,twoside,a4paper]{article}
+
+%% BibTeX settings
+\usepackage[authoryear,round]{natbib}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide,graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{%
+  pdftitle = {Geo-Scripting course: Lesson 3},
+  pdfsubject = {},
+  pdfkeywords = {R project management, good scripting habits},
+  pdfauthor = {Lo\"{i}c Dutrieux},
+  %% change colorlinks to false for pretty printing
+  colorlinks = {true},
+  linkcolor = {Blue},
+  citecolor = {Blue},
+  urlcolor = {Red},
+  hyperindex = {true},
+  linktocpage = {true},
+}
+
+\usepackage{Sweave} %% is essentially
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{Lesson 3}
+\author{Lo\"{i}c Dutrieux, Jan Verbesselt, Ben DeVries, Sytze de Bruin}
+
+\maketitle
+
+\section{Today's learning objectives}
+At the end of the lecture, you should be able to
+
+\begin{itemize}
+  \item Find help for R related issues
+  \item Produce a reproducible example
+  \item Adopt some good scripting/programming habits
+  \item Use control flow for efficient function writing
+  \item Create a R package
+  \item Use version control to develop, maintain, and share with others your R packages
+\end{itemize}
+
+
+\section{Introduction}
+
+During the previous lectures, you saw how to … Today the emphasis of the lecture is mostly oriented toward carrying a R project. Therefore, some recurrent aspects of project development, such as, how to find help, or techniques to organize your code are covered in the lecture.
+Scripting means that you often go beyond easy things and therefore face challenges; as a consequence, it is likely that at one moment or another, you will have to go look for help. Part of this lesson is intended to guide you through ways of finding help, including posting to the mail list and writing a reproducible example. In addition, this lecture goes through a couple of essential “good practices” when working on geo-scripting projects. Not all aspects of good practices are covered, however, for those of you who are curious to know more about version control, R package building, etc, be sure to check the reference section of this document.
+
+
+\section{Finding help}
+
+There are many place where help can be found on the internet. So in case the function or package documentation is not sufficient for what you are trying to achieve, google is your best friend. Most likely by googling the right key words relating to your “problem”, google will direct you to the archive of the R mailing list, or to some discussions on Stack Exchange \url{http://stackexchange.com/}. These two are reliable sources of information, and it’s quite likely that the problem you were trying to  figure out has already been answered before.
+However, it may also happen that you discover a “bug” or something that you would qualify of abnormal behavior, or that you really have a question that no-one has ever asked (corollary: has never been answered). In that case, you may submit a question to one of the R mailing list. For general R question there is a general R mailing list url{https://stat.ethz.ch/mailman/listinfo/r-help}, while the spatial domain has its own mailing list {https://stat.ethz.ch/mailman/listinfo/r-sig-geo}. Geo related question should be posted to this latter mailing list.
+Warning, these mailing list have heavy mail traffic, use your mail client efficiently and set filters, otherwise it will quickly bother you.
+
+These mailing lists have a few rules, and it’s important to respect them in order to ensure that:
+\begin{itemize}
+\item no-one gets offended by your question,
+\item	people who are able to answer the question are actually willing to do so,
+\item	you get the best quality answer
+\end{itemize}
+
+So, when posting to the mail list: 
+
+\begin{itemize}
+\item	Be courteous,
+\item	Provide a brief description of the problem and why you are trying to do that.
+\item	Provide a reproducible example that illustrate the problem, reproducing the eventual error
+\item	Sign with your name and your affiliation
+\item Do not expect an immediate answer (although well presented question often get answered fairly quickly)
+\end{itemize}
+
+\section{Creating a reproducible example}
+
+Indispensable when asking a question to the online community, being able to write a reproducible example has many advantages.
+First it may ensure that when you present a problem, people are able to answer your question without guessing what you are trying to do. BUt reproducible examples are not only to ask questions; they may help you in your thinking, developing  or debugging process when writing your own functions. For instance, when developing a function to do a certain type of raster calculation, start by testing it on a small auto-generated rasterLayer object, and not directly on your actual data covering the entire universe…
+
+\subsection*{But what is a reproducible example exactly?}
+Well, one could define a reproducible example by a piece of code that can be executed by anyone who has R, independently of the data present on his machine or any preloaded variables. The computation time should not exceed a few seconds and if the code automatically downloads data, the data volume should be as small as possible.
+So basically, if you can quickly start a R session on your neighbour's computer while he is on a break, copy-paste the code without making any adjustments and see almost immediately what you want to demonstrate; congratulation, you have created a reproducible example.
+
+Let's illustrate this by an example.
+I want to perform values replacements of one raster layer, based on the values of another raster Layer.
+
+<<>>=
+# Create two rastersLayer objects of similar extent
+library(raster)
+r <- s <- raster(ncol=50, nrow=50)
+# fill the raster with values
+r[] <- 1:ncell(r)
+s[] <- 2 * (1:ncell(s))
+s[200:400] <- 150
+s[50:150] <- 151
+# perform the replacement
+r[s %in% c(150, 151)] <- NA
+# Visualize the result TODO(dutri001) embed the figure in the pdf
+plot(r)
+@
+
+Useful to know when writing a reproducible example; instead of generating your own small datasets (vectors or RasterLayers, etc) as part of your reproducible example, use some of R “built-in” datasets. They are part of the main R packages.
+Some popular datasets are: cars, meuse.grid_ll, Rlogo, etc
+The autocompletion menu of the \code{data} function will give you an overview of the datasets available
+
+<<>>=
+# This demonstration of datasets still need to be writen
+data(cars)
+class(cars)
+head(cars)
+plot(cars)
+## Add another example with meuse, from sp
+@
+
+\section{Good scripting/programming habits}
+
+Increasing your scripting/programming efficiency goes through adopting good scripting habits. Following a couple of guidelines will ensure that your work:
+
+\begin{itemize}
+  \item Can be understood and used by others
+  \item	Can be understood and reused by you in the future
+  \item	Can be debugged with minimal efforts
+  \item	Can be re-used across different projects
+  \item	Is easily accessible by others
+  
+\end{itemize}
+  
+In order to achieve these objectives, you should try to follow a few good practices. The list below is not exhaustive, but already constitutes a good basis that will help you getting more efficient now and in the future when working on R projects.
+
+\begin{itemize}
+
+\item Write short functions.
+\item	Make your functions generic and flexible, using control flow
+\item	Comment your code
+\item	Document your functions
+\item	Build a package 
+\item Keep a TODO list
+\item	Use version control to develop/maintain your package
+
+\end{itemize}
+
+\subsection*{Function writing}
+
+Short, generic and flexible, so that it will be easier to re-use them for a slightly different processing/analysis chain.
+More flexibility in your function can be achieve thanks to so easy tricks provided by control flow. The next section develops further this concept and provides examples of how control flow can help your functions becoming more flexible.
+
+\subsection*{Control flow}
+Control flow refers to the use of conditions in your code that redirect the flow to different directions depending on variables values of classes. Make use of that in your code, as this will make your functions more flexible and generic.
+
+\subsection*{Object classes and Control flow}
+You have seen in a previous lesson already that every variable in your R working environment belongs to a class. You can take advantage of that, using control flow, to make your functions more flexible.
+
+A quick reminder on classes
+<<>>=
+# 5 different objects belonging to 5 different classes
+a <- 12
+class(a)
+
+b <- "I have a class too"
+class(b)
+
+library(raster)
+c <- raster(ncol=10, nrow=10)
+class(c)
+
+d <- stack(c, c)
+class(d)
+
+e <- brick(d)
+class(e)
+@
+
+\subsubsection*{Controling the class of input variables of a function}
+
+This section needs to be writen, containing examples.
+
+\subsubsection*{Use of \code{try} and debugging your functions}
+
+\code{try}
+The \code{try} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (subfuntion, piece of code) that is wrapped into \code{try} will not interupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers.
+An example of the use of \code{try}
+
+<<>>=
+# I need to write this example
+# Something with a list of rasterLayers, with some layers containing nothing but NAs
+
+@
+
+Also \code{try} returns an object of different class when it fails. You can take advantage of that at a later stage of your processing chain to make your function more adaptive.
+See the example below
+<<>>=
+# Also need to write this one
+# The prefast package does something like that
+
+@
+
+\subsection*{Package building}
+Also part of good programming practices, building a R package is a great way to stay organized, keep track of what you are doing and be able to use it quickly and properly at any time.
+
+\subsubsection*{Why building a package?}
+\begin{itemize}
+\item Easy to share with others
+\item Dependencies are automatically imported and functions are sourced
+\item Documentation is attached to the functions and cannot be lost (or forgotten)
+\end{itemize}
+For these reasons, if you build a package you'll still be able to run the functions you wrote next year. Which is often not the case for stand alone functions that are poorly documented and depend on a millions other functions ... that you cannot find anymore.
+
+\subsubsection*{Structure of a package}
+
+TODO(dutri001) Finish that part
+
+This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual (…). 
+The default basic structure of a package is as follows:
+2 subdirectories (R and man), NAMESPACE and DESCRIPTION files. The R directory includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the man subdirectory. These .Rd files are the functions documentation. NAMESPACE and DESCRIPTION files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalistic package structure; more elaborate packages may include extra subdirectories, such as data, demo or vignette.
+/R/
+/man/
+/NAMESPACE
+/DESCRIPTION
+
+
+The package.skeleton() function will help you get the package structure from a list of sourced functions.
+prompt() creates a tailored documentation (.Rd) file from an existing function.
+The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including 
+Good practices: \url{http://mages.github.io/R_package_development/#1}
+
+\subsection*{Version control}
+Not done yet
+
+In this lecture, we won’t go into the details of version control, however, we will review some general aspects that make version control a valuable tool for scientists and geo-programmers.
+What is it?
+ 
+How is it useful?
+Version control is very well suited to large software development projects and for that reason it is an indispensable part of such projects. Although we are not software developpers, version control systems present a set of advantages from which we, and the scientists who use scripting in  general, can benefit. 
+Among others, some arguments in favour of using version control are that:
+
+\begin{itemize}
+\item It facilitates collaboration with others
+\item Allows you to keep your code archived in a safe place (the cloud)
+\item Allows you to go back to previous version of your code
+\item Allows you to have experimental branches without breaking your code
+\item Keep different versions of your code without having to worry about filenames and archiving organization
+\end{itemize}
+	
+What systems exist?
+Git, Subversion (svn), mercurial (hg)
+Online repositories:
+GitHub
+Bitbucket
+Sourceforge
+Rforge
+
+Semantics of version control
+Commits
+Push
+Clone (git)
+branch (git): Creates a branch
+checkout (svn): equivalent of git clone
+
+How to
+To be able to perform the following tutorial, you must have git installed on your machine. Please refer to the system setup vignette to know how to install and setup git and allow it to be embedded into R Studio.
+Tutorial on how to start a R package with version control, hosted on GitHub.
+Setup
+1 – Create a GitHub account (only if you don’t have one already)
+2 – From GitHub, create a new repository and name it after the name of the package you want to start
+3 – Choose for the option to add a README
+4 – Copy the clone URL of the repository
+5 – From R Studio, go to project  Create project  Version Control  Git. In the repository URL field, enter the clone URL that you just copied from GitHub. Project directory name should appear automatically. Choose a location for your project.
+6 – Copy the content of a package (created using the package.skeleton() function) to this newly created directory.
+7 – In the git panel of R Studio (by default on the upper right), add all the objects added to the package by checking them  press commit  write a commit message  commit  push. You should be prompted for your GitHub username and password, once this is done, your package should be added to your GitHub remote repository.
+
+
+If you are concerned about always having a “compile-able” version of your code, use different branches. Create a “dev” branch on which you develop your new functions or do any kind of experiments, and keep the stable version on your package on the “master” branch. Once the “dev” branch becomes stable, merge it with the “master” branch.
+
+
+
+\bibliographystyle{model5-names}
+\bibliography{refs}
+
+\end{document}
