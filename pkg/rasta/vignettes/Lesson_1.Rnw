@@ -32,7 +32,7 @@
 \SweaveOpts{engine = R, eps = FALSE, pdf = FALSE, png = TRUE, resolution = 120, keep.source = TRUE}
 
 <<preliminaries, echo=FALSE, results=hide>>=
-options(width = 70, prompt = "R> ", continue = "+ ")
+options(width = 70, prompt = "> ", continue = "+ ")
 @
 
 \begin{document}
@@ -155,6 +155,13 @@ The main scripting languages for GIS and Remote sensing currently are:
 This preliminary section will cover some basic details about R. 
 For this course we will use Rstudio as an IDE to write and run scripts. Open Rstudio!
 Now type the following script in the R console:
+
+<<>>=
+rm(list=ls())  # Clear the workspace!
+ls() ## no objects left in the workspace
+@ 
+A good way to start most R scripts
+
 <<>>=
 a <- 1
 a
@@ -237,31 +244,28 @@ We will look at examples of these objects in the next sectionl
 \end{frame}
  
 \begin{frame}[fragile]
-\frametitle{The rasta package}
-Now load the rasta package which you can download from:
-\url{https://r-forge.r-project.org/R/?group_id=1743}
+\frametitle{R packages and the rasta package}
+ R `packages' are user contributed functions. There are about 5000 or so (with a constantly expanding list). 
+ If a package is already installed you load the package with the \verb+library()+ command. If you want to install a package you can use the \verb+install.packages()+ command (you have to provide the url of the CRAN mirror to download the package. 
+ If you are using R Studio you can also just click on \textbf{Tools>Install Packages}, and type in the name(s) of the package you want to install. 
 
+Now install and load the rasta package:
+<<echo=TRUE, eval=FALSE>>=
+install.packages("rasta", repos="http://R-Forge.R-project.org")
+@
 <<>>=
 library(rasta) ## load the rasta library
 @
 
 <<eval=FALSE>>=
-demo("Lesson_1_demo", package = "rasta")
-?mysummary
-example(mysummary)
+# ?mysummary
 mysummary
 @
 
-\medskip
 \emph{What does the function do?}
-Course overview and pdf's are available + Excercise. \\
-\medskip
-
-\emph{
- Excercise needs to be handed in before 1030 the day after the lesson so that we can provide feedback on the excercise and discuss shortly.
-}
 
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Reading Data in and Out}
@@ -288,6 +292,7 @@ head(mydat$Y89Births)[1:2]
 What is the class of the $mydat$?
 We will go over ways to index and subscript data.frames later. Lets do a basic regression so you can see an example of a list.
 \end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{Basic regression and example of a list}
@@ -325,24 +330,39 @@ That concludes our basic introduction to data.frames and lists. There is alot mo
 Let's do some basic set up first. In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
 
 <<eval=FALSE>>=
-rm(list=ls())  # Clear the workspace, but not run for now
-@ 
-but a good way to start most R scripts
-
-<<eval=FALSE>>=
-getwd()
+getwd() ## Double check your working directory
 @
 
 <<>>=
 datdir <- 'data/' #This is an example of a Mac file path
 # datdir<-'/data/' #This is an example of a PC file path
 # setwd(datdir) 
-# getwd()
 # This sets the working directory (where R looks for files)
+@
+\end{frame}
+
+\begin{frame} [fragile] 
+\frametitle{Set Your Working Directory and Load Your Libraries}
+\textbf{Load Libraries}
+Next we will load a series of R packages that will give the functions we need to complete all the exercises in lesson 1 and 2. For this exercise all of the packages should (hopefully) be already installed on your machine (?). 
+We will load them below using the library() command. 
+I also included some comments describing how we use each of the packages in the exercises.
+
+<<loadlibraries, message=FALSE>>=
+#----Packages for Reading/Writing/Manipulating Spatial Data---
+library(rgdal) # reading shapefiles and raster data
+library(rgeos)
+library(maptools)
+library(spdep)   # useful spatial stat functions
+library(spatstat) # functions for generating random points
+library(raster) 
+#---Packages for Data Visualization and Manipulation---
+library(ggplot2)
+library(reshape2)
+library(scales)
 @
 
 \end{frame}
-
 
 \begin{frame}
 \frametitle{Excercise Lesson 1: Write you own function}
@@ -365,7 +385,6 @@ This will be a test to see if your R scripting levels are ok to continue the cou
 \begin{frame}
 \frametitle{More information}
 For more information about R please refer to the following links:
-
 \begin{itemize}
 \item {\url{http://www.statmethods.net/index.html} This is a great website for learning R function, graphs, and stats.}
 \item {the book on Applied spatial Data analysis with R 
@@ -374,7 +393,6 @@ For more information about R please refer to the following links:
 %% R spatial project
 
 \end{itemize}
-
 \end{frame}
 
 \bibliographystyle{model5-names}
