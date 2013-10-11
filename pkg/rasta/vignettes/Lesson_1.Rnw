@@ -334,8 +334,6 @@ This will be a test to see if your R scripting levels are ok to continue the cou
 \end{frame}
 
 
-
-
 \begin{frame}
 \frametitle{More information}
 For more information about R please refer to the following links \url{http://www.statmethods.net/index.html}. 
