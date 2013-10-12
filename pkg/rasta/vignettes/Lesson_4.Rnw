@@ -1,0 +1,87 @@
+\documentclass[11pt,twoside,a4paper]{article}
+
+%% BibTeX settings
+\usepackage[authoryear,round]{natbib}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide,graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{%
+  pdftitle = {Lesson 6 - Raster Analysis},
+  pdfsubject = {},
+  pdfkeywords = {Landsat, time series},
+  pdfauthor = {Ben DeVries},
+  %% change colorlinks to false for pretty printing
+  colorlinks = {true},
+  linkcolor = {Blue},
+  citecolor = {Blue},
+  urlcolor = {Red},
+  hyperindex = {true},
+  linktocpage = {true},
+}
+
+\usepackage{Sweave} %% is essential
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{Handling vector data in R}
+\author{Sytze de Bruin}
+
+\maketitle
+
+\begin{abstract}
+
+In this tutorial, we will explore the packages sp and rgeos as well as other related packages used for handling spatial data in R. More specifically we will:
+\begin{enumerate}
+  \item create point, line and polygon objects from scratch;
+  \item explore the structure of sp classes for spatial data;
+  \item transform between datums and map projections; 
+  \item apply basic vector operations, such as buffering and intersection;
+  \item use Date-Time classes;
+\end{enumerate}
+\end{abstract}
+
+\section{The sp package}
+
+The sp package is an essential tool for handling spatial data in R. There is an excellent vignette available at \url{http://cran.r-project.org/web/packages/sp/vignettes/intro_sp.pdf}.
+
+
+\section{Some section}
+
+This section will cover some of the following areas:
+\begin{itemize}
+  \item some item
+  \item some other item
+  \begin{itemize}
+    \item some sub item
+    \item next sub item
+  \end{itemize}
+\end{itemize}
+  
+
+% this chunk runs silently
+<<echo = FALSE, results = hide>>=
+library(sp)
+a <- 1
+@
+% the following is just for show
+\begin{Sinput}
+> setwd('path/to/rasta/package') # set this to the appropriate directory
+\end{Sinput}
+<<>>=
+@
+
+
+
+\bibliographystyle{model5-names}
+\bibliography{refs}
+
+\end{document}
