@@ -23,7 +23,7 @@ numeric. The maximum distance (same unit as input coordinates) of consecutive po
 }
 }
 \details{
-The input data frame should at least hold the following columns: "loadnr" [integer],  "workwidth.m." [numeric], "date" [POSIXct].
+The input data frame should at least hold the following columns: "x" [numeric], "y" [numeric], loadnr" [integer], "datetime" [POSIXct], "workwidth.m." [numeric], "date" [POSIXct].
 
 }
 
