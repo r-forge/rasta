@@ -5,8 +5,8 @@ CreateHarvestTracks <- function(x, CRSobj, maxdist = 10.0){
   # Checks the input data frame for required attributes.
   
   require(sp)
-  if (nargs() != 2) 
-    stop("\nCreateLinesDataFrame expects two arguments: a data frame and an object of class CRS")
+  if (nargs() < 2) 
+    stop("\nCreateLinesDataFrame expects at least two arguments: a data frame and an object of class CRS")
   required.names <- c("x", "y", "loadnr", "datetime", "workwidth.m.", "date")
   if (!all(required.names %in% names(x))){
     missing <- required.names[which(!required.names %in% names(x))]
