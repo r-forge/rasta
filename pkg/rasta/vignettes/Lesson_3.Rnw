@@ -9,6 +9,7 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{url}
+\usepackage{float}
 
 % hyperref setup
 \definecolor{Red}{rgb}{0.5,0,0}
@@ -52,17 +53,16 @@ At the end of the lecture, you should be able to
 
 \section{Introduction}
 
-During the previous lectures, you saw how to … Today the emphasis of the lecture is mostly oriented toward carrying a R project. Therefore, some recurrent aspects of project development, such as, how to find help, or techniques to organize your code are covered in the lecture.
-Scripting means that you often go beyond easy things and therefore face challenges; as a consequence, it is likely that at one moment or another, you will have to go look for help. Part of this lesson is intended to guide you through ways of finding help, including posting to the mail list and writing a reproducible example. In addition, this lecture goes through a couple of essential “good practices” when working on geo-scripting projects. Not all aspects of good practices are covered, however, for those of you who are curious to know more about version control, R package building, etc, be sure to check the reference section of this document.
+During the previous lectures, you saw how to TODO(finish that sentence). Today the emphasis of the lecture is mostly oriented toward carrying a R project. Therefore, some recurrent aspects of project development, such as, how to find help, or techniques to organize your code are covered in the lecture.
+Scripting means that you often go beyond easy things and therefore face challenges; as a consequence, it is likely that at one moment or another, you will have to go look for help. Part of this lesson is intended to guide you through ways of finding help, including posting to the mail list and writing a reproducible example. In addition, this lecture goes through a couple of essential ''good practices'' when working on geo-scripting projects. Not all aspects of good practices are covered, however, for those of you who are curious to know more about version control, R package building, etc, be sure to check the reference section of this document.
 
 
 \section{Finding help}
 
-There are many place where help can be found on the internet. So in case the function or package documentation is not sufficient for what you are trying to achieve, google is your best friend. Most likely by googling the right key words relating to your “problem”, google will direct you to the archive of the R mailing list, or to some discussions on Stack Exchange \url{http://stackexchange.com/}. These two are reliable sources of information, and it’s quite likely that the problem you were trying to  figure out has already been answered before.
-However, it may also happen that you discover a “bug” or something that you would qualify of abnormal behavior, or that you really have a question that no-one has ever asked (corollary: has never been answered). In that case, you may submit a question to one of the R mailing list. For general R question there is a general R mailing list url{https://stat.ethz.ch/mailman/listinfo/r-help}, while the spatial domain has its own mailing list {https://stat.ethz.ch/mailman/listinfo/r-sig-geo}. Geo related question should be posted to this latter mailing list.
-Warning, these mailing list have heavy mail traffic, use your mail client efficiently and set filters, otherwise it will quickly bother you.
+There are many place where help can be found on the internet. So in case the function or package documentation is not sufficient for what you are trying to achieve, google is your best friend. Most likely by googling the right key words relating to your ''problem'', google will direct you to the archive of the R mailing list, or to some discussions on Stack Exchange \url{http://stackexchange.com/}. These two are reliable sources of information, and it is quite likely that the problem you were trying to  figure out has already been answered before.\\However, it may also happen that you discover a ''bug'' or something that you would qualify of abnormal behavior, or that you really have a question that no-one has ever asked (corollary: has never been answered). In that case, you may submit a question to one of the R mailing list. For general R question there is a general R mailing list \url{https://stat.ethz.ch/mailman/listinfo/r-help}, while the spatial domain has its own mailing list \url{https://stat.ethz.ch/mailman/listinfo/r-sig-geo}. Geo related question should be posted to this latter mailing list.\\
+Warning, these mailing list have heavy mail traffic, use your mail client efficiently and set filters, otherwise it will quickly bother you.\\
+These mailing lists have a few rules, and it's important to respect them in order to ensure that:
 
-These mailing lists have a few rules, and it’s important to respect them in order to ensure that:
 \begin{itemize}
 \item no-one gets offended by your question,
 \item	people who are able to answer the question are actually willing to do so,
@@ -82,7 +82,7 @@ So, when posting to the mail list:
 \section{Creating a reproducible example}
 
 Indispensable when asking a question to the online community, being able to write a reproducible example has many advantages.
-First it may ensure that when you present a problem, people are able to answer your question without guessing what you are trying to do. BUt reproducible examples are not only to ask questions; they may help you in your thinking, developing  or debugging process when writing your own functions. For instance, when developing a function to do a certain type of raster calculation, start by testing it on a small auto-generated rasterLayer object, and not directly on your actual data covering the entire universe…
+First it may ensure that when you present a problem, people are able to answer your question without guessing what you are trying to do. BUt reproducible examples are not only to ask questions; they may help you in your thinking, developing  or debugging process when writing your own functions. For instance, when developing a function to do a certain type of raster calculation, start by testing it on a small auto-generated rasterLayer object, and not directly on your actual data covering the entire universe \dots
 
 \subsection*{But what is a reproducible example exactly?}
 Well, one could define a reproducible example by a piece of code that can be executed by anyone who has R, independently of the data present on his machine or any preloaded variables. The computation time should not exceed a few seconds and if the code automatically downloads data, the data volume should be as small as possible.
@@ -102,20 +102,36 @@ s[200:400] <- 150
 s[50:150] <- 151
 # perform the replacement
 r[s %in% c(150, 151)] <- NA
-# Visualize the result TODO(dutri001) embed the figure in the pdf
+# Visualize the result
+@
+\begin{center}
+<<fig = TRUE>>=
 plot(r)
 @
+\end{center}
 
-Useful to know when writing a reproducible example; instead of generating your own small datasets (vectors or RasterLayers, etc) as part of your reproducible example, use some of R “built-in” datasets. They are part of the main R packages.
-Some popular datasets are: cars, meuse.grid_ll, Rlogo, etc
+
+Useful to know when writing a reproducible example; instead of generating your own small datasets (vectors or RasterLayers, etc) as part of your reproducible example, use some of R ''built-in'' datasets. They are part of the main R packages.
+Some popular datasets are: cars, meuse.grid\_ll, Rlogo, iris, etc
 The autocompletion menu of the \code{data} function will give you an overview of the datasets available
 
 <<>>=
 # This demonstration of datasets still need to be writen
-data(cars)
+data(cars) # Imports the variable cars in the working environment
 class(cars)
-head(cars)
-plot(cars)
+# head(cars) # Visualizes the first five rows of the variable
+@
+\begin{figure}[H]
+\begin{center}
+<<label=cars, fig = TRUE>>=
+plot(cars) # The plot function on this type of dataset (class = data.frame, 2 column) automatically generates a scatterplot
+@
+\end{center}
+\caption{Visual representation of the cars dataset}
+\label{cars}
+\end{figure}
+
+<<>>=
 ## Add another example with meuse, from sp
 @
 
@@ -148,8 +164,8 @@ In order to achieve these objectives, you should try to follow a few good practi
 
 \subsection*{Function writing}
 
-Short, generic and flexible, so that it will be easier to re-use them for a slightly different processing/analysis chain.
-More flexibility in your function can be achieve thanks to so easy tricks provided by control flow. The next section develops further this concept and provides examples of how control flow can help your functions becoming more flexible.
+The objectif of this section is to provide a few advices to help you write efficiently function. That is functions that are simple, generic and flexible, so that they integrate well in a processing/analysis chain and can easily be re-used in a slightly different chain if needed.
+More flexibility in your function can be achieve thanks to some easy tricks provided by control flow. The following section develops further this concept and provides examples of how control flow can help your functions becoming more flexible.
 
 \subsection*{Control flow}
 Control flow refers to the use of conditions in your code that redirect the flow to different directions depending on variables values of classes. Make use of that in your code, as this will make your functions more flexible and generic.
@@ -179,12 +195,74 @@ class(e)
 
 \subsubsection*{Controling the class of input variables of a function}
 
-This section needs to be writen, containing examples.
+One way of making function more auto-adaptive is by adding checks of the input variables. Using object class can greatly simplify this task.
+For example let's imagine that you just wrote a simple HelloWorld function.
+
+<<>>=
+HelloWorld <- function (x) {
+  hello <- sprintf('Hello %s', x)
+  return(hello)
+}
+
+HelloWorld('john')
+@
+
+Obviously, the user is expected to pass an object of character vector to x. Otherwise the function will return an error. You can make it not crash by controling the class of the input variable.
+For example.
+
+<<>>=
+HelloWorld <- function (x) {
+  if (is.character(x)) {
+    hello <- sprintf('Hello %s', x)
+  } else {
+    hello <- warning('Object of class character expected for x')
+  }
+  return(hello)
+}
+
+HelloWorld(21)
+
+@
+
+The function does not crashes anymore, but returns a warning instead.
+
+Note that most common object classes have their own logical function, that returns \code{TRUE} or \code{FALSE}.
+For example.
+
+<<>>=
+is.character('john')
+is.character(32)
+is.numeric(32)
+@
+
+Also note that \code{is.character(32) == TRUE} is equivalent to \code{is.character(32)}. Also when checking logical arguments, you don't have to use the \code{== TRUE}. As an example, a function may have an argument (\code{plot}) that if set to \code{TRUE} will generate a plot, while if set to \code{FALSE} does not plot. This means that the function certainly contains an if statement. \code{if(plot)} in that case is equivalent to \code{if(plot == TRUE)}, it's just shorter.
+
+<<>>=
+library(raster)
+minusRaster <- function(x, y, plot=FALSE) { # Function to substract 2 rasterLayers
+  z <- x - y
+  if (plot) {
+    plot(z)
+  }
+  return(z)
+}
+
+r <- raster(system.file("external/rlogo.grd", package="raster"))
+r2 <- r
+r2[] <- (1:ncell(r2)) / 10
+r3 <- minusRaster(r, r2) # simply performs the calculation
+@
+
+\begin{center}
+<<fig = TRUE>>=
+r4 <- minusRaster(r, r2, plot=TRUE) # Performs the claculation and plots the resulting RasterLayer
+@
+\end{center}
 
 \subsubsection*{Use of \code{try} and debugging your functions}
 
-\code{try}
-The \code{try} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (subfuntion, piece of code) that is wrapped into \code{try} will not interupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers.
+\code{try}\\
+The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (subfuntion, piece of code) that is wrapped into \code{try} will not interupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers.
 An example of the use of \code{try}
 
 <<>>=
@@ -216,24 +294,24 @@ For these reasons, if you build a package you'll still be able to run the functi
 
 TODO(dutri001) Finish that part
 
-This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual (…). 
+This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual (\dots). 
 The default basic structure of a package is as follows:
-2 subdirectories (R and man), NAMESPACE and DESCRIPTION files. The R directory includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the man subdirectory. These .Rd files are the functions documentation. NAMESPACE and DESCRIPTION files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalistic package structure; more elaborate packages may include extra subdirectories, such as data, demo or vignette.
-/R/
-/man/
-/NAMESPACE
-/DESCRIPTION
+2 subdirectories (R and man), NAMESPACE and DESCRIPTION files. The R directory includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the man subdirectory. These .Rd files are the functions documentation. NAMESPACE and DESCRIPTION files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalistic package structure; more elaborate packages may include extra subdirectories, such as data, demo or vignette.\\
+/R/\\
+/man/\\
+/NAMESPACE\\
+/DESCRIPTION\\
 
 
-The package.skeleton() function will help you get the package structure from a list of sourced functions.
-prompt() creates a tailored documentation (.Rd) file from an existing function.
+The \code{package.skeleton} function will help you get the package structure from a list of sourced functions.
+\code{prompt} creates a tailored documentation (.Rd) file from an existing function.
 The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including 
 Good practices: \url{http://mages.github.io/R_package_development/#1}
 
 \subsection*{Version control}
 Not done yet
 
-In this lecture, we won’t go into the details of version control, however, we will review some general aspects that make version control a valuable tool for scientists and geo-programmers.
+In this lecture, we won't go into the details of version control, however, we will review some general aspects that make version control a valuable tool for scientists and geo-programmers.
 What is it?
  
 How is it useful?
@@ -263,20 +341,32 @@ Clone (git)
 branch (git): Creates a branch
 checkout (svn): equivalent of git clone
 
-How to
+How to\\
 To be able to perform the following tutorial, you must have git installed on your machine. Please refer to the system setup vignette to know how to install and setup git and allow it to be embedded into R Studio.
 Tutorial on how to start a R package with version control, hosted on GitHub.
 Setup
-1 – Create a GitHub account (only if you don’t have one already)
-2 – From GitHub, create a new repository and name it after the name of the package you want to start
-3 – Choose for the option to add a README
-4 – Copy the clone URL of the repository
-5 – From R Studio, go to project  Create project  Version Control  Git. In the repository URL field, enter the clone URL that you just copied from GitHub. Project directory name should appear automatically. Choose a location for your project.
-6 – Copy the content of a package (created using the package.skeleton() function) to this newly created directory.
-7 – In the git panel of R Studio (by default on the upper right), add all the objects added to the package by checking them  press commit  write a commit message  commit  push. You should be prompted for your GitHub username and password, once this is done, your package should be added to your GitHub remote repository.
+
+\begin{enumerate}
+  \item Create a GitHub account (only if you don't have one already)
+  \item From GitHub, create a new repository and name it after the name of the package you want to start
+  \item Choose for the option to add a README
+  \item Copy the clone URL of the repository (Figure~\ref{github})
+  \item From R Studio, go to project - Create project - Version Control - Git. In the repository URL field, enter the clone URL that you just copied from GitHub. Project directory name should appear automatically. Choose a location for your project.
 
 
-If you are concerned about always having a “compile-able” version of your code, use different branches. Create a “dev” branch on which you develop your new functions or do any kind of experiments, and keep the stable version on your package on the “master” branch. Once the “dev” branch becomes stable, merge it with the “master” branch.
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=0.5\textwidth]{figs/github_screenCapture.png}
+  \caption {GitHub clone URL}
+  \label{github}
+\end{figure}
+
+  
+  \item Copy the content of a package (created using the \code{package.skeleton} function) to this newly created directory.
+  \item In the git panel of R Studio (by default on the upper right), add all the objects added to the package by checking them - press commit - write a commit message - commit - push. You should be prompted for your GitHub username and password, once this is done, your package is added to your GitHub remote repository.
+\end{enumerate}
+
+If you are concerned about always having a ''compile-able'' version of your code, use different branches. Create a ''dev'' branch on which you develop your new functions or do any kind of experiments, and keep the stable version on your package on the ''master'' branch. Once the ''dev'' branch becomes stable, merge it with the ''master'' branch.
 
 
 
