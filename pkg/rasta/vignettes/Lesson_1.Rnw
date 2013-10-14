@@ -32,7 +32,7 @@
 \SweaveOpts{engine = R, eps = FALSE, pdf = FALSE, png = TRUE, resolution = 120, keep.source = TRUE}
 
 <<preliminaries, echo=FALSE, results=hide>>=
-options(width = 70, prompt = "> ", continue = "+ ")
+options(width = 70, prompt = ">", continue = "+ ")
 @
 
 \begin{document}
@@ -361,7 +361,25 @@ library(ggplot2)
 library(reshape2)
 library(scales)
 @
+\end{frame}
 
+\begin{frame} [fragile] 
+\frametitle{Read and Plot Spatial Data}
+The most flexible way to read in a shapefile is by using the $readOGR$ command. This is the only option that will also read in the $.prj$ file associated with the shapefile. NCEAS has a useful summary of the various ways to read in a shapefile: \url{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}
+I recommend always using $readOGR()$.
+Read OGR can be used for almost any vector data format. To read in a shapefile, you enter two arguments:
+\begin{itemize}
+\item dsn- The directory containing the shapefile (even if this is already your working directory)
+\item layer- the name of the shapefile, without the file extension
+\end{itemize}
+
+%<<readOGR>>=
+%download.file('http://rasta.r-forge.r-project.org/kenyashape.zip', 
+%'data/kenyashape.zip')
+%unzip('data/kenyashape.zip')
+%rm('data/kenyashape.zip')
+%#ds <- readOGR(dsn=datdir, layer='kenya')
+%@
 \end{frame}
 
 \begin{frame}
@@ -375,7 +393,6 @@ library(scales)
 
 \medskip
 This will be a test to see if your R scripting levels are ok to continue the course in the coming months.
-
 %% R course SVN 
 %% The script needs to contain your name
 %% Title of the script is Ex_lesson_1_yourname.R
