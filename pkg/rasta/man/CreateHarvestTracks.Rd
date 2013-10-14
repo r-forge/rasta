@@ -49,8 +49,7 @@ Sytze de Bruin
 #download.file('http://rasta.r-forge.r-project.org/kroonven.csv.zip',
 #              'kroonven.csv.zip')
               
-#download.file('http://rasta.r-forge.r-project.org/kroonven.csv',
-#              'kroonven.csv')
+#download.file('http://rasta.r-forge.r-project.org/kroonven.csv', 'kroonven.csv')
 #unzip('kroonven.csv.zip')
 #borne_data = read.table("kroonven.csv", sep = ",", header = T)
 
