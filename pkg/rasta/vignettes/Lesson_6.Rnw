@@ -82,8 +82,10 @@ A raster brick from a small area within the Kafa Biosphere Reserve in Southern E
 
 % this chunk runs silently
 <<echo = FALSE, results = hide>>=
-library(raster)
-tura <- brick('~/R/projects/rasta/pkg/rasta/inst/extdata/tura.grd')
+library(rasta)
+f <- system.file("extdata/tura.grd", package="rasta")
+# tura <- brick('~/R/projects/rasta/pkg/rasta/inst/extdata/tura.grd')
+tura <- brick(f) ## Jan's comment: the package needs to be compiled first including the tura.gr* files.
 @
 % the following is just for show
 \begin{Sinput}
