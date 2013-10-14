@@ -64,7 +64,7 @@ prj_string_RD <- CRS("+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888
 all_rd <- spTransform(borne_data, prj_string_RD)
 dimnames(all_rd@coords)[[2]] <- c("x", "y")
 
-# add attributes 'datetime' and 'date' 
+# add attribute 'datetime' 
 all_rd$datetime <- as.POSIXct(paste(paste(all_rd$year, all_rd$month, all_rd$day, sep="-"),
                           paste(all_rd$hr, all_rd$min, all_rd$sec, sep=":")),
                               tz="Europe/Andorra")
@@ -75,8 +75,8 @@ all_rd <- as.data.frame(all_rd)
 # make sure points are temporally ordered
 all_rd <- all_rd[order(all_rd$datetime),]
 
-# call function to create tracks
-sp_lines_df <- (all_rd, prj_string_RD)
+# call function to create tracks, may take some time
+sp_lines_df <- CreateHarvestTracks(all_rd, prj_string_RD)
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

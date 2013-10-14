@@ -5,6 +5,7 @@ CreateHarvestTracks <- function(x, CRSobj, maxdist = 10.0){
   # Checks the input data frame for required attributes.
   
   require(sp)
+  require(rgdal)
   if (nargs() < 2) 
     stop("\nCreateLinesDataFrame expects at least two arguments: a data frame and an object of class CRS")
   required.names <- c("x", "y", "loadnr", "datetime", "workwidth.m.")
@@ -31,7 +32,7 @@ CreateHarvestTracks <- function(x, CRSobj, maxdist = 10.0){
     np <- 0
     while (i <= imax && x[i,][["loadnr"]] == current_id && 
              x[i,][["workwidth.m."]] == current_ww && 
-             as.Date(x[i,][["date"]]) == current_dt)
+             as.Date(x[i,][["datetime"]]) == current_dt)
     {
       # distOK is TRUE if two points are likely to belong to the same work line
       distOK = i == 1 | np == 0 || 
