@@ -34,7 +34,7 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Lesson 3}
-\author{Lo\"{i}c Dutrieux, Jan Verbesselt, Ben DeVries, Sytze de Bruin}
+\author{Lo\"{i}c Dutrieux}
 
 \maketitle
 
@@ -155,6 +155,7 @@ In order to achieve these objectives, you should try to follow a few good practi
 \item Write short functions.
 \item	Make your functions generic and flexible, using control flow
 \item	Comment your code
+\item Follow the R style guide \url{http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml}
 \item	Document your functions
 \item	Build a package 
 \item Keep a TODO list
@@ -231,12 +232,15 @@ For example.
 
 <<>>=
 is.character('john')
+# is equivalent to 
+class('john') == 'character'
+
 is.character(32)
 is.numeric(32)
 @
 
-Also note that \code{is.character(32) == TRUE} is equivalent to \code{is.character(32)}. Also when checking logical arguments, you don't have to use the \code{== TRUE}. As an example, a function may have an argument (\code{plot}) that if set to \code{TRUE} will generate a plot, while if set to \code{FALSE} does not plot. This means that the function certainly contains an if statement. \code{if(plot)} in that case is equivalent to \code{if(plot == TRUE)}, it's just shorter.
-
+Also note that \code{is.character(32) == TRUE} is equivalent to \code{is.character(32)}. Therefore when checking logical arguments, you don't have to use the \code{== TRUE}. As an example, a function may have an argument (\code{plot}) that if set to \code{TRUE} will generate a plot, while if set to \code{FALSE} does not plot. This means that the function certainly contains an if statement. \code{if(plot)} in that case is equivalent to \code{if(plot == TRUE)}, it's just shorter.\\
+An example, with a function that substract 2 RasterLayers, with the option to plot the resulting RasterLayer, or not.
 <<>>=
 library(raster)
 minusRaster <- function(x, y, plot=FALSE) { # Function to substract 2 rasterLayers
@@ -247,9 +251,10 @@ minusRaster <- function(x, y, plot=FALSE) { # Function to substract 2 rasterLaye
   return(z)
 }
 
-r <- raster(system.file("external/rlogo.grd", package="raster"))
-r2 <- r
-r2[] <- (1:ncell(r2)) / 10
+# Let's generate 2 rasters 
+r <- raster(system.file("external/rlogo.grd", package="raster")) # that one is the R logo raster converted to the raster package file format.
+r2 <- r # The second RasterLayer is calqued from the initial RasterLayer in order to avoid issues of non matching extent or resolution, etc
+r2[] <- (1:ncell(r2)) / 10 # Filling the rasterLayer with new values. The /10 simply makes the result more spectacular
 r3 <- minusRaster(r, r2) # simply performs the calculation
 @
 
@@ -262,20 +267,51 @@ r4 <- minusRaster(r, r2, plot=TRUE) # Performs the claculation and plots the res
 \subsubsection*{Use of \code{try} and debugging your functions}
 
 \code{try}\\
-The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (subfuntion, piece of code) that is wrapped into \code{try} will not interupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers.
-An example of the use of \code{try}
-
-<<>>=
-# I need to write this example
-# Something with a list of rasterLayers, with some layers containing nothing but NAs
-
-@
-
+The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (subfuntion, piece of code) that is wrapped into \code{try} will not interupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers. So \code{try} is a perfect way to deal with heterogeneous/unpredictable input data.\\
 Also \code{try} returns an object of different class when it fails. You can take advantage of that at a later stage of your processing chain to make your function more adaptive.
-See the example below
-<<>>=
-# Also need to write this one
-# The prefast package does something like that
+See the example below that illustrate the use of \code{try} for sequencially calculating frequency on a list of auto-generated RasterLAyers.
+<<a, eval=FALSE, echo=TRUE>>=
+library(raster)
+
+# Create a raster layer and fill it with "randomly" generated integer values
+a <- raster(nrow=50, ncol=50)
+a[] <- floor(rnorm(n=ncell(a)))
+
+# The freq() function returns the frequency of a certain value in a RasterLayer
+freq(a, value=-2)
+
+# Let's imagine that you want to run this function over a whole list of RasterLayer
+# But some elements of the list are impredictibly corrupted, so the list looks as follows
+b <- a # So that b is also a RasterLayer
+c <- NA
+list <- c(a,b,c)
+
+# Running freq(c) would return an error and crash the whole process
+out <- list()
+for(i in 1:length(list)) {
+  out[i] <- freq(list[i], value=-2)
+}
+
+
+# So by building a function that includes a try(), we are able to catch the error, allowing the process to continue despite missing/corrupted data.
+fun <- function(x, value) {
+  tr <- try(freq(x=x, value=value), silent=TRUE)
+  if (class(tr) == 'try-error') {
+    return('This object returned an error')
+  } else {
+    return(tr)
+  }
+}
+
+# So let's try to run the loops again
+out <- list()
+for(i in 1:length(list)) {
+  out[i] <- freq(list[i], value=-2)
+}
+out
+
+# Note that using a function of the apply family would be a more elegant/shorter way to obtain the same result
+(out <- sapply(X=list, FUN=fun, value=-2))
 
 @
 
@@ -285,37 +321,48 @@ Also part of good programming practices, building a R package is a great way to 
 \subsubsection*{Why building a package?}
 \begin{itemize}
 \item Easy to share with others
-\item Dependencies are automatically imported and functions are sourced
+\item Dependencies are automatically imported and functions are sourced (reduces the risk of having broken dependencies)
 \item Documentation is attached to the functions and cannot be lost (or forgotten)
 \end{itemize}
-For these reasons, if you build a package you'll still be able to run the functions you wrote next year. Which is often not the case for stand alone functions that are poorly documented and depend on a millions other functions ... that you cannot find anymore.
+For these reasons, if you build a package, next year you will still be able to run the functions you wrote yesterday. Which is often not the case for stand alone functions that are poorly documented and depend on a millions other functions ... that you cannot find anymore.
 
 \subsubsection*{Structure of a package}
 
-TODO(dutri001) Finish that part
+\begin{figure}[h]
+  \centering
+  \includegraphics[height=0.6\textwidth]{figs/package_structure.png}
+  \caption {Minimal structure of an R package}
+  \label{package}
+\end{figure}
 
-This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual (\dots). 
-The default basic structure of a package is as follows:
-2 subdirectories (R and man), NAMESPACE and DESCRIPTION files. The R directory includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the man subdirectory. These .Rd files are the functions documentation. NAMESPACE and DESCRIPTION files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalistic package structure; more elaborate packages may include extra subdirectories, such as data, demo or vignette.\\
-/R/\\
-/man/\\
-/NAMESPACE\\
-/DESCRIPTION\\
+This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual \textit{Writing R extensions} \url{http://cran.r-project.org/doc/manuals/R-exts.html}.\\
+The default basic structure of a package is as follows:\
+2 subdirectories (R and man), NAMESPACE and DESCRIPTION files (Figure~\ref{package}). The \textbf{R directory} includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the \textbf{man directory}. These .Rd files are the functions documentation. \textbf{NAMESPACE} and \textbf{DESCRIPTION} files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalistic package structure; more elaborate packages may include extra subdirectories, such as data, demo or vignette.\\
 
+\subsubsection*{Useful tips for package creation}
 
-The \code{package.skeleton} function will help you get the package structure from a list of sourced functions.
+The \code{package.skeleton} function will help you get the package structure from a list of sourced functions. (A function opened in the R Studio editor pannel can be sourced by pressing the ''Source'' in the top right hand corner of the pannel)
 \code{prompt} creates a tailored documentation (.Rd) file from an existing function.
-The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including 
-Good practices: \url{http://mages.github.io/R_package_development/#1}
+The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including. Explore the menus and option under Project - New project. 
+More package creation tips can be found online \url{http://mages.github.io/R_package_development/#1}
+
+\subsubsection*{Package building}
+\begin{itemize}
+\item Prerequisites\\
+In order to be able to build package, you must have \textbf{Rtools} installed and properly setup on your system. Refer to the system setup document for more information on how to install Rtools. Once this is done R Studio offers great integration with Rtools, which makes package building really easy. The build pannel in R Studio is by default located in the upper right window.
+
+\item Check and build\\
+In order to be operational on your system the R package you just created has to be checked and built. This is a critical step since everything has to be perfect in order to pass the check step. Simple things like a missing line in a function documentation file mail result in the package not passing the checks. Although a package that does not fully passes the check may still be built in some cases, this is not recommended, and it is therefore preferable to deal with the errors returned in the check console before building.\\
+Another option for building package is to do so directly from a remote git repository using the devtools package. This aspect of package building, together with general consideration on version control systems is presented in the next section.
+
+\end{itemize}
 
 \subsection*{Version control}
-Not done yet
-
 In this lecture, we won't go into the details of version control, however, we will review some general aspects that make version control a valuable tool for scientists and geo-programmers.
-What is it?
- 
-How is it useful?
-Version control is very well suited to large software development projects and for that reason it is an indispensable part of such projects. Although we are not software developpers, version control systems present a set of advantages from which we, and the scientists who use scripting in  general, can benefit. 
+
+\subsubsection*{What is version control?}
+
+Version control, also called revision control or source control, refers to the management of changes to documents, files or set of files. The version control management can be performed locally or directly on a remote online repository, and the code is usually stored on an online repository, available from anywhere. Version control is very well suited to large software development projects and for that reason it is an indispensable part of such projects. Although we are not software developpers, version control systems present a set of advantages from which we, and the scientists who use scripting in  general, can benefit. 
 Among others, some arguments in favour of using version control are that:
 
 \begin{itemize}
@@ -326,25 +373,33 @@ Among others, some arguments in favour of using version control are that:
 \item Keep different versions of your code without having to worry about filenames and archiving organization
 \end{itemize}
 	
-What systems exist?
-Git, Subversion (svn), mercurial (hg)
-Online repositories:
-GitHub
-Bitbucket
-Sourceforge
-Rforge
+\subsubsection*{What systems exist for version control?}
+The three main revision control software are Git, Subversion (abreviated as svn), and mercurial (abreviated as hg). Since we are not full time software developpers we are only interested in a limited set of functionalities provided by these systems, most differences between them may appear futile to us. However, a few points of consideration remain, particularly regarding the integration with R Studio and R in general.\\
+Since the R Studio IDE provides integration for git and svn, we will only focus on these two system from here on. Table~\ref{gitsvn} provides an overview of most online repositories options for svn and git, and level of integration with R package building.
 
-Semantics of version control
-Commits
-Push
-Clone (git)
-branch (git): Creates a branch
-checkout (svn): equivalent of git clone
 
-How to\\
-To be able to perform the following tutorial, you must have git installed on your machine. Please refer to the system setup vignette to know how to install and setup git and allow it to be embedded into R Studio.
+\begin{table}[H]
+  \caption {Git and svn for R projects}
+  \centering
+  \begin{tabular}{| l | l | l |}
+    \hline
+    \textbf{Systems} & \textbf{Online repositories available} & \textbf{Integration with R} \\ \hline
+    \textbf{Git} & Bitbucket, GitHub, SourceForge & Via devtools package \\ \hline
+    \textbf{Svn} & R Forge, SourceForge& Via R Forge building tools and \code{install.package()} function \\ \hline
+  \end{tabular}
+  \label{gitsvn}
+    
+\end{table}
+
+\subsubsection*{Semantics of version control}
+\textbf{Commits}: Consists of adding the latest changes to the repository. This is done locally with Git and directly on a remote repository with svn. Commits can be seen as a milestones in the versioning of a file or set of files. It is always possible to return to previous commits.\\
+\textbf{Push} (git only): Add previous changes commited to the local repository, to the remote repository.\\
+\textbf{Clone} (git)/\textbf{Checkout} (svn): Copy the content of the remote repository locally.\\
+\textbf{Branch} (git): Create a branch (a parallel version of the code in the repository)\\
+
+\subsubsection*{How to}
+To be able to perform the following tutorial, you must have git installed on your machine. Please refer to the system setup vignette to know how to install and setup git and allow it to be embedded into R Studio.\\
 Tutorial on how to start a R package with version control, hosted on GitHub.
-Setup
 
 \begin{enumerate}
   \item Create a GitHub account (only if you don't have one already)
@@ -354,7 +409,7 @@ Setup
   \item From R Studio, go to project - Create project - Version Control - Git. In the repository URL field, enter the clone URL that you just copied from GitHub. Project directory name should appear automatically. Choose a location for your project.
 
 
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
   \includegraphics[height=0.5\textwidth]{figs/github_screenCapture.png}
   \caption {GitHub clone URL}
@@ -366,7 +421,7 @@ Setup
   \item In the git panel of R Studio (by default on the upper right), add all the objects added to the package by checking them - press commit - write a commit message - commit - push. You should be prompted for your GitHub username and password, once this is done, your package is added to your GitHub remote repository.
 \end{enumerate}
 
-If you are concerned about always having a ''compile-able'' version of your code, use different branches. Create a ''dev'' branch on which you develop your new functions or do any kind of experiments, and keep the stable version on your package on the ''master'' branch. Once the ''dev'' branch becomes stable, merge it with the ''master'' branch.
+If you are concerned about always having a ''compile-able'' version of your code, use different branches. Create a ''dev'' branch on which you develop your new functions or do any kind of experiments, and keep the stable version of your package on the ''master'' branch. Once the ''dev'' branch becomes stable, merge it with the ''master'' branch.
 
 
 
