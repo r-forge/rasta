@@ -71,7 +71,7 @@ library(ggplot2)
 library(reshape2)
 library(scales)
 @
-\newpage
+\clearpage
 
 \section{Read and Plot Spatial Data}
 \subsection{Read in a Shapefile}
@@ -84,27 +84,34 @@ Read OGR can be used for almost any vector data format. To read in a shapefile, 
 \item layer: the name of the shapefile, without the file extension
 \end{itemize}
 
-% 
-% <<eval=FALSE>>=
-% download.file('http://rasta.r-forge.r-project.org/kenyashape.zip', 
-% 'data/kenyashape.zip')
-% unzip('data/kenyashape.zip', exdir = datdir)
-% ds <- readOGR(dsn = datdir, layer = 'kenya')
+% to illustrate how a file can be downloaded and read-in
+<<eval=FALSE>>=
+download.file('http://rasta.r-forge.r-project.org/kenyashape.zip',  
+      'data/kenyashape.zip')
+unzip('data/kenyashape.zip', exdir = datdir)
+kenya <- readOGR(dsn = datdir, layer = 'kenya')
+@
+
+% % internal option
+% <<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
+% library(rasta)
+% datdir <- system.file("extdata/", package="rasta")
+% kenya <- readOGR(dsn = datdir, layer = 'kenya')
+% plot(kenya)
 % @
 
+<<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
+library(rasta)
+data("kenya")
+plot(kenya)
+@
 
-% 
-% <<kenya,include=false,fig=true>>=
-% plot(ds)
-% @
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_2-kenya}
+\caption{An example plot.}
+\end{figure}
 
-% 
-% \begin{figure}[tbp]
-% \centering
-% \includegraphics{Lesson_2-kenya}
-% \caption{An example plot.}
-% \end{figure}
-% 
 
 % \bibliographystyle{model5-names}
 % \bibliography{refs}

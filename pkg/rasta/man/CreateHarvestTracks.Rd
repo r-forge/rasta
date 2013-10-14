@@ -45,13 +45,17 @@ Sytze de Bruin
 }
 \examples{
 \dontrun{
-  # download and read data
-#download.file('http://rasta.r-forge.r-project.org/kroonven.csv.zip',
-#              'kroonven.csv.zip')
-              
-#download.file('http://rasta.r-forge.r-project.org/kroonven.csv', 'kroonven.csv')
-#unzip('kroonven.csv.zip')
-#borne_data = read.table("kroonven.csv", sep = ",", header = T)
+# download and read data
+if (FALSE) {
+  #download.file('http://rasta.r-forge.r-project.org/kroonven.csv.zip',
+  #              'kroonven.csv.zip')
+  #unzip('kroonven.csv.zip')
+  #borne_data = read.table("kroonven.csv", sep = ",", header = T)
+  #download.file('http://rasta.r-forge.r-project.org/kroonven.csv', 'kroonven.csv')
+}
+
+borne_data = read.table('http://rasta.r-forge.r-project.org/kroonven.csv', sep = ",", header = T)
+
 
 # make spatial
 coordinates(borne_data) <- c("lon.degr.","lat.degr.")
