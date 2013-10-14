@@ -47,12 +47,9 @@ Let's do some basic set up first. In the code block below type in the file path 
 
 <<eval=FALSE>>=
 getwd() ## Double check your working directory
-@
-
-<<>>=
 datdir <- 'data/' #This is an example of a Mac file path
 # datdir<-'/data/' #This is an example of a PC file path
-# setwd(datdir) 
+setwd(datdir) 
 # This sets the working directory (where R looks for files)
 @
 
@@ -87,25 +84,29 @@ Read OGR can be used for almost any vector data format. To read in a shapefile, 
 \item layer: the name of the shapefile, without the file extension
 \end{itemize}
 
-<<readOGR>>=
-download.file('http://rasta.r-forge.r-project.org/kenyashape.zip', 
-'data/kenyashape.zip')
-unzip('data/kenyashape.zip', exdir = datdir)
-file.remove('data/kenyashape.zip')
-ds <- readOGR(dsn = datdir, layer = 'kenya')
-@
+% 
+% <<eval=FALSE>>=
+% download.file('http://rasta.r-forge.r-project.org/kenyashape.zip', 
+% 'data/kenyashape.zip')
+% unzip('data/kenyashape.zip', exdir = datdir)
+% ds <- readOGR(dsn = datdir, layer = 'kenya')
+% @
 
-<<kenya,include=false,fig=true>>=
-plot(ds)
-@
 
-\begin{figure}[tbp]
-\centering
-\includegraphics{Lesson_2-kenya}
-\caption{An example plot.}
-\end{figure}
+% 
+% <<kenya,include=false,fig=true>>=
+% plot(ds)
+% @
 
-\bibliographystyle{model5-names}
-\bibliography{refs}
+% 
+% \begin{figure}[tbp]
+% \centering
+% \includegraphics{Lesson_2-kenya}
+% \caption{An example plot.}
+% \end{figure}
+% 
+
+% \bibliographystyle{model5-names}
+% \bibliography{refs}
 
 \end{document}

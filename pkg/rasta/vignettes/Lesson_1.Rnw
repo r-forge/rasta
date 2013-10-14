@@ -41,7 +41,7 @@ options(width = 70, prompt = ">", continue = "+ ")
 
 \title{Applied Geo-Scripting: Lesson 1}
 
-\author{Jan Verbesselt, Sytze de Bruyn, Loic Dutrieux, Ben De Vries, ...}
+\author{Jan Verbesselt, Sytze de Bruyn, Lo\"{i}c Dutrieux, Ben De Vries, Aldo Bergsma}
 
 \Logo{figs/forest_small.jpg}
 
@@ -83,9 +83,10 @@ options(width = 70, prompt = ">", continue = "+ ")
 \begin{itemize}
 	\item{Reproducible: avoid clicking and you keep track of what you have done}
 	\item{Efficient: you can write a script to do something for you e.g. multiple times e.g. automatically downloading data}
+	\item{Build your own tools and functions (e.g. raster filters, MODIS download tool, BFAST package)}
 	\item{Enable collaboration: sharing scripts, functions, and packages}
 	\item{Good for finding errors i.e. debugging}
-	e.g. this course is fully writing with scripting languages (i.e. R and Latex).
+	e.g. this course is fully writting with scripting languages (i.e. R and Latex).
 \end{itemize}
 \end{frame}
 
@@ -105,29 +106,36 @@ options(width = 70, prompt = ">", continue = "+ ")
 The main scripting languages for GIS and Remote sensing currently are: 
 \begin{itemize} % [<+->]
   \item R
-  \item Python (stand-alone or integrated within ArcGIS, QGIS), 
-  \item GRASS
+  \item Python
+   \begin{itemize}
+     \item stand-alone (ArcPy and PyQGIS)
+     \item integrated within ArcGIS, QGIS 
+    \end{itemize}
+  \item GRASS (grass function are included in QGIS)
+  \item Javascript for geoweb scripting
 \end{itemize}
-\emph{Aldo can you help here}
 \end{frame}
 
 \begin{frame}
 \frametitle{Python versus R}
 \begin{itemize}
-  \item{Python is a general purpose programming language}
+  \item{Python is a general purpose programming language with a clear syntax}
   \item{R is particularly strong in statistical computing and graphics}
   \item{Installing libraries in Python is sometimes challenging}
-  \item{Syntactic differences can be confusing}
+  \item{Syntactic differences can be confusing (especially when combining these) }
   \item{There are many R and Python packages for spatial analyses and for dealing with spatial data}
   \item{Scripts in both languages can be combined:}
   \begin{itemize}
-   \item {call R from Python using \textbf{RPy}}
+   \item {call R from Python using \textbf{RPy, RPy2}}
    \item {call Python from R \url{http://rpython.r-forge.r-project.org/}}
   \end{itemize}
+  \item Many programs have support for:
+   \begin{itemize}
+    \item Python (Blender, Sketchup, QGIS, MySQL, PostGIS)
+    \item R (GRASS, QGIS, MySQL, PostGIS)
+   \end{itemize}
 \end{itemize}
 
-\medskip
-\emph{Aldo can you help here}
 \end{frame}
 
 \begin{frame}
@@ -323,55 +331,55 @@ That concludes our basic introduction to data.frames and lists. There is alot mo
 
 %% THE REAL STUFF
 
-\begin{frame}[fragile] 
-\frametitle{Set Your Working Directory and Load Your Libraries}
-\textbf{Set the Working Directory}
+% \begin{frame}[fragile] 
+% \frametitle{Set Your Working Directory and Load Your Libraries}
+% \textbf{Set the Working Directory}
+% 
+% Let's do some basic set up first. In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
+% 
+% <<eval=FALSE>>=
+% getwd() ## Double check your working directory
+% @
+% 
+% <<>>=
+% datdir <- 'data/' #This is an example of a Mac file path
+% # datdir<-'/data/' #This is an example of a PC file path
+% # setwd(datdir) 
+% # This sets the working directory (where R looks for files)
+% @
+% \end{frame}
 
-Let's do some basic set up first. In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
-
-<<eval=FALSE>>=
-getwd() ## Double check your working directory
-@
-
-<<>>=
-datdir <- 'data/' #This is an example of a Mac file path
-# datdir<-'/data/' #This is an example of a PC file path
-# setwd(datdir) 
-# This sets the working directory (where R looks for files)
-@
-\end{frame}
-
-\begin{frame} [fragile] 
-\frametitle{Set Your Working Directory and Load Your Libraries}
-\textbf{Load Libraries}
-Next we will load a series of R packages that will give the functions we need to complete all the exercises in lesson 1 and 2. For this exercise all of the packages should (hopefully) be already installed on your machine (?). 
-We will load them below using the library() command. 
-I also included some comments describing how we use each of the packages in the exercises.
-
-<<loadlibraries, message=FALSE>>=
-#----Packages for Reading/Writing/Manipulating Spatial Data---
-library(rgdal) # reading shapefiles and raster data
-library(rgeos)
-library(maptools)
-library(spdep)   # useful spatial stat functions
-library(spatstat) # functions for generating random points
-library(raster) 
-#---Packages for Data Visualization and Manipulation---
-library(ggplot2)
-library(reshape2)
-library(scales)
-@
-\end{frame}
-
-\begin{frame} [fragile] 
-\frametitle{Read and Plot Spatial Data}
-The most flexible way to read in a shapefile is by using the $readOGR$ command. This is the only option that will also read in the $.prj$ file associated with the shapefile. NCEAS has a useful summary of the various ways to read in a shapefile: \url{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}
-I recommend always using $readOGR()$.
-Read OGR can be used for almost any vector data format. To read in a shapefile, you enter two arguments:
-\begin{itemize}
-\item dsn- The directory containing the shapefile (even if this is already your working directory)
-\item layer- the name of the shapefile, without the file extension
-\end{itemize}
+% \begin{frame} [fragile] 
+% \frametitle{Set Your Working Directory and Load Your Libraries}
+% \textbf{Load Libraries}
+% Next we will load a series of R packages that will give the functions we need to complete all the exercises in lesson 1 and 2. For this exercise all of the packages should (hopefully) be already installed on your machine (?). 
+% We will load them below using the library() command. 
+% I also included some comments describing how we use each of the packages in the exercises.
+% 
+% <<loadlibraries, message=FALSE>>=
+% #----Packages for Reading/Writing/Manipulating Spatial Data---
+% library(rgdal) # reading shapefiles and raster data
+% library(rgeos)
+% library(maptools)
+% library(spdep)   # useful spatial stat functions
+% library(spatstat) # functions for generating random points
+% library(raster) 
+% #---Packages for Data Visualization and Manipulation---
+% library(ggplot2)
+% library(reshape2)
+% library(scales)
+% @
+% \end{frame}
+% 
+% \begin{frame} [fragile] 
+% \frametitle{Read and Plot Spatial Data}
+% The most flexible way to read in a shapefile is by using the $readOGR$ command. This is the only option that will also read in the $.prj$ file associated with the shapefile. NCEAS has a useful summary of the various ways to read in a shapefile: \url{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}
+% I recommend always using $readOGR()$.
+% Read OGR can be used for almost any vector data format. To read in a shapefile, you enter two arguments:
+% \begin{itemize}
+% \item dsn- The directory containing the shapefile (even if this is already your working directory)
+% \item layer- the name of the shapefile, without the file extension
+% \end{itemize}
 
 %<<readOGR>>=
 %download.file('http://rasta.r-forge.r-project.org/kenyashape.zip', 
@@ -380,7 +388,7 @@ Read OGR can be used for almost any vector data format. To read in a shapefile, 
 %rm('data/kenyashape.zip')
 %#ds <- readOGR(dsn=datdir, layer='kenya')
 %@
-\end{frame}
+% \end{frame}
 
 \begin{frame}
 \frametitle{Excercise Lesson 1: Write you own function}
@@ -406,7 +414,8 @@ For more information about R please refer to the following links:
 \item {\url{http://www.statmethods.net/index.html} This is a great website for learning R function, graphs, and stats.}
 \item {the book on Applied spatial Data analysis with R 
  \url{http://www.asdar-book.org/} \citep{Bivand:2013ux}.}
-\item  {Visit \url{http://www.r-project.org/} and check out the Manuals i.e an introdutions to R}
+\item  {Visit \url{http://www.r-project.org/} and check out the Manuals i.e an introductions to R}
+\item Overview of R functionality for spatial data analysis: \url{http://cran.r-project.org/web/views/Spatial.html}
 %% R spatial project
 
 \end{itemize}
