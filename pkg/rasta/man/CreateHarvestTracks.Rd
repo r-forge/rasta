@@ -44,11 +44,15 @@ Sytze de Bruin
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-# download and read data
-download.file('http://rasta.r-forge.r-project.org/kroonven.csv.zip',
-              'kroonven.csv.zip')
-unzip('kroonven.csv.zip')
-borne_data = read.table("kroonven.csv", sep = ",", header = T)
+\dontrun{
+  # download and read data
+#download.file('http://rasta.r-forge.r-project.org/kroonven.csv.zip',
+#              'kroonven.csv.zip')
+              
+#download.file('http://rasta.r-forge.r-project.org/kroonven.csv',
+#              'kroonven.csv')
+#unzip('kroonven.csv.zip')
+#borne_data = read.table("kroonven.csv", sep = ",", header = T)
 
 # make spatial
 coordinates(borne_data) <- c("lon.degr.","lat.degr.")
@@ -77,6 +81,8 @@ all_rd <- all_rd[order(all_rd$datetime),]
 
 # call function to create tracks, may take some time
 sp_lines_df <- CreateHarvestTracks(all_rd, prj_string_RD)
+}
+
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
