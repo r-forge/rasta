@@ -375,7 +375,7 @@ Among others, some arguments in favour of using version control are that:
 	
 \subsubsection*{What systems exist for version control?}
 The three main revision control software are Git, Subversion (abreviated as svn), and mercurial (abreviated as hg). Since we are not full time software developpers we are only interested in a limited set of functionalities provided by these systems, most differences between them may appear futile to us. However, a few points of consideration remain, particularly regarding the integration with R Studio and R in general.\\
-Since the R Studio IDE provides integration for git and svn, we will only focus on these two system from here on. Table~\ref{gitsvn} provides an overview of most online repositories options for svn and git, and level of integration with R package building.
+Since the R Studio IDE provides integration for git and svn, we will only focus on these two system from here on. Table~\ref{gitsvn} provides an overview of most online repositories options for svn and git, and level of integration with R package building. Please note that online repositories are not the only options for hosting of the remote repository. It is common practice in companies to have an internally hosted central repository.
 
 
 \begin{table}[H]
@@ -396,6 +396,7 @@ Since the R Studio IDE provides integration for git and svn, we will only focus 
 \textbf{Push} (git only): Add previous changes commited to the local repository, to the remote repository.\\
 \textbf{Clone} (git)/\textbf{Checkout} (svn): Copy the content of the remote repository locally.\\
 \textbf{Branch} (git): Create a branch (a parallel version of the code in the repository)\\
+\textbf{Merge}: Merges two versions (branches) into one.
 
 \subsubsection*{How to}
 To be able to perform the following tutorial, you must have git installed on your machine. Please refer to the system setup vignette to know how to install and setup git and allow it to be embedded into R Studio.\\
