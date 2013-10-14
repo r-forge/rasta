@@ -1,0 +1,111 @@
+\documentclass[11pt,twoside,a4paper]{article}
+
+%% BibTeX settings
+\usepackage[authoryear,round]{natbib}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide,graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{%
+  pdftitle = {Example Tutorial},
+  pdfsubject = {},
+  pdfkeywords = {MODIS, time series},
+  pdfauthor = {Jan Verbesselt},
+  %% change colorlinks to false for pretty printing
+  colorlinks = {true},
+  linkcolor = {Blue},
+  citecolor = {Blue},
+  urlcolor = {Red},
+  hyperindex = {true},
+  linktocpage = {true},
+}
+
+\usepackage{Sweave} %% is essentially
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{Lesson 2}
+\author{Jan Verbesselt}
+
+\maketitle
+
+\begin{abstract}
+An intro to reading in spatial data with R.
+\end{abstract}
+
+\section{Set Your Working Directory and Load Your Libraries}
+\subsection{Set the Working Directory}
+Let's do some basic set up first. In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
+
+<<eval=FALSE>>=
+getwd() ## Double check your working directory
+@
+
+<<>>=
+datdir <- 'data/' #This is an example of a Mac file path
+# datdir<-'/data/' #This is an example of a PC file path
+# setwd(datdir) 
+# This sets the working directory (where R looks for files)
+@
+
+\subsection{Load Libraries}
+Next we will load a series of R packages that will give the functions we need to complete all the exercises in lesson 1 and 2. For this exercise all of the packages should (hopefully) be already installed on your machine (?). 
+We will load them below using the library() command. 
+I also included some comments describing how we use each of the packages in the exercises.
+
+<<loadlibraries, message=FALSE>>=
+#----Packages for Reading/Writing/Manipulating Spatial Data---
+library(rgdal) # reading shapefiles and raster data
+library(rgeos)
+library(maptools)
+library(spdep)   # useful spatial stat functions
+library(spatstat) # functions for generating random points
+library(raster) 
+#---Packages for Data Visualization and Manipulation---
+library(ggplot2)
+library(reshape2)
+library(scales)
+@
+\newpage
+
+\section{Read and Plot Spatial Data}
+\subsection{Read in a Shapefile}
+The most flexible way to read in a shapefile is by using the \verb+readOGR+ command. This is the only option that will also read in the .prj file associated with the shapefile. NCEAS has a useful summary of the various ways to read in a shapefile: \url{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}
+I recommend always using \verb+readOGR()+.
+
+Read OGR can be used for almost any vector data format. To read in a shapefile, you enter two arguments:
+\begin{itemize}
+\item dsn: the directory containing the shapefile (even if this is already your working directory)
+\item layer: the name of the shapefile, without the file extension
+\end{itemize}
+
+<<readOGR>>=
+download.file('http://rasta.r-forge.r-project.org/kenyashape.zip', 
+'data/kenyashape.zip')
+unzip('data/kenyashape.zip', exdir = datdir)
+file.remove('data/kenyashape.zip')
+ds <- readOGR(dsn = datdir, layer = 'kenya')
+@
+
+<<kenya,include=false,fig=true>>=
+plot(ds)
+@
+
+\begin{figure}[tbp]
+\centering
+\includegraphics{Lesson_2-kenya}
+\caption{An example plot.}
+\end{figure}
+
+\bibliographystyle{model5-names}
+\bibliography{refs}
+
+\end{document}
