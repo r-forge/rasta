@@ -46,7 +46,7 @@ echo $contents; } ?>
 
 <p> <ul>
 <li> <strong>Lesson 1-2:</strong> shape file kenya <a href="http://rasta.r-forge.r-project.org/kenyashape.zip">kenyashape.zip</a> </li>
-<li> <strong>Lesson 4:</strong> data set. More info here (Sytze) <a href="http://rasta.r-forge.r-project.org/kroonven.csv.zip">kroonven.csv.zip</a> </li>
+<li> <strong>Lesson 4:</strong> data set. More info here (Sytze) <a href="http://rasta.r-forge.r-project.org/kroonven.csv">kroonven.csv</a> </li>
 <li> <strong> Rasta </strong>package for windows (0.1 version). <a href="http://rasta.r-forge.r-project.org/rasta.zip">rasta.zip</a> </li>
 </ul> </p>
 
