@@ -23,7 +23,7 @@ numeric. The maximum distance (same unit as input coordinates) of consecutive po
 }
 }
 \details{
-The input data frame should at least hold the following columns: "x" [numeric], "y" [numeric], loadnr" [integer], "datetime" [POSIXct], "workwidth.m." [numeric], "date" [POSIXct].
+The input data frame should at least hold the following columns: "x" [numeric], "y" [numeric], "loadnr" [integer], "datetime" [POSIXct], "workwidth.m." [numeric].
 
 }
 
@@ -68,7 +68,6 @@ dimnames(all_rd@coords)[[2]] <- c("x", "y")
 all_rd$datetime <- as.POSIXct(paste(paste(all_rd$year, all_rd$month, all_rd$day, sep="-"),
                           paste(all_rd$hr, all_rd$min, all_rd$sec, sep=":")),
                               tz="Europe/Andorra")
-all_rd$date <- as.POSIXct(paste(all_rd$year, all_rd$month, all_rd$day, sep="-"))
 
 # convert to data frame
 all_rd <- as.data.frame(all_rd)
