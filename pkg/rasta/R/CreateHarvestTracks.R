@@ -7,7 +7,7 @@ CreateHarvestTracks <- function(x, CRSobj, maxdist = 10.0){
   require(sp)
   if (nargs() < 2) 
     stop("\nCreateLinesDataFrame expects at least two arguments: a data frame and an object of class CRS")
-  required.names <- c("x", "y", "loadnr", "datetime", "workwidth.m.", "date")
+  required.names <- c("x", "y", "loadnr", "datetime", "workwidth.m.")
   if (!all(required.names %in% names(x))){
     missing <- required.names[which(!required.names %in% names(x))]
     stop(paste("\nAttribute '", missing, "' missing in input data frame.", sep = ""))
@@ -15,7 +15,7 @@ CreateHarvestTracks <- function(x, CRSobj, maxdist = 10.0){
   if (class(CRSobj)[1] != "CRS") stop("\nWrong class 'CRSobj'.")
   current_id <- x[1,][["loadnr"]]
   current_ww <- x[1,][["workwidth.m."]]
-  current_dt <- x[1,][["date"]]
+  current_dt <- as.Date(x[1,][["datetime"]])
   
   Point2PointDistance <- function(point1, point2)
     sqrt((point2[1] - point1[1])**2 + (point2[2] - point1[2])**2)
@@ -31,7 +31,7 @@ CreateHarvestTracks <- function(x, CRSobj, maxdist = 10.0){
     np <- 0
     while (i <= imax && x[i,][["loadnr"]] == current_id && 
              x[i,][["workwidth.m."]] == current_ww && 
-             x[i,][["date"]] == current_dt)
+             as.Date(x[i,][["date"]]) == current_dt)
     {
       # distOK is TRUE if two points are likely to belong to the same work line
       distOK = i == 1 | np == 0 || 
@@ -59,8 +59,8 @@ CreateHarvestTracks <- function(x, CRSobj, maxdist = 10.0){
     if (i < imax){
       current_id = x[i,][["loadnr"]]
       current_ww = x[i,][["workwidth.m."]]
-      current_dt = x[i,][["date"]]}
-    current_tm <- x[i,][["datetime"]]
+      current_dt = as.Date(x[i,][["datetime"]])
+    }
   }
   dfr <- data.frame(ID=Ids,loads, width, datim)
   row.names(dfr) <- dfr$ID
