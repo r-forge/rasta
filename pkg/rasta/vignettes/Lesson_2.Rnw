@@ -38,19 +38,37 @@
 \maketitle
 
 \begin{abstract}
-An intro to reading in spatial data with R.
+An intro to reading in spatial data: rasta and vector data with R.
 \end{abstract}
+
+\section{Today's learning objectives}
+
+\begin{itemize}
+	\item{Read, write, and visualize spatial data (vector/raster) using a script}
+	\item{Find libraries which offer spatial data handling functions}
+	\item{Learn to include functions from a library in your script}
+\end{itemize}
 
 \section{Set Your Working Directory and Load Your Libraries}
 \subsection{Set the Working Directory}
-Let's do some basic set up first. In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
+Let's do some basic set up first. 
+
+\begin{itemize}
+	\item{Create a folder which will be your working directory e.g. \emph{Lesson2}}
+	\item{Create an R script within that folder}
+	\item{Set your working directory to the \emph{Lesson2} folder}
+	\item{Create a $data$ folder within your working directory}
+\end{itemize}
+
+In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
 
 <<eval=FALSE>>=
-getwd() ## Double check your working directory
-datdir <- 'data/' #This is an example of a Mac file path
-# datdir<-'/data/' #This is an example of a PC file path
-setwd(datdir) 
+setwd("yourworkingdirectory")
 # This sets the working directory (where R looks for files)
+
+getwd() # Double check your working directory
+datdir <- "data/" #This is an example of a Mac file path
+# datdir<- "/data/" #This is an example of a PC file path
 @
 
 \subsection{Load Libraries}
@@ -73,7 +91,7 @@ library(scales)
 @
 \clearpage
 
-\section{Read and Plot Spatial Data}
+\section{Read, plot, and explore spatial data}
 \subsection{Read in a Shapefile}
 The most flexible way to read in a shapefile is by using the \verb+readOGR+ command. This is the only option that will also read in the .prj file associated with the shapefile. NCEAS has a useful summary of the various ways to read in a shapefile: \url{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}
 I recommend always using \verb+readOGR()+.
@@ -99,7 +117,7 @@ kenya <- readOGR(dsn = datdir, layer = 'kenya')
 % kenya <- readOGR(dsn = datdir, layer = 'kenya')
 % plot(kenya)
 % @
-
+\clearpage
 \subsection{Plotting the Data}
 Plotting is easy, use the \verb+plot()+ command:
 <<eval=FALSE>>=
@@ -140,10 +158,11 @@ The \verb+str()+ or structure command tells us how R is actually storing and org
 \item \emph{proj4string}: A character string describing the projection system
 \end{enumerate}
 
+The only one we want to worry about is data, because this is where the data.frame() associated with our spatial object is stored. 
+We access slots using the @ sign.
 
-The only one we want to worry about is data, because this is where the data.frame() associated with our spatial object is stored. We access slots using the @ sign.
+%\textbf{Note} Mention S3 vs S4 classes?
 
-\textbf{Note} Mention S3 vs S4 classes?
 <<accessdata>>=
 #--------------------------ACCESS THE SHAPEFILE DATA------------------------------
 dsdat<-as(kenya, "data.frame")  #extract the data into a regular data.frame
@@ -153,8 +172,5 @@ kenya$new<- 1:nrow(dsdat) #add a new colunm, just like adding data to a data.fra
 head(kenya@data)
 @
 
-
-% \bibliographystyle{model5-names}
-% \bibliography{refs}
 
 \end{document}
