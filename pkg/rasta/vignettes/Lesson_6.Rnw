@@ -33,21 +33,30 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Raster Analysis}
-\author{Ben DeVries, Jan Verbesselt, Loic Dutrieux, Sytze de Bruin}
+\author{Ben DeVries, Jan Verbesselt, Lo\"{i}c Dutrieux, Sytze de Bruin}
 
 \maketitle
 
 \begin{abstract}
 
-In this tutorial, we will explore the raster package and other related packages used for typical raster analyses. We will first look at analysis of RasterLayer objects, exploring functions having to do with raster algebra, focal and zonal statistics and other operations. We will then explore spatio-temporal analysis of raster data using RasterBrick objects. Here, we will extract time series data from a RasterBrick object and derive temporal statistics from these data.
+In this tutorial, we will explore the raster package and other related packages used for typical raster analyses. We will first look at analysis of RasterLayer objects, exploring functions having to do with raster algebra, focal and zonal statistics and other operations. We will then explore spatio-temporal analysis of raster data using RasterBrick objects. Here, we will extract time series data from a RasterBrick object and derive temporal statistics from these data. Since data from the Landsat archive is becoming increasingly important for environmental research and monitoring, this tutorial will focus on the use of these data.
 \begin{enumerate}
   \item perform typical image preprocessing operations (apply a mask, calculate ndvi, etc.)
-  \item overlaying with geodata and calculating zonal statistics
+  \item classify a raster layer
+  \item overlay with geodata and calculate zonal statistics
+  \item perform focal operations
+  \item parse Landsat scene information in a time series
   \item explore a raster brick by plotting layers and layers statistics
-  \item perform raster brick operations to derive stats (e.g. \%no-data in the time series)
-  \item extract pixel time series and derive various statistics
+  \item perform raster brick operations to derive statistics (e.g. \%no-data in the time series)
+  \item extract pixel time series and derive various time series statistics
 \end{enumerate}
 \end{abstract}
+
+<<echo = false, results = hide>>=
+library(raster)
+library(rgdal)
+library(sp)
+@
 
 \section{The raster package}
 
@@ -73,7 +82,63 @@ This section will cover some of the following areas:
   \item zonal statistics using other geodata (Biosphere Reserve zones, administrative zones, etc...)
   \item reclassifying (stratifying) a raster based on elevation data (SRTM or ASTER2)
 \end{itemize}
-  
+
+\subsection*{Raster classification}
+
+....using the reclassify() function
+
+....section on Random Forest classification, using the Gewata or Tura subset...
+
+\subsection*{Working with thematic rasters}
+
+In some cases, the values of a raster may be categorical, meaning they relate to a thematic class (e.g. 'forest' or 'wetland') rather than a quantitative value (e.g. NDVI or \% Tree Cover). The raster dataset 'LULC2011\textunderscore Gewata\textunderscore classes.tif' is a raster with integer values representing LULC classes from a 2011 classification (using SPOT5 and ASTER source data).
+
+<<echo = FALSE, results = hide>>=
+lulc <- raster('~/R/projects/rasta/www/Kafa_BR/LULC2011_Gewata.tif')
+@
+
+\begin{Sinput}
+> lulc <- raster('path/to/data/LULC2011_Gewata.tif')
+\end{Sinput}
+
+<<>>=
+# check out the distribution values
+freq(lulc)
+hist(lulc)
+@
+
+This is a raster with integer values between 1 and 6, but for this raster to be meaningful at all, we need a lookup or attribute table to identify these classes. A .csv file has also been provided as part of the package. Read it in as a data.frame:
+\begin{Sinput}
+> # Note: the ID column is the first one, hence 'row.names = 1'
+> lulc.classes <- read.csv('path/to/data/LULC2011_Gewata_classes.csv, row.names = 1)
+\end{Sinput}
+<<echo = FALSE, results = hide>>=
+lulc.classes <- read.csv('~/R/projects/rasta/www/Kafa_BR/LULC2011_Gewata_classes.csv', row.names = 1)
+@
+
+This data.frame represents a lookup table for the raster we just loaded. The ID column corresponds to the values taken on by the lulc raster, and the 'Class' column describes the LULC classes assigned. In R it is possible to add a attribute table to a raster. In order to do this, we need to coerce the raster values to a factor from an integer.
+
+<<>>=
+lulc <- as.factor(lulc)
+@
+
+If you display the attributes of this raster (just type 'lulc'), it will do so, but will also return an error. This error arises because R expects that a raster with factor values should also have a raster attribute table.
+
+<<>>=
+# assign a raster attribute table (RAT)
+levels(lulc) <- lulc.classes
+lulc
+@
+
+\subsection*{Zonal Statistics}
+
+...to do...
+
+\subsection*{Calculating focal values}
+
+...write a function to remove 'lone' pixels from a raster layer using the focal() function...
+...write another function (or amend the one above) to apply an area threshold to a raster dataset...
+
 \section{Working with multilayered raster data}
 
 When working with multispectral or multitemporal raster data, it is convenient to represent multiple raster layers as a single object in R. R works with two types of multilayer raster objects: stacks and bricks. The main difference between the two is that raster stacks can be read from several different data sources (files) and bricks are read from a single file (e.g. a multiband GeoTIFF).
@@ -82,15 +147,14 @@ A raster brick from a small area within the Kafa Biosphere Reserve in Southern E
 
 % this chunk runs silently
 <<echo = FALSE, results = hide>>=
-library(rasta)
-f <- system.file("extdata/tura.grd", package="rasta")
-# tura <- brick('~/R/projects/rasta/pkg/rasta/inst/extdata/tura.grd')
-tura <- brick(f) ## Jan's comment: the package needs to be compiled first including the tura.gr* files.
+tura <- brick('~/R/projects/rasta/www/Kafa_BR/tura.grd')
 @
-% the following is just for show
 \begin{Sinput}
-> setwd('path/to/rasta/package') # set this to the appropriate directory
-> tura <- brick('inst/extdata/tura.grd')
+> # set the working directory to the directory containing the data
+> setwd('path/to/the/data')
+> tura <- brick('tura.grd')
+> # alternatively, without (re)setting the working directory:
+> tura <- brick('path/to/data/tura.grd')
 \end{Sinput}
 <<>>=
 # inspect the data
@@ -181,7 +245,7 @@ getSceneinfo <- function(sourcefile, filename="")
 sceneinfo <- getSceneinfo(names(tura))
 print(sceneinfo)
 # add a 'year' column to the sceneinfo dataframe and plot #scenes/year
-sceneinfo$year <- factor(substr(sceneinfo$date, 1, 4), levels = c(1999:2013))
+sceneinfo$year <- factor(substr(sceneinfo$date, 1, 4), levels = c(1984:2013))
 @
 \begin{center}
 <<fig = TRUE>>=
@@ -194,6 +258,10 @@ ggplot(data = sceneinfo, aes(x = year, fill = sensor)) +
   theme(axis.text.x = element_text(angle = 45))
 @
 \end{center}
+
+Note that the values along the x-axis of this plot are evenly distributed, even though there are gaps in the values (e.g. between 1987 and 1994). The spacing is due to the fact that we defined sceneinfo\$year as a vector of \emph{factors} rather than a numeric vectors. Factors act as thematic classes and can be represented by numbers or letters. In this case, the actual values of the factors are not recognized by R. Instead, the levels defined in the factor() function define the hierarchy of the factors (in this case we have defined the levels from 1984 up to 2013, according to the range of acquisition dates). For more information on factors in R, check out \url{http://www.stat.berkeley.edu/classes/s133/factors.html}.
+
+Try to generate the plot above with the years (x-axis) represented as a numeric vector instead of as a factor. Hint: it is not as straightforward as you might think - to convert a factor x to a numeric vector, try \emph{x <- as.numeric(as.character(x))}.
 
 \subsection*{Plotting RasterBricks}
 A RasterBrick can be plotted just as a RasterLayer, and the graphics device will automatically split into panels to accommodate the layers (to an extent: R will not attempt to plot 100 layers at once!). To plot the first 9 layers:
@@ -229,7 +297,17 @@ levelplot(tura[[1:6]])
 @
 <<>>=
 # providing titles to the layers is done using the 'names.attr' argument in place of 'main'
-levelplot(tura[[1:6]], names.attr = sceneinfo$date[1:6])
+levelplot(tura[[1:8]], names.attr = sceneinfo$date[1:8])
+# define a more logical colour scale
+library(RColorBrewer)
+# this package has a convenient tool for defining colour palettes
+?brewer.pal
+display.brewer.all()
+cols <- brewer.pal(11, 'PiYG')
+# to change the colour scale in levelplot(), we first have to define a rasterTheme object
+# see ?rasterTheme() for more info
+rtheme <- rasterTheme(region = cols)
+levelplot(tura[[1:8]], names.attr = sceneinfo$date[1:8], par.settings = rtheme)
 @
 
 This plot gives us a common scale which allows us to compare values (and perhaps detect trends) from layer to layer. In the above plot, the layer titles do not look very nice -- we will solve that problem a bit later.
@@ -262,10 +340,16 @@ with(y, count[is.na(value)]) / ncell(tura[[1]]) * 100
 nas <- vector(mode = 'numeric', length = nlayers(tura))
 for(i in 1:nlayers(tura)){
   y <- as.data.frame(freq(tura[[i]]))
-  nas[i] <- with(y, count[is.na(value)]) / ncell(tura[[i]]) * 100
+  # if there are no NAs, then simply assign a zero
+  # otherwise, grab the # of NAs from the frequency table
+  if(!TRUE %in% is.na(y$value)){
+    nas[i] <- 0
+  } else {
+    nas[i] <- with(y, count[is.na(value)]) / ncell(tura[[i]]) * 100
+  }
 }
-# add this vector as a column in the sceneinfo data.frame
-sceneinfo$nodata <- nas
+# add this vector as a column in the sceneinfo data.frame (rounded to 2 decimal places)
+sceneinfo$nodata <- round(nas, 2)
 @
 \begin{center}
 <<fig = TRUE>>=
@@ -284,7 +368,7 @@ We have now derived some highly valuable information about our time series. For 
 which(sceneinfo$nodata == 100)
 # supply these indices to the dropLayer() command to get rid of these layers
 tura <- dropLayer(tura, which(sceneinfo$nodata == 100))
-# redifine our sceneinfo data.frame as well
+# redefine our sceneinfo data.frame as well
 sceneinfo <- sceneinfo[which(sceneinfo$nodata != 100), ]
 # optional: remake the previous ggplots with this new dataframe
 @
@@ -313,15 +397,12 @@ nodata <- calc(tura, fun = function(x) length(x[is.na(x)]) / length(x) * 100)
 plot(nodata)
 @
 \end{center}
-<<>>=
-# block out pixels with 100% data loss (these have already been masked)
-nodata[nodata == 100] <- NA
-@
-\begin{center}
-<<fig = TRUE, echo = FALSE>>=
-plot(nodata)
-@
-\end{center}
+
+\subsection*{Summary statistics}
+
+In addition to calculating the \% of NA in the time series, there are many other ways we can describe this raster time series. For example, we may want to know the mean or median NDVI value over the whole time series, for example.
+
+...to do....
 
 \section{Times Series Analysis}
 \begin{itemize}
@@ -334,12 +415,92 @@ plot(nodata)
 \end{itemize}
 \end{itemize}
 
+There is an easy way to interactively extract data from a single pixel using the raster package. First, a raster plot should be made from which to identify the pixel of interest. Then, the click() function allows for extraction of the data contained within that pixel. Simply calling click() with no further arguments will only return the (x, y) coordinates of that point as a 1-row matrix.
+ 
+ % this code is not run in the compilation of the pdf, since this is an interactive function
+ \begin{Sinput}
+ > plot(tura, 101)
+ > click()
+             x        y
+[1,] 819695.2 830544.3
+ \end{Sinput}
+
+We can extract more meaningful information by passing the name of the object (in this case, a RasterBrick) as the first argument, followed by the argument 'n = 1' (or the number of desired points to identify).
+
+\begin{Sinput}
+> plot(tura, 101)
+> click(tura, n = 1)
+\end{Sinput}
+
+In this case, all data from that pixel are extracted. These time series could then easily be coerced (or inserted) into a data.frame to plot the data and further analyze them. Let's take a look at a the time series of a few different pixels. Instead of using the interactive click() function to extract these data, suppose that we know the (x, y) coordinates of a land cover type (or other points of interest, from a field campaign or ground truth dataset, for example).
+
+<<results = hide>>=
+# several pixel coordinate pairs expressed as separate 1-row matrices
+forest <- matrix(data = c(819935, 832004), nrow = 1, dimnames = list(NULL, c('x', 'y')))
+cropland <- matrix(data = c(819440, 829346), nrow = 1, dimnames = list(NULL, c('x', 'y')))
+wetland <- matrix(data = c(822432, 832076), nrow = 1, dimnames = list(NULL, c('x', 'y')))
+
+# recall that we can extract pixel data if we know the cell #
+# we can easily convert from xy matrix to cell number with cellFromXY()
+cellFromXY(tura, forest)
+tura[cellFromXY(tura, forest)] # returns a 1-row matrix with all ts values
+@
+
+Now we are able to extract the time series data given a set of (x, y) coordinates. Let's put the data from these three points into a data.frame to facilitate plotting of the data.
+
+<<results = hide>>=
+# prepare the data.frame
+ts <- data.frame(sensor = getSceneinfo(names(tura))$sensor,
+                 date = getSceneinfo(names(tura))$date,
+                 forest = t(tura[cellFromXY(tura, forest)]),
+                 cropland = t(tura[cellFromXY(tura, cropland)]),
+                 wetland = t(tura[cellFromXY(tura, wetland)])
+                 )
+print(ts)
+
+# simple plot of forest time series
+plot(ts$date, ts$forest)
+# same thing but using with()
+with(ts, plot(date, forest))
+@
+
+Note the two large gaps in the time series during the 1990's, during which time there are no Landsat data available from the USGS. While we could still use these data to understand historical trends, we will only look at time series data from the ETM+ sensor (ie. data acquired after 1999) for the following exercises.
+
+<<>>=
+# remove all data from the TM sensor and plot again
+ts <- ts[which(ts$sensor != "TM"), ]
+with(ts, plot(date, forest))
+@
+
+A more informative plot would show these time series side by side with the same scale or on the same plot. These are possible with either the base plot() function or using ggplot2. Either way, there is some preparation needed, and in the case of ggplot2, this may not be immediately obvious. In the following example, we are going to make a facet\textunderscore wrap plot. In order to do so, we need to merge the time series columns to make a data.frame with many rows indeed. An additional column will be used to identify the class (forest, cropland or wetland) of each data point, and this class will be used to 'split' the data into 3 facets. The reshape package has a convenient function, melt(), which will 'automatically' reshape the data.frame to make it passable to the ggplot framework.
+
+<<>>=
+library(reshape)
+# convert dates to characters, otherwise melt() returns an error
+ts$date <- as.character(ts$date)
+tsmelt <- melt(ts)
+head(tsmelt)
+names(tsmelt) <- c('sensor', 'date', 'class', 'value')
+# convert tsplot$date back to Date class to enable formatting of the plot
+tsmelt$date <- as.Date(tsmelt$date)
+
+tsplot <- ggplot(data = tsmelt, aes(x = date, y = value / 10000)) +
+  geom_point() +
+  scale_x_date() +
+  labs(y = "NDVI") +
+  facet_wrap(~ class, nrow = 3) +
+  theme_bw()
+tsplot
+@
+
+
 
 \section{Exercise}
 \begin{itemize}
 \item to be doable in 3 hours....
 \item combine concepts from previous lessons as well
 \item example 1: produce a figure with maximum/minimum/median/mean NDVI per year; figure should have a common scale and be properly labelled
+\item example 2: compute a time series metric over an entire RasterBrick using the calc() function
 \end{itemize}
 
 \bibliographystyle{model5-names}
