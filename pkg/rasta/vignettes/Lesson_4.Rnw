@@ -129,7 +129,7 @@ Notice the difference between the objects mypoints and mypointsdf.
 Now let us connect the two points by a straight line. First find information on the classes for lines that are available in \texttt{sp}. The goal is to create SpatialLinesDataFrame but we have to go through some other classes.
 
 <<>>=
-?SpatialLines   # read help
+# first consult help SpatialLines
 simple_line <- Line(coords)
 lines_obj <- Lines(list(simple_line), "1")
 spatlines <- SpatialLines(list(lines_obj), proj4string=prj_string_WGS)
