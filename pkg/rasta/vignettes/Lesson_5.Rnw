@@ -19,6 +19,7 @@
 % hyperref setup
 \definecolor{Red}{rgb}{0.5,0,0}
 \definecolor{Blue}{rgb}{0,0,0.5}
+\def\code#1{\texttt{#1}}
 \hypersetup{%
   pdftitle = {Geo-Scripting course: Lesson 5},
   pdfsubject = {},
@@ -81,12 +82,12 @@ In a previous lecture you saw the overall system architecture (Figure~\ref{overv
 The raster package is the reference R package for raster processing, Robert J. Hijmans is the original developer of the package.
 The introduction of the raster package to R has been a revolution for geo processing and analysis. Among other things the raster package allows to:
 \begin{itemize}
-\item Read and write raster data of most commonly used format (thanks to extensive use of rgdal)
-\item Perform most raster operations (creation of raster objects, performing spatial/geometric operations (re-projections, resampling, etc), filtering and raster calculations)
-\item Work on large raster datasets thanks to its built-in block processing functionalities
-\item Perform fast operations thanks to optimized back-end C# code
-\item Visualize and interact with the data
-\item etc...
+  \item Read and write raster data of most commonly used format (thanks to extensive use of rgdal)
+  \item Perform most raster operations (creation of raster objects, performing spatial/geometric operations (re-projections, resampling, etc), filtering and raster calculations)
+  \item Work on large raster datasets thanks to its built-in block processing functionalities
+  \item Perform fast operations thanks to optimized back-end C# code
+  \item Visualize and interact with the data
+  \item etc...
 \end{itemize}
 Check the home page of the raster package \url{http://cran.r-project.org/web/packages/raster/}, the package is extremely well documented, including vignettes and demos.
 
@@ -107,7 +108,31 @@ r
 
 
 \section{Raster objects manipulations}
+  \subsection*{Reading and writing from/to file}
+  The actual data used in geo processing projects often comes as geo-data on files, such as GeoTiff or other comonly used file formats. Reading data directly from these files into the R working environment (as objects belonging to one of the 3 raster objects classes), is made possible thanks to the raster package. The three main commands for reading raster objects from file are the \code{raster()}, \code{stack()}, and \code{brick()} functions, refering to RasterLayer, RasterStack and RasterBrick objects respectively. \\ Writing one of the three raster objects classes to file is achieved with the \code{writeRaster()} function.\\
+  To illustrate the reading and writing of raster files, we will use the data stored in the /inst/extdata/ directory within the rasta package.
+  
+<<>>=
+# Reading a single raster layer 
+
+# Reading a multilayer raster object
+
+
+@
+
+Note that in addition to supporting most commonly used geodata formats, the raster package has its own format. Saving a file using the \code{.grd} extension (\code{'filename.grd'}) will automatically save the object to the raster package format. This format has great advantages when performing geo processing in R (one advantage for instance is that it conserve original filenames as layer names in multilayer objects), however, saving your final results in this file format might be risky as the GDAL drivers for that file format do not seem to exist yet.
+
+\\
+\subsection*{Geo processing, in memory Vs. on disk}
+When looking at the documentation of most functions of the raster package, you will notice that the list of arguments is almost always ended by ... It is called and ellipsis, and means that extra arguments can be passed to the function. Often these arguments are those that can be passed to the \code{writeRaster()} function; meaning that most geo-processing functions are able to write their result directly to file, on disk. This reduces the number of steps and is always a good consideration when working with big raster objects that tend to overload the memory if not written directly to file.
+
   \subsection*{Re-projections}
+  The \code{projectRaster()} function allows re-projection of raster objects to any projection one can think of. However, if re-projecting and mosaicking is really a large part of your project, you may want to consider using directly the \code{gdalwarp} command line utility \url{}. Although there is R interface to \code{gdalwarp}, the string handling capabilities of R can be of great help when building \code{gdalwarp} expressions.
+  
+  \subsection*{Croping a raster object}
+  \code{crop()} is the raster package function that allows you to crop data to smaller spatial extents. A great advantage of the crop function is that it acceps almost all spatial object class of R as ''extent'' input.
+  
+  
   \subsection*{Creating layer stacks}
   
 \section{Simple raster arithmetic}

@@ -20,9 +20,11 @@
 \usepackage{url}
 \usepackage{float}
 
+
 % hyperref setup
 \definecolor{Red}{rgb}{0.5,0,0}
 \definecolor{Blue}{rgb}{0,0,0.5}
+\def\code#1{\texttt{#1}}
 \hypersetup{%
   pdftitle = {Geo-Scripting course: Lesson 3},
   pdfsubject = {},
