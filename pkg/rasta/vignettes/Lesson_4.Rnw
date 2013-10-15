@@ -151,53 +151,57 @@ Try to understand the above code and results by studying help.
 \subsection*{Writing and reading spatial vector data using OGR}
 What now follows is a brief intermezzo before continuing with the classess for polygons. Let us first export the objects created thusfar to kml files that can be displayed in Google Earth. We will use OGR functionality for that purpose, which is available through the package \texttt{rgdal}.
 
-% <<>>=
-% library(rgdal)
-% # write to kml ; below we that there is a subdirectory data within the current 
-% # working directory.
-% writeOGR(mypointsdf, "data/mypointsGE.kml", "mypointsGE", driver="KML", overwrite_layer=T)
-% writeOGR(mylinesdf, "data/mylinesGE.kml", "mylinesGE", driver="KML", overwrite_layer=T)
-% @
+<<>>=
+library(rgdal)
+# write to kml ; below we that there is a subdirectory data within the current 
+# working directory.
+writeOGR(mypointsdf, "data/mypointsGE.kml", "mypointsGE", driver="KML", 
+         overwrite_layer=T)
+writeOGR(mylinesdf, "data/mylinesGE.kml", "mylinesGE", driver="KML", 
+         overwrite_layer=T)
+@
 
-% Check whether the attribute data were written to the kml output.
-% 
-% The function \texttt{readOGR} allows reading OGR compatible data into a suitable Spatial vector object. Similar to \texttt{writeOGR}, the function requires entries for the arguments dsn (data source name) and layer (layer name). The interpretation of these enties vary by driver. Please study details in the help file.
-% Digitize a path (e.g. a bicycle route) between the two points of interest you selected earlier in Google Earth. This can be achieved using the \texttt{Add Path} functionality. Save the path in the data folder within the working directory under the name \texttt{route.kml}. We will read this file into a spatial lines object and add it to the already existing \texttt{SpatialLinesDataFrame} object.
-% 
-% <<>>=
-% myroute <- readOGR("data/route.kml", "route.kml")
-% # put both in single data frame
-% myroute@proj4string <- prj_string_WGS
-% names(myroute)
-% myroute$Description <- NULL
-% mylinesdf <- rbind(mylinesdf, myroute)
-% @
-% 
-% Try to understand the above code and results. Feel free to display the data and export to Google Earth.
-% 
-% \subsection*{Transformations between projections}
-% Transformations between coordinate systems are crucial to many GIS applications. In some of the examples below we will use metric distances whereas the data we have used so far used a polar coordinate system. One way to deal with this is by transforming the data to a planar coordinate system. In R this can be achieved via bindings to the PROJ.4 - Cartographic Projections Library (\url{http://trac.osgeo.org/proj/}), which are available in \texttt{rgdal}. We will transform our spatial data to the Dutch grid (Rijksdriehoekstelsel) often referred to as RD. 
-% Note that: 
-% \begin{itemize}
-%   \item some widely spread definitions of the Dutch grid (EPSG: 28992) are incomplete;
-%   \item the transformation used below is approximate since it does not account for time dependent differences between WGGS84 and ETRS89 and it does not apply a correction grid for modelling errors in the original measurements of RD. Details can be found at \url{http://nl.wikipedia.org/wiki/Rijksdriehoekscoordinaten}.
-% \end{itemize}
-% 
-% <<>>=
-% # define CRS object for RD projection (find help)
-% prj_string_RD <- CRS("+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 
-% +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.2369,50.0087,465.658,
-% -0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +units=m +no_defs")
-% 
-% # perform the coordinate transformation from WGS84 to RD
-% mylinesRD <- spTransform(mylinesdf, prj_string_RD)
-% 
-% # add length attribute to lines object
-% library(rgeos)
-% mylinesdf$length <- gLength(mylinesRD, byid=T)
-% mylinesdf@data
-% 
-% @
+Check whether the attribute data were written to the kml output.\\
+
+The function \texttt{readOGR} allows reading OGR compatible data into a suitable Spatial vector object. Similar to \texttt{writeOGR}, the function requires entries for the arguments dsn (data source name) and layer (layer name). The interpretation of these enties vary by driver. Please study details in the help file.
+Digitize a path (e.g. a bicycle route) between the two points of interest you selected earlier in Google Earth. This can be achieved using the \texttt{Add Path} functionality. Save the path in the data folder within the working directory under the name \texttt{route.kml}. We will read this file into a spatial lines object and add it to the already existing \texttt{SpatialLinesDataFrame} object.
+
+<<>>=
+myroute <- readOGR("data/route.kml", "route.kml")
+# put both in single data frame
+myroute@proj4string <- prj_string_WGS
+# names(myroute)
+myroute$Description <- NULL
+mylinesdf <- rbind(mylinesdf, myroute)
+@
+ 
+Try to understand the above code and results. Feel free to display the data and export to Google Earth.
+
+\subsection*{Transformations between projections}
+Transformations between coordinate systems are crucial to many GIS applications. In some of the examples below we will use metric distances whereas the data we have used so far used a polar coordinate system. One way to deal with this is by transforming the data to a planar coordinate system. In R this can be achieved via bindings to the PROJ.4 - Cartographic Projections Library (\url{http://trac.osgeo.org/proj/}), which are available in \texttt{rgdal}. We will transform our spatial data to the Dutch grid (Rijksdriehoekstelsel) often referred to as RD. 
+Please note that: 
+\begin{itemize}
+  \item some widely spread definitions of the Dutch grid (EPSG: 28992) are incomplete;
+  \item the transformation used below is approximate since it does not account for time dependent differences between WGGS84 and ETRS89 and it does not apply a correction grid for modelling errors in the original measurements of RD. Details can be found at \url{http://nl.wikipedia.org/wiki/Rijksdriehoekscoordinaten}.
+\end{itemize}
+
+<<>>=
+# define CRS object for RD projection (find help)
+prj_string_RD <- CRS("+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 
++k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.2369,50.0087,465.658,
+-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +units=m +no_defs")
+
+# perform the coordinate transformation from WGS84 to RD
+mylinesRD <- spTransform(mylinesdf, prj_string_RD)
+
+# add length attribute to lines object
+library(rgeos)
+mylinesdf$length <- gLength(mylinesRD, byid=T)
+@
+<<eval=FALSE>>=
+mylinesdf@data
+@
+
 % 
 % \begin{itemize}
 %   \item some item
