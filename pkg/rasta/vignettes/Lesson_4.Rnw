@@ -55,7 +55,8 @@ The packages \texttt{sp} and \texttt{rgdal} are widely used throughout this cour
 
 \section{Creating basic geometries}
 
-The package sp provides classes for spatial-only geometries, such as \texttt{SpatialPoints} (for points), and combinations of geometries and attribute data, such as a \texttt{SpatialPointsDataFrame}. The following data classes are available for spatial vector data \citep{Edzer:2005ux}:
+The package \texttt{sp} provides classes for spatial-only geometries, such as \texttt{SpatialPoints} (for points), and combinations of geometries and attribute data, such as a \texttt{SpatialPointsDataFrame}. The following data classes are available for spatial vector data \citep{Edzer:2005ux}:
+
 
 \begin{center}
 \begin{tabular}{lllll}
@@ -81,30 +82,38 @@ The example below shows how you can create spatial point objects from these coor
 <<>>=
 # load sp package
 library(sp)
-# set working directory
-# setwd("d:/rasta")    # set this to the appropriate directory
 
 # coordinates of two points identiefied in Google Earth, for example
-pnt1_xy <- cbind(5.6660, 51.9872)
-pnt2_xy <- cbind(5.6643, 51.9668)
-# combine in single matrix
+pnt1_xy <- cbind(5.6660, 51.9872)   # enter your own coordinates
+pnt2_xy <- cbind(5.6643, 51.9668)   # enter your own coordinates
+# combine coordinates in single matrix
 coords <- rbind(pnt1_xy, pnt2_xy)
 
-# make spatial points
+# make spatial points object
 prj_string_WGS <- CRS("+proj=longlat +datum=WGS84")
 mypoints <- SpatialPoints(coords, proj4string=prj_string_WGS)
+@
+
+<<eval=FALSE>>=
 # inspect object
 class(mypoints)
 str(mypoints)
+@
 
+<<eval=TRUE, fig=FALSE>>=
 # create and display some attribute data and store in a data frame
-mydata <- data.frame(cbind(id = c(1,2), Name = c("my description 1", 
-                                                 "my description 2")))
+mydata <- data.frame(cbind(id = c(1,2), 
+                Name = c("my description 1", 
+                         "my description 2")))
+
 # make spatial points data frame
-mypointsdf <- SpatialPointsDataFrame(coords, data = mydata, 
-                                     proj4string=prj_string_WGS)
-# inspect and plot object
-class(mypointsdf)
+mypointsdf <- SpatialPointsDataFrame(
+  coords, data = mydata, 
+  proj4string=prj_string_WGS)
+@
+
+<<eval=FALSE, fig=FALSE>>=
+class(mypointsdf) # inspect and plot object
 names(mypointsdf)
 str(mypointsdf)
 spplot(mypointsdf, zcol="Name", col.regions = c("red", "blue"), 
@@ -114,40 +123,42 @@ spplot(mypointsdf, zcol="Name", col.regions = c("red", "blue"),
 @
 
 
+Notice the difference between the objects mypoints and mypointsdf.
 
-% Notice the difference between the objects mypoints and mypointsdf.
-% 
-% \subsection*{Lines}
-% Now let us connect the two points by a straight line. First find information on the classes for lines that are available in \texttt{sp}. The goal is to create SpatialLinesDataFrame but we have to go through some other classes.
-% 
-% <<>>=
-% ?SpatialLines
-% simple_line <- Line(coords)
-% lines_obj <- Lines(list(simple_line), "1")
-% spatlines <- SpatialLines(list(lines_obj), proj4string=prj_string_WGS)
-% line_data <- data.frame(Name = "straight line", row.names="1")
-% mylinesdf <- SpatialLinesDataFrame(spatlines, line_data)
-% class(mylinesdf)
-% str(mylinesdf)
-% spplot(mylinesdf, col.regions = "blue", 
-%        xlim = bbox(mypointsdf)[1, ]+c(-0.01,0.01), 
-%        ylim = bbox(mypointsdf)[2, ]+c(-0.01,0.01),
-%        scales= list(draw = TRUE))
-% @
-% 
-% Try to understand the above code and results by studying help.
-% 
-% \subsection*{Writing and reading spatial vector data using OGR}
-% What now follows is a brief intermezzo before continuing with the classess for polygons. Let us first export the objects created thusfar to kml files that can be displayed in Google Earth. We will use OGR functionality for that purpose, which is available through the package \texttt{rgdal}.
-% 
-% <<>>=
-% library(rgdal)
-% # write to kml ; below we that there is a subdirectory data within the current 
-% # working directory.
-% writeOGR(mypointsdf, "data/mypointsGE.kml", "mypointsGE", driver="KML", overwrite_layer=T)
-% writeOGR(mylinesdf, "data/mylinesGE.kml", "mylinesGE", driver="KML", overwrite_layer=T)
-% @
-% 
+\subsection*{Lines}
+Now let us connect the two points by a straight line. First find information on the classes for lines that are available in \texttt{sp}. The goal is to create SpatialLinesDataFrame but we have to go through some other classes.
+
+<<>>=
+?SpatialLines   # read help
+simple_line <- Line(coords)
+lines_obj <- Lines(list(simple_line), "1")
+spatlines <- SpatialLines(list(lines_obj), proj4string=prj_string_WGS)
+line_data <- data.frame(Name = "straight line", row.names="1")
+mylinesdf <- SpatialLinesDataFrame(spatlines, line_data)
+@
+
+<<eval=FALSE, fig=FALSE>>=
+class(mylinesdf)
+str(mylinesdf)
+spplot(mylinesdf, col.regions = "blue", 
+       xlim = bbox(mypointsdf)[1, ]+c(-0.01,0.01), 
+       ylim = bbox(mypointsdf)[2, ]+c(-0.01,0.01),
+       scales= list(draw = TRUE))
+@
+
+Try to understand the above code and results by studying help.
+
+\subsection*{Writing and reading spatial vector data using OGR}
+What now follows is a brief intermezzo before continuing with the classess for polygons. Let us first export the objects created thusfar to kml files that can be displayed in Google Earth. We will use OGR functionality for that purpose, which is available through the package \texttt{rgdal}.
+
+<<>>=
+library(rgdal)
+# write to kml ; below we that there is a subdirectory data within the current 
+# working directory.
+writeOGR(mypointsdf, "data/mypointsGE.kml", "mypointsGE", driver="KML", overwrite_layer=T)
+writeOGR(mylinesdf, "data/mylinesGE.kml", "mylinesGE", driver="KML", overwrite_layer=T)
+@
+
 % Check whether the attribute data were written to the kml output.
 % 
 % The function \texttt{readOGR} allows reading OGR compatible data into a suitable Spatial vector object. Similar to \texttt{writeOGR}, the function requires entries for the arguments dsn (data source name) and layer (layer name). The interpretation of these enties vary by driver. Please study details in the help file.
