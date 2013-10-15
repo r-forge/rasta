@@ -32,31 +32,159 @@
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-\title{Handling vector data in R}
+\title{Handling spatial vector data in R}
 \author{Sytze de Bruin}
 
 \maketitle
 
-\begin{abstract}
-
-In this tutorial, we will explore the packages sp and rgeos as well as other related packages used for handling spatial data in R. More specifically we will:
+\section{Today's learning objectives}
+In today's lecture, we will explore the basics of handling spatial vector data in R. There are several R packages for this purpose but we will focus on using \texttt{sp}, \texttt{rgdal}, \texttt{rgeos} and some  related packages. At the end of the lecture, you should be able to
 \begin{enumerate}
   \item create point, line and polygon objects from scratch;
-  \item explore the structure of sp classes for spatial data;
+  \item explore the structure of \texttt{sp} classes for spatial data;
   \item transform between datums and map projections; 
-  \item apply basic vector operations, such as buffering and intersection;
-  \item use Date-Time classes;
+  \item apply basic operations on vector data, such as buffering, intersection and area calculation;
+  \item use a Date-Time class;
+  \item write spatial data to a kml file.
+  \item convert spatial data read from a plain text file into a spatial class.
 \end{enumerate}
-\end{abstract}
 
-\section{The sp package}
+\section{Some packages for working with spatial vector data in R}
 
-The sp package is an essential tool for handling spatial data in R. There is an excellent vignette available at \url{http://cran.r-project.org/web/packages/sp/vignettes/intro_sp.pdf}.
+The packages \texttt{sp} and \texttt{rgdal} are widely used throughout this course. Both packages not only provide functionallity for raster data but also for vector data. For example, rgdal includes bindings to parts of the OGR Simple Feature Library which provides access to a variety of vector file formats such as ESRI Shapefiles and kml. Similarly, rgeos is an interface to the powerful "Geometry Engine - Open Source" (GEOS) library for all kind of operations on geometries (buffering, overlaying, area calculations, etc.). Thus, functionality that you commonly find in expensive GIS software is also available within R, using free but very powerful software libaries. The possiblities are huge; in this course we can only scratch the surface with some essentials which hopefully invite you to experiment further and use them in your research. Details can be found in the book Applied Spatial Data Analysis with R and several vignettes authored by Roger Bivand, Edzer Pebesma and Virgilio Gómez-Rubio. Owing to time constraints, this lecture cannot cover the related package "spacetime" with classes and methods for spatio-temporal data.
+
+\section{Creating basic geometries}
+
+The package sp provides classes for spatial-only geometries, such as \texttt{SpatialPoints} (for points), and combinations of geometries and attribute data, such as a \texttt{SpatialPointsDataFrame}. The following data classes are available for spatial vector data (Pebesma and Bivand, 2005):
+
+\begin{center}
+\begin{tabular}{lllll}
+data type & class                        & attributes  \\ \hline
+points    & {\tt SpatialPoints}          & No \\
+points    & {\tt SpatialPointsDataFrame} & {\tt data.frame} \\
+line      & {\tt Line}                   & No  \\
+lines     & {\tt Lines}                  & No  \\
+lines     & {\tt SpatialLines}           & No  \\
+lines     & {\tt SpatialLinesDataFrame}  & {\tt data.frame} \\
+rings     & {\tt Polygon}                & No  \\
+rings     & {\tt Polygons}               & No  \\
+rings     & {\tt SpatialPolygons}        & No  \\
+rings     & {\tt SpatialPolygonsDataFrame} & {\tt data.frame} \\
+\end{tabular}
+\end{center}
+
+We will go through a few examples of creating geometries from scratch to familiarize yourself with these classes. First, start Google Earth on your computer and make a note of the longitude and latitude of two points in Wageningen that are relevant to you. Use a decimal degree notation with at least 4 digits after the decimal point. To change the settings in Google Earth click \texttt{Tools | Options} and change the Show lat/Long setting on the 3D View Tab. 
+
+\subsection*{Points}
+The example below shows how you can create spatial point objects from these coordinates.
+
+<<>>=
+# load sp package
+library(sp)
+# set working directory
+setwd("d:/rasta")    # set this to the appropriate directory
+
+# coordinates of two points identiefied in Google Earth, for example
+pnt1_xy <- cbind(5.6660, 51.9872)
+pnt2_xy <- cbind(5.6643, 51.9668)
+# combine in single matrix
+coords <- rbind(pnt1_xy, pnt2_xy)
+
+# make spatial points
+prj_string_WGS <- CRS("+proj=longlat +datum=WGS84")
+mypoints <- SpatialPoints(coords, proj4string=prj_string_WGS)
+# inspect object
+class(mypoints)
+str(mypoints)
+
+# create and display some attribute data and store in a data frame
+mydata <- data.frame(cbind(id = c(1,2), Name = c("my description 1", 
+                                                 "my description 2")))
+# make spatial points data frame
+mypointsdf <- SpatialPointsDataFrame(coords, data = mydata, 
+                                     proj4string=prj_string_WGS)
+# inspect and plot object
+class(mypointsdf)
+names(mypointsdf)
+str(mypointsdf)
+spplot(mypointsdf, zcol="Name", col.regions = c("red", "blue"), 
+       xlim = bbox(mypointsdf)[1, ]+c(-0.01,0.01), 
+       ylim = bbox(mypointsdf)[2, ]+c(-0.01,0.01),
+       scales= list(draw = TRUE))
+@
+
+Notice the difference between the objects mypoints and mypointsdf.
+
+\subsection*{Lines}
+Now let us connect the two points by a straight line. First find information on the classes for lines that are available in \texttt{sp}. The goal is to create SpatialLinesDataFrame but we have to go through some other classes.
+
+<<>>=
+?SpatialLines
+simple_line <- Line(coords)
+lines_obj <- Lines(list(simple_line), "1")
+spatlines <- SpatialLines(list(lines_obj), proj4string=prj_string_WGS)
+line_data <- data.frame(Name = "straight line", row.names="1")
+mylinesdf <- SpatialLinesDataFrame(spatlines, line_data)
+class(mylinesdf)
+str(mylinesdf)
+spplot(mylinesdf, col.regions = "blue", 
+       xlim = bbox(mypointsdf)[1, ]+c(-0.01,0.01), 
+       ylim = bbox(mypointsdf)[2, ]+c(-0.01,0.01),
+       scales= list(draw = TRUE))
+@
+
+Try to understand the above code and results by studying help.
+
+\subsection*{Writing and reading spatial vector data using OGR}
+What now follows is a brief intermezzo before continuing with the classess for polygons. Let us first export the objects created thusfar to kml files that can be displayed in Google Earth. We will use OGR functionality for that purpose, which is available through the package \texttt{rgdal}.
+
+<<>>=
+library(rgdal)
+# write to kml ; below we that there is a subdirectory data within the current 
+# working directory.
+writeOGR(mypointsdf, "data/mypointsGE.kml", "mypointsGE", driver="KML", overwrite_layer=T)
+writeOGR(mylinesdf, "data/mylinesGE.kml", "mylinesGE", driver="KML", overwrite_layer=T)
+@
+
+Check whether the attribute data were written to the kml output.
+
+The function \texttt{readOGR} allows reading OGR compatible data into a suitable Spatial vector object. Similar to \texttt{writeOGR}, the function requires entries for the arguments dsn (data source name) and layer (layer name). The interpretation of these enties vary by driver. Please study details in the help file.
+Digitize a path (e.g. a bicycle route) between the two points of interest you selected earlier in Google Earth. This can be achieved using the \texttt{Add Path} functionality. Save the path in the data folder within the working directory under the name \texttt{route.kml}. We will read this file into a spatial lines object and add it to the already existing \texttt{SpatialLinesDataFrame} object.
+
+<<>>=
+myroute <- readOGR("data/route.kml", "route.kml")
+# put both in single data frame
+myroute@proj4string <- prj_string_WGS
+names(myroute)
+myroute$Description <- NULL
+mylinesdf <- rbind(mylinesdf, myroute)
+@
+
+Try to understand the above code and results. Feel free to display the data and export to Google Earth.
+
+\subsection*{Transformations between projections}
+Transformations between coordinate systems are crucial to many GIS applications. In some of the examples below we will use metric distances whereas the data we have used so far used a polar coordinate system. One way to deal with this is by transforming the data to a planar coordinate system. In R this can be achieved via bindings to the PROJ.4 - Cartographic Projections Library (\url{http://trac.osgeo.org/proj/}), which are available in \texttt{rgdal}. We will transform our spatial data to the Dutch grid (Rijksdriehoekstelsel) often referred to as RD. 
+Note that: 
+\begin{itemize}
+  \item several widely spread definitions of the Dutch grid (EPSG: 28992) are incorrect;
+  \item the transformation used below is approximate since it does not account for time dependent differences between WGGS84 and ETRS89 and it does not apply a correction grid for modelling errors in the original measurements of RD.
+\end{itemize}
+
+<<>>=
+prj_string_RD <- CRS("+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 
++k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.2369,50.0087,465.658,
+-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +units=m +no_defs")
 
 
-\section{Some section}
+#
+#
+#
 
-This section will cover some of the following areas:
+# add length attribute
+mylinesdf$length <- gLength(mylinesdf, byid=T)
+
+@
+
 \begin{itemize}
   \item some item
   \item some other item
