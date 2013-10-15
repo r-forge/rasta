@@ -1,5 +1,14 @@
 \documentclass[11pt,twoside,a4paper]{article}
 
+% TODO
+% Add a section on debugging
+% Add a reference section
+% Design an exercise
+% Comments warping in R code sections 
+
+
+
+
 %% BibTeX settings
 \usepackage[authoryear,round]{natbib}
 
