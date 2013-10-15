@@ -25,6 +25,6 @@ Formal class 'Spatial Vector Object' [resulting from readOGR() function package 
 # Visualise the data
 library(raster)
 data(kenya)
-plot(ds)
+plot(kenya)
 }
 \keyword{Kenya}
