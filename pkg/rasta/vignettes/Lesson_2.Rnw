@@ -117,6 +117,7 @@ kenya <- readOGR(dsn = datdir, layer = 'kenya')
 % kenya <- readOGR(dsn = datdir, layer = 'kenya')
 % plot(kenya)
 % @
+
 \clearpage
 \subsection{Plotting the Data}
 Plotting is easy, use the \verb+plot()+ command:
