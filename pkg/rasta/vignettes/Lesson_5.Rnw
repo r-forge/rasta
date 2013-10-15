@@ -1,5 +1,9 @@
 \documentclass[11pt,twoside,a4paper]{article}
 
+% TODO
+% Frame around figure 1
+
+
 %% BibTeX settings
 \usepackage[authoryear,round]{natbib}
 
