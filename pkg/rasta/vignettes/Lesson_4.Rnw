@@ -166,22 +166,23 @@ Try to understand the above code and results. Feel free to display the data and 
 Transformations between coordinate systems are crucial to many GIS applications. In some of the examples below we will use metric distances whereas the data we have used so far used a polar coordinate system. One way to deal with this is by transforming the data to a planar coordinate system. In R this can be achieved via bindings to the PROJ.4 - Cartographic Projections Library (\url{http://trac.osgeo.org/proj/}), which are available in \texttt{rgdal}. We will transform our spatial data to the Dutch grid (Rijksdriehoekstelsel) often referred to as RD. 
 Note that: 
 \begin{itemize}
-  \item several widely spread definitions of the Dutch grid (EPSG: 28992) are incorrect;
-  \item the transformation used below is approximate since it does not account for time dependent differences between WGGS84 and ETRS89 and it does not apply a correction grid for modelling errors in the original measurements of RD.
+  \item some widely spread definitions of the Dutch grid (EPSG: 28992) are incomplete;
+  \item the transformation used below is approximate since it does not account for time dependent differences between WGGS84 and ETRS89 and it does not apply a correction grid for modelling errors in the original measurements of RD. Details can be found at \url{http://nl.wikipedia.org/wiki/Rijksdriehoekscoordinaten}.
 \end{itemize}
 
 <<>>=
+# define CRS object for RD projection (find help)
 prj_string_RD <- CRS("+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 
 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.2369,50.0087,465.658,
 -0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +units=m +no_defs")
 
+# perform the coordinate transformation from WGS84 to RD
+mylinesRD <- spTransform(mylinesdf, prj_string_RD)
 
-#
-#
-#
-
-# add length attribute
-mylinesdf$length <- gLength(mylinesdf, byid=T)
+# add length attribute to lines object
+library(rgeos)
+mylinesdf$length <- gLength(mylinesRD, byid=T)
+mylinesdf@data
 
 @
 
