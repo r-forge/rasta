@@ -151,13 +151,13 @@ Try to understand the above code and results by studying help.
 \subsection*{Writing and reading spatial vector data using OGR}
 What now follows is a brief intermezzo before continuing with the classess for polygons. Let us first export the objects created thusfar to kml files that can be displayed in Google Earth. We will use OGR functionality for that purpose, which is available through the package \texttt{rgdal}.
 
-<<>>=
-library(rgdal)
-# write to kml ; below we that there is a subdirectory data within the current 
-# working directory.
-writeOGR(mypointsdf, "data/mypointsGE.kml", "mypointsGE", driver="KML", overwrite_layer=T)
-writeOGR(mylinesdf, "data/mylinesGE.kml", "mylinesGE", driver="KML", overwrite_layer=T)
-@
+% <<>>=
+% library(rgdal)
+% # write to kml ; below we that there is a subdirectory data within the current 
+% # working directory.
+% writeOGR(mypointsdf, "data/mypointsGE.kml", "mypointsGE", driver="KML", overwrite_layer=T)
+% writeOGR(mylinesdf, "data/mylinesGE.kml", "mylinesGE", driver="KML", overwrite_layer=T)
+% @
 
 % Check whether the attribute data were written to the kml output.
 % 
