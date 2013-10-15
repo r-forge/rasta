@@ -82,7 +82,7 @@ The example below shows how you can create spatial point objects from these coor
 # load sp package
 library(sp)
 # set working directory
-setwd("d:/rasta")    # set this to the appropriate directory
+# setwd("d:/rasta")    # set this to the appropriate directory
 
 # coordinates of two points identiefied in Google Earth, for example
 pnt1_xy <- cbind(5.6660, 51.9872)
@@ -195,18 +195,18 @@ mylinesdf@data
   \end{itemize}
 \end{itemize}
   
-
-% this chunk runs silently
-<<echo = FALSE, results = hide>>=
-library(sp)
-a <- 1
-@
-% the following is just for show
-\begin{Sinput}
-> setwd('path/to/rasta/package') # set this to the appropriate directory
-\end{Sinput}
-<<>>=
-@
+% 
+% % this chunk runs silently
+% <<echo = FALSE, results = hide, eval=FALSE>>=
+% library(sp)
+% a <- 1
+% @
+% % the following is just for show
+% \begin{Sinput}
+% > setwd('path/to/rasta/package') # set this to the appropriate directory
+% \end{Sinput}
+% <<>>=
+% @
 
 
 
