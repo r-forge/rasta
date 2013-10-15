@@ -100,6 +100,13 @@ kenya <- readOGR(dsn = datdir, layer = 'kenya')
 % plot(kenya)
 % @
 
+\subsection{Plotting the Data}
+Plotting is easy, use the \verb+plot()+ command:
+<<eval=FALSE>>=
+plot(kenya)
+@
+Obviously there are more options to dress up your plot and make a proper map/graphic. A common method is to use \verb+spplot()+ from the sp package. However I prefer to use the functions available in the ggplot2 package as I think they are more flexible and intuitive. We will address maps and graphics later in the in the class. For now, let us move onto reading in some tabular data and merging that data to our shapefile (similar to the join operation in ArcGIS).
+
 <<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
 library(rasta)
 data("kenya")
@@ -111,6 +118,40 @@ plot(kenya)
 \includegraphics[width=0.6\textwidth]{Lesson_2-kenya}
 \caption{An example plot.}
 \end{figure}
+
+\clearpage
+\subsection{Exploring the Data within the vector file}
+
+We can explore some basic aspects of the data using \verb+summary()+ and \verb+str()+. Summary works on almost all R objects but returns different results depending on the type of object. For example if the object is the result of a linear regression then summary will give you the coefficient estimates, standard errors, t-stats, $R^2$, et cetera.
+
+<<exploredata>>=
+summary(kenya)
+str(kenya,2)
+@
+
+As mentioned above, the \verb+summary()+ command works on virtually all R objects. In this case it gives some basic information about the projection, coordinates, and data contained in our shapefile
+
+The \verb+str()+ or structure command tells us how R is actually storing and organizing our shapefile. This is a useful way to explore complex objects in R. When we use \verb+str()+ on a spatial polygon object, it tells us the object has five 'slots':
+\begin{enumerate}
+\item \emph{data}: This holds the data.frame
+\item \emph{polygons}: This holds the coordinates of the polygons
+\item \emph{plotOrder}: The order that the coordinates should be drawn
+\item \emph{bbox}: The coordinates of the bounding box (edges of the shape file)
+\item \emph{proj4string}: A character string describing the projection system
+\end{enumerate}
+
+
+The only one we want to worry about is data, because this is where the data.frame() associated with our spatial object is stored. We access slots using the @ sign.
+
+\textbf{Note} Mention S3 vs S4 classes?
+<<accessdata>>=
+#--------------------------ACCESS THE SHAPEFILE DATA------------------------------
+dsdat<-as(kenya, "data.frame")  #extract the data into a regular data.frame
+head(dsdat)
+
+kenya$new<- 1:nrow(dsdat) #add a new colunm, just like adding data to a data.frame
+head(kenya@data)
+@
 
 
 % \bibliographystyle{model5-names}
