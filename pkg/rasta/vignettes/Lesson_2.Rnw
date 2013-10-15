@@ -173,5 +173,45 @@ kenya$new<- 1:nrow(dsdat) #add a new colunm, just like adding data to a data.fra
 head(kenya@data)
 @
 
+\section{Create Random Points and Extract as a Text File}
+
+We are going to do a point in polygon spatial join. However before we do that we are going to generate some random points. We will use the function \verb+runifpoint()+ from the spatstat package. This function creates N points drawn from a spatial uniform distribution (complete spatial randomness) within a given bounding box. The bounding box can be in a variety of forms but the most straightforward is simply a four element vector with \emph{xmin} (the minimum x coordinate), \emph{xmax}, \emph{ymin}, and \emph{ymax}. In the code below we will extract this box from our Kenya data set, convert it to a vector, generate the points, and then plot the points on top of the Kenya map. 
+
+<<ranpoints>>=
+#--------------------------GENERATE RANDOM POINTS------------------------------
+win<-bbox(kenya) #the bounding box around the Kenya dataset
+win
+win<-t(win) #transpose the bounding box matrix
+win
+win<-as.vector(win) #convert to a vector for input into runifpoint()
+win
+dran<-runifpoint(100,win=as.vector(t(bbox(kenya)))) #create 100 random points
+@
+
+<<rndp_kenya, echo=TRUE, fig=TRUE, include=FALSE>>=
+plot(kenya)
+plot(dran,add=T)
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_2-rndp_kenya}
+\caption{Random points within the Kenya shape file}
+\end{figure}
+
+Now that we have created some random points, we will extract the x coordinates (longitude), y coordinates (latitude), and then simulate some values to go with them. 
+%%%????
+%The purpose of doing this is to create a text file with x,y, and some values. We will then write those values out as a .csv file, read them back in, convert them to a shapefile, and then do a point in polygon spatial join.
+
+<<converttocoordinatestextfile>>=
+#--------------------------CONVERT RANDOM POINTS TO DATA.FRAME------------------
+dp <- as.data.frame(dran) #This creates a simple data frame with 2 colunms, x and y
+head(dp)
+
+# Now we will add some values that will be aggregated in the next exercise
+dp$values<-rnorm(100,5,10) 
+#generates 100 values from a Normal distribution with mean 5, and sd-10
+head(dp)
+@
 
 \end{document}
