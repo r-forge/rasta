@@ -1,0 +1,101 @@
+\documentclass[11pt,twoside,a4paper]{article}
+
+% TODO
+% Frame around figure 1
+
+
+%% BibTeX settings
+\usepackage[authoryear,round]{natbib}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide,graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{float}
+\usepackage[demo]{graphicx}
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\def\code#1{\texttt{#1}}
+\hypersetup{%
+  pdftitle = {System Setup},
+  pdfsubject = {},
+  pdfkeywords = {raster},
+  pdfauthor = {Lo\"{i}c Dutrieux},
+  %% change colorlinks to false for pretty printing
+  colorlinks = {true},
+  linkcolor = {Blue},
+  citecolor = {Blue},
+  urlcolor = {Red},
+  hyperindex = {true},
+  linktocpage = {true},
+}
+
+\usepackage{Sweave} %% is essentially
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{Setting up your system for Geo-scripting with R}
+\author{Lo\"{i}c Dutrieux}
+
+\maketitle
+
+\section{Introduction}
+Having your system properly set-up is a cricial step before before starting any geo-processing with R. This short tutorial will guide you through some important steps that you should follw in order to have the required software installed and appropriately set-up. Figure~\ref{overview} provides an overview of the different components of the system and how they are connected with each others.
+
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[height=0.6\textwidth]{figs/system_overview_2.png}
+  \caption [Caption for LOF]{System architecture overview\protect\footnotemark}
+
+  \label{overview}
+\end{figure}
+
+\section{On windows}
+
+\subsection*{R and R Studio}
+TODO
+Refer to R manual and R Studio Manual
+
+\subsection*{Rtools}
+TODO
+Provide download page. Has to fit the version of R you are using.
+Important to select the option ''add the following directories to your system path''.
+
+\subsection*{GDAL/OGR/PROJ4 libraries}
+FWTools, a bit outdated.
+Installation via OSGeo4W installer.
+Possibly the bin directory path has to be appended to system PATH.
+
+\subsection*{Version control software}
+Installing these software is not an absolute necessity, however it might come handy if you plan to implement some of the good practices discussed in Lesson 3. Refer to \hyperref[Lesson_3.pdf]{Lesson 3} for more details.
+
+\subsubsection*{Git and SlickSVN}
+Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system.
+
+\subsubsection*{Integration with the R Studio IDE}
+It is possible that R Studio automatically detects Git and SlickSVN on your system, however this is not systematic. In case the Git/Svn buttons in R Studio are innactive, after installing either Git or SlickSVN, follow the steps described bellow.\\
+Once SlikSVN (or git) has been installed, in order to allow it to interact with RStudio, its path has to be set. Conveniently that can be done directly from within RStudio. In R Studio, navigate to Tools - Options - Git/SVN - SVN (or Git) - Browse and select the SVN.exe (or git.exe) executable in C:/Program Files/SlikSVN/bin/ (or C:/Program Files/git/bin/)
+Restart RStudio.
+
+\subsection*{Specific R packages}
+Not all packages are hosted on the CRAN package repository, this is the case for instance of the MODIS package that is maintained on R Forge, and requires an extra argument in the \code{install.packages()} function to be installed. The install line, to be copy pasted in the R shell is often given on the package R forge home page.
+
+
+
+\footnotetext{Note that FWTools is one example of binary distribution for windows, you can also install gdal/ogr/proj.4 from OSGeo4W, (linux: by compiling it yourself from source or from a package archive)}
+
+
+
+
+
+
+\bibliographystyle{model5-names}
+\bibliography{refs}
+
+\end{document}
