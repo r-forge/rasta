@@ -72,14 +72,20 @@ At the end of the lecture, you should be able to:
 \end{figure}
 
 
-In a previous lecture you saw the overall system architecture (Figure~\ref{overview}) and you saw how to read/write vector data from/to file into you R environment. These vector read/write operations were made possible thanks to the OGR library. The OGR library is interfaced with R thanks to the rgdal package/binding. By analogy, raster data can be read/written thanks to the GDAL library. Figure~\ref{overview} provides an overview of the connections between these elements. GDAL stands for Geospatial Data Abstraction Library. You can check the project home page at \url{http://www.gdal.org/} and you will be surprised to see that a lot of the software you have used in the past to read gridded geospatial data use GDAL. (i.e.: ArcGIS, QGIS, GRASS, etc). In this lesson, we will use GDAL indirectly via the raster package, which uses rgdal extensively. However, it is possible to call GDAL functionalities directly through the command line (a shell is usually provided with the GDAL binary distribution you installed on your system), which is equivalent to calling a \code{system()} command directly from within R. In addition, if you are familiar with R and its string handling utilities, it should facilitate ...
-% Text for the footnote
-\footnotetext{Note that FWTools is one example of binary distribution for windows, you can also install gdal/ogr/proj.4 from OSGeo4W, (linux: by compiling it yourself from source or from a package archive)}
+In a previous lecture you saw the overall system architecture (Figure~\ref{overview}) and you saw how to read/write vector data from/to file into you R environment. These vector read/write operations were made possible thanks to the OGR library. The OGR library is interfaced with R thanks to the rgdal package/binding. By analogy, raster data can be read/written thanks to the GDAL library. Figure~\ref{overview} provides an overview of the connections between these elements. GDAL stands for Geospatial Data Abstraction Library. You can check the project home page at \url{http://www.gdal.org/} and you will be surprised to see that a lot of the software you have used in the past to read gridded geospatial data use GDAL. (i.e.: ArcGIS, QGIS, GRASS, etc). In this lesson, we will use GDAL indirectly via the raster package, which uses rgdal extensively. However, it is possible to call GDAL functionalities directly through the command line (a shell is usually provided with the GDAL binary distribution you installed on your system), which is equivalent to calling a \code{system()} command directly from within R. In addition, if you are familiar with R and its string handling utilities, it should facilitate the building of the expression that have to be passed to GDAL.\\
 
+
+Perform system setup checks.
 <<>>=
 # Example to perform system set-up checks
-
+library(rgdal)
+getGDALVersionInfo()
 @
+
+The previous function should return the version number of the current version of GDAL installed on your machine. 1.10.1 is the most recent stable release. In case the function above returns an error, or if you cannot install rgdal at all, you should verify that all required software and libraries are properly installed. Please refer to the system setup vignette in that same package.
+
+% Text for the footnote
+\footnotetext{Note that FWTools is one example of binary distribution for windows, you can also install gdal/ogr/proj.4 from OSGeo4W, (linux: by compiling it yourself from source or from a package archive)}
 
 \section{overview of the raster package}
 The raster package is the reference R package for raster processing, Robert J. Hijmans is the original developer of the package.
@@ -96,6 +102,10 @@ Check the home page of the raster package \url{http://cran.r-project.org/web/pac
 
 
   \subsection*{Read/write raster data into R using the raster package}
+  
+  <<>>=
+
+@
 
   \subsection*{Explore the raster objects}
 The raster package produces and uses R objects of three different classes. The \textbf{RasterLayer}, the \textbf{RasterStack} and the \textbf{RasterBrick}. A RasterLayer is the equivalent of a single layer raster, as an R environment variable. The data themselves, depending on the size of the grid can be loaded in memory or on disk. The same stands for RasterBrick and RasterStack objects, which are the equivalent of multi-layer RasterLayer objects. RasterStack and RasterBrick are very similar, the difference being in the virtual characteristic of the RasterStack. While a RasterBrick has to refer to one multi-layer file or is in itself a multi-layer object with data loaded in memory, a RasterStack may ''virtually'' connect several raster objects written to different files or in memory. Processing will be more efficient for a RasterBrick than for a RasterStack, but RasterStack has the advantage of facilitating pixel based calculations on separate raster layers.\\
@@ -113,7 +123,7 @@ r
 \section{Raster objects manipulations}
   \subsection*{Reading and writing from/to file}
   The actual data used in geo processing projects often comes as geo-data on files, such as GeoTiff or other comonly used file formats. Reading data directly from these files into the R working environment (as objects belonging to one of the 3 raster objects classes), is made possible thanks to the raster package. The three main commands for reading raster objects from file are the \code{raster()}, \code{stack()}, and \code{brick()} functions, refering to RasterLayer, RasterStack and RasterBrick objects respectively. \\ Writing one of the three raster objects classes to file is achieved with the \code{writeRaster()} function.\\
-  To illustrate the reading and writing of raster files, we will use the data stored in the /inst/extdata/ directory within the rasta package.
+  To illustrate the reading and writing of raster files, we will use the data stored in the /inst/extdata/ directory within the rasta package. For the conveignance of that course, we have added data directly to the package; they are read using the \code{}
   
 <<>>=
 # Reading a single raster layer 
