@@ -76,7 +76,10 @@ In a previous lecture you saw the overall system architecture (Figure~\ref{overv
 % Text for the footnote
 \footnotetext{Note that FWTools is one example of binary distribution for windows, you can also install gdal/ogr/proj.4 from OSGeo4W, (linux: by compiling it yourself from source or from a package archive)}
 
+<<>>=
+# Example to perform system set-up checks
 
+@
 
 \section{overview of the raster package}
 The raster package is the reference R package for raster processing, Robert J. Hijmans is the original developer of the package.
