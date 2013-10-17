@@ -57,7 +57,7 @@ At the end of the lecture, you should be able to:
 \section{Assumed knowledge from previous lectures}
 \begin{itemize}
   \item Understand system architecture (R, R packages, libraries, drivers, bindings)
-  \item Read/write vector data
+  \item Read and write vector data
   \item Good scripting habits
 \end {itemize}
 
@@ -72,7 +72,7 @@ At the end of the lecture, you should be able to:
 \end{figure}
 
 
-In a previous lecture you saw the overall system architecture (Figure~\ref{overview}) and you saw how to read/write vector data from/to file into you R environment. These vector read/write operations were made possible thanks to the OGR library. The OGR library is interfaced with R thanks to the rgdal package/binding. By analogy, raster data can be read/written thanks to the GDAL library. Figure~\ref{overview} provides an overview of the connections between these elements. GDAL stands for Geospatial Data Abstraction Library. You can check the project home page at \url{http://www.gdal.org/} and you will be surprised to see that a lot of the software you have used in the past to read gridded geospatial data use GDAL. (i.e.: ArcGIS, QGIS, GRASS, etc). In this lesson, we will use GDAL indirectly via the raster package, which uses rgdal extensively. However, it is possible to call GDAL functionalities directly through the command line (a shell is usually provided with the GDAL binary distribution you installed on your system), which is equivalent to calling a \code{system()} command directly from within R. In addition, if you are familiar with R and its string handling utilities, it should facilitate the building of the expression that have to be passed to GDAL.\\
+In a previous lecture you saw the overall system architecture (Figure~\ref{overview}) and you saw how to read and write vector data from/to file into you R environment. These vector read/write operations were made possible thanks to the OGR library. The OGR library is interfaced with R thanks to the rgdal package/binding. By analogy, raster data can be read/written thanks to the GDAL library. Figure~\ref{overview} provides an overview of the connections between these elements. GDAL stands for Geospatial Data Abstraction Library. You can check the project home page at \url{http://www.gdal.org/} and you will be surprised to see that a lot of the software you have used in the past to read gridded geospatial data use GDAL. (i.e.: ArcGIS, QGIS, GRASS, etc). In this lesson, we will use GDAL indirectly via the raster package, which uses rgdal extensively. However, it is possible to call GDAL functionalities directly through the command line (a shell is usually provided with the GDAL binary distribution you installed on your system), which is equivalent to calling a \code{system()} command directly from within R. In addition, if you are familiar with R and its string handling utilities, it should facilitate the building of the expression that have to be passed to GDAL.\\
 
 
 Perform system setup checks.
@@ -94,7 +94,7 @@ The introduction of the raster package to R has been a revolution for geo proces
   \item Read and write raster data of most commonly used format (thanks to extensive use of rgdal)
   \item Perform most raster operations (creation of raster objects, performing spatial/geometric operations (re-projections, resampling, etc), filtering and raster calculations)
   \item Work on large raster datasets thanks to its built-in block processing functionalities
-  \item Perform fast operations thanks to optimized back-end C# code
+  \item Perform fast operations thanks to optimized back-end C code
   \item Visualize and interact with the data
   \item etc...
 \end{itemize}
@@ -149,6 +149,12 @@ When looking at the documentation of most functions of the raster package, you w
   \subsection*{Creating layer stacks}
   
 \section{Simple raster arithmetic}
+\subsection*{}
+Performing simple raster operations with raster objects is fairly easy. For instance, if you want to substract two RasterLayers of same extent, r1 and r2; simply doing r1 - r2 will give the expected output, which is, every pixel value of r2 will be substracted to the matching pixel value of r1. These types of pixel based operations almost always require a set of conditions to be met in order to be executed; the two RasterLayers need to be identical in term of extent, resolution , projection, etc.
+
+\subsection{Subsetting layers from from RasterStack and RasterBrick}
+Different spectral bands of a same satellite image scene are often stored in multi layers objects. This means that you will very likely import them in you R working environment as RasterBrick or RasterStack objects. As a consequence, to perform calculations between these bands, you will have to write an expression refering to individual layers of the object. Referring to individual layers in a RasterBrick or RasterStack object is done by using square brackets ''[[]]''.
+Let's look for instance at how the famous NDVI index would have to be calculated from a RasterBrick object containing the spectral bands of Landsat 8 data.
 
 Vectorized expressions\\
 Calc and overlay\\
@@ -171,6 +177,7 @@ The rgdal package does not include hdf drivers in its pre-built binary. Data can
 One easy way to do that is by calling it directly from R, via the command line utility.
 
 TODO(dutri001) add a not run example
+
 
 \subsection*{Linux}
 

@@ -1,7 +1,7 @@
 \documentclass[11pt,twoside,a4paper]{article}
 
 % TODO
-% Add a section on debugging
+% Extend section on debugging (debug, trace, ...)
 % Add a reference section
 % Design an exercise
 % Comments warping in R code sections 
@@ -66,7 +66,7 @@ At the end of the lecture, you should be able to
 
 \section{Introduction}
 
-During the previous lectures, you saw some general aspects of the R language, such as an introduction to the syntax, object classes, reading of external data and function writting. Today the emphasis of the lecture is mostly oriented toward carrying an R project. Therefore, some recurrent aspects of project development, such as, how to find help, or techniques to organize your code are covered in the lecture.
+During the previous lectures, you saw some general aspects of the R language, such as an introduction to the syntax, object classes, reading of external data and function writing. Today the emphasis of the lecture is mostly oriented toward carrying an R project. Therefore, some recurrent aspects of project development, such as, how to find help, or techniques to organize your code are covered in the lecture.
 Scripting means that you often go beyond easy things and therefore face challenges; as a consequence, it is likely that at one moment or another, you will have to go look for help. Part of this lesson is intended to guide you through ways of finding help, including posting to the mail list and writing a reproducible example. In addition, this lecture goes through a couple of essential ''good practices'' when working on geo-scripting projects. Not all aspects of good practices are covered, however, for those of you who are curious to know more about version control, R package building, etc, be sure to check the reference section of this document.
 
 
@@ -95,7 +95,7 @@ So, when posting to the mail list:
 \section{Creating a reproducible example}
 
 Indispensable when asking a question to the online community, being able to write a reproducible example has many advantages.
-First it may ensure that when you present a problem, people are able to answer your question without guessing what you are trying to do. BUt reproducible examples are not only to ask questions; they may help you in your thinking, developing  or debugging process when writing your own functions. For instance, when developing a function to do a certain type of raster calculation, start by testing it on a small auto-generated rasterLayer object, and not directly on your actual data covering the entire universe \dots
+First it may ensure that when you present a problem, people are able to answer your question without guessing what you are trying to do. But reproducible examples are not only to ask questions; they may help you in your thinking, developing  or debugging process when writing your own functions. For instance, when developing a function to do a certain type of raster calculation, start by testing it on a small auto-generated rasterLayer object, and not directly on your actual data covering the entire universe \dots
 
 \subsection*{But what is a reproducible example exactly?}
 Well, one could define a reproducible example by a piece of code that can be executed by anyone who has R, independently of the data present on his machine or any preloaded variables. The computation time should not exceed a few seconds and if the code automatically downloads data, the data volume should be as small as possible.
@@ -126,7 +126,7 @@ plot(r)
 
 Useful to know when writing a reproducible example; instead of generating your own small datasets (vectors or RasterLayers, etc) as part of your reproducible example, use some of R ''built-in'' datasets. They are part of the main R packages.
 Some popular datasets are: cars, meuse.grid\_ll, Rlogo, iris, etc
-The autocompletion menu of the \code{data} function will give you an overview of the datasets available
+The auto completion menu of the \code{data} function will give you an overview of the datasets available
 
 <<>>=
 # This demonstration of datasets still need to be writen
@@ -140,11 +140,11 @@ class(cars)
 plot(cars) # The plot function on this type of dataset (class = data.frame, 2 column) automatically generates a scatterplot
 @
 \end{center}
-\caption{Visual representation of the cars dataset}
+\caption{Visual representation of the cars data set}
 \label{cars}
 \end{figure}
 
-Another famous dataset is the meuse dataset, providing all sorts of spatial variables spread across a part of the meuse watershed.
+Another famous data set is the meuse data set, providing all sorts of spatial variables spread across a part of the meuse watershed.
 The following example compiled from the help pages of the sp package.
 <<>>=
 ## Example using built-in dataset from the sp package
@@ -168,7 +168,7 @@ bubble(meuse, "zinc", maxsize = 2.5, main = "zic concentrations (ppm)", key.entr
 \label{meuse1}
 \end{figure}
 
-The sp package help page contain multiple examples of how to explore its meuse built-in dataset. Another example of multiple plots using meuse.grid is given in figure~\ref{meuse2}.
+The sp package help page contain multiple examples of how to explore its meuse built-in data set. Another example of multiple plots using meuse.grid is given in figure~\ref{meuse2}.
 
 \begin{figure}[H]
 \begin{center}
@@ -191,7 +191,7 @@ spplot(meuse.grid, col.regions=bpy.colors(), main = "meuse.grid",
 )
 @
 \end{center}
-\caption{Another example of spatial data manipulation and spatial plot using the meuse dataset from sp package}
+\caption{Another example of spatial data manipulation and spatial plot using the meuse data set from sp package}
 \label{meuse2}
 \end{figure}
 
@@ -215,7 +215,7 @@ In order to achieve these objectives, you should try to follow a few good practi
 \item Write short functions.
 \item	Make your functions generic and flexible, using control flow
 \item	Comment your code
-\item Follow the R style guide\footnote{The aim of having a formated style guide is to increase readibility of your code by others. In that regard, identation, use of <- instead of = as assignment operator and placement of curly braces are of particular relevance when writing functions. Proper configuration of your script editor allows you to automatically implement some of these guidelines without having to think too much about it.} \url{http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml}
+\item Follow the R style guide\footnote{The aim of having a formatted style guide is to increase readability of your code by others. In that regard, indentation, use of <- instead of = as assignment operator and placement of curly braces are of particular relevance when writing functions. Proper configuration of your script editor allows you to automatically implement some of these guidelines without having to think too much about it.} \url{http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml}
 \item	Document your functions
 \item	Build a package 
 \item Keep a TODO list
@@ -225,7 +225,7 @@ In order to achieve these objectives, you should try to follow a few good practi
 
 \subsection*{Function writing}
 
-The objectif of this section is to provide a few advices to help you write efficiently function. That is functions that are simple, generic and flexible, so that they integrate well in a processing/analysis chain and can easily be re-used in a slightly different chain if needed.
+The objective of this section is to provide a few advice to help you write efficiently function. That is functions that are simple, generic and flexible, so that they integrate well in a processing/analysis chain and can easily be re-used in a slightly different chain if needed.
 More flexibility in your function can be achieve thanks to some easy tricks provided by control flow. The following section develops further this concept and provides examples of how control flow can help your functions becoming more flexible.
 
 \subsection*{Control flow}
@@ -254,7 +254,7 @@ e <- brick(d)
 class(e)
 @
 
-\subsubsection*{Controling the class of input variables of a function}
+\subsubsection*{Controlling the class of input variables of a function}
 
 One way of making function more auto-adaptive is by adding checks of the input variables. Using object class can greatly simplify this task.
 For example let's imagine that you just wrote a simple HelloWorld function.
@@ -268,7 +268,7 @@ HelloWorld <- function (x) {
 HelloWorld('john')
 @
 
-Obviously, the user is expected to pass an object of character vector to x. Otherwise the function will return an error. You can make it not crash by controling the class of the input variable.
+Obviously, the user is expected to pass an object of character vector to x. Otherwise the function will return an error. You can make it not crash by controlling the class of the input variable.
 For example.
 
 <<>>=
@@ -300,7 +300,7 @@ is.numeric(32)
 @
 
 Also note that \code{is.character(32) == TRUE} is equivalent to \code{is.character(32)}. Therefore when checking logical arguments, you don't have to use the \code{== TRUE}. As an example, a function may have an argument (\code{plot}) that if set to \code{TRUE} will generate a plot, while if set to \code{FALSE} does not plot. This means that the function certainly contains an if statement. \code{if(plot)} in that case is equivalent to \code{if(plot == TRUE)}, it's just shorter.\\
-An example, with a function that substract 2 RasterLayers, with the option to plot the resulting RasterLayer, or not.
+An example, with a function that subtract 2 RasterLayers, with the option to plot the resulting RasterLayer, or not.
 <<>>=
 library(raster)
 minusRaster <- function(x, y, plot=FALSE) { # Function to substract 2 rasterLayers
@@ -325,10 +325,10 @@ r4 <- minusRaster(r, r2, plot=TRUE) # Performs the claculation and plots the res
 \end{center}
 
 \subsubsection*{Use of \code{try} and debugging your functions}
-\emph{\textbf{Use of try for error handling}}\\
-The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (subfuntion, piece of code) that is wrapped into \code{try} will not interupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers. So \code{try} is a perfect way to deal with heterogeneous/unpredictable input data.\\
+\textit{\textbf{Use of try for error handling}}\\
+The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (sub-function, piece of code) that is wrapped into \code{try} will not interrupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers. So \code{try} is a perfect way to deal with heterogeneous/unpredictable input data.\\
 Also \code{try} returns an object of different class when it fails. You can take advantage of that at a later stage of your processing chain to make your function more adaptive.
-See the example below that illustrate the use of \code{try} for sequencially calculating frequency on a list of auto-generated RasterLAyers.
+See the example below that illustrate the use of \code{try} for sequentially calculating frequency on a list of auto-generated RasterLAyers.
 <<a, eval=FALSE, echo=TRUE>>=
 library(raster)
 
@@ -374,9 +374,9 @@ out
 
 @
 \\
-\emph{\textbf{Function debugging}}\\
+\textit{\textbf{Function debugging}}\\
 
-Debugging a single line of code is usually relatively easy; simply double checking the classes of all input arguments often gives good pointers to why the lines crashes. But when writing more complicated functions where objects created within the function are reused later on in that same function or in a nested function, it is easy to lose track of what is happening, and debugging can then become a nightmare. A few trics can be used to make that process less painful. The first thing to investigate right after an error occurs is to run the \code{traceback()} function; just like that without arguments. Carefully reading the return of that function will tell you where exactly in your function the error occured.
+Debugging a single line of code is usually relatively easy; simply double checking the classes of all input arguments often gives good pointers to why the lines crashes. But when writing more complicated functions where objects created within the function are reused later on in that same function or in a nested function, it is easy to lose track of what is happening, and debugging can then become a nightmare. A few tricks can be used to make that process less painful. The first thing to investigate right after an error occurs is to run the \code{traceback()} function; just like that without arguments. Carefully reading the return of that function will tell you where exactly in your function the error occurred.
 
 \subsection*{Package building}
 Also part of good programming practices, building a R package is a great way to stay organized, keep track of what you are doing and be able to use it quickly and properly at any time.
@@ -400,20 +400,20 @@ For these reasons, if you build a package, next year you will still be able to r
 
 This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual \textit{Writing R extensions} \url{http://cran.r-project.org/doc/manuals/R-exts.html}.\\
 The default basic structure of a package is as follows:\
-2 subdirectories (R and man), NAMESPACE and DESCRIPTION files (Figure~\ref{package}). The \textbf{R directory} includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the \textbf{man directory}. These .Rd files are the functions documentation. \textbf{NAMESPACE} and \textbf{DESCRIPTION} files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalistic package structure; more elaborate packages may include extra subdirectories, such as data, demo or vignette.\\
+2 sub directories (R and man), NAMESPACE and DESCRIPTION files (Figure~\ref{package}). The \textbf{R directory} includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the \textbf{man directory}. These .Rd files are the functions documentation. \textbf{NAMESPACE} and \textbf{DESCRIPTION} files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalist package structure; more elaborate packages may include extra sub directories, such as data, demo or vignette.\\
 
 \subsubsection*{Useful tips for package creation}
 
-The \code{package.skeleton} function will help you get the package structure from a list of sourced functions. (A function opened in the R Studio editor pannel can be sourced by pressing the ''Source'' in the top right hand corner of the pannel)
+The \code{package.skeleton} function will help you get the package structure from a list of sourced functions. (A function opened in the R Studio editor panel can be sourced by pressing the ''Source'' in the top right hand corner of the panel)
 \code{prompt} creates a tailored documentation (.Rd) file from an existing function.
 The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including. Explore the menus and option under Project - New project. 
 More package creation tips can be found online \url{http://mages.github.io/R_package_development/#1}
 
 \subsubsection*{Package building}\\
-\emph{\textbf{Prerequisites}}\\
-In order to be able to build package, you must have \textbf{Rtools} installed and properly setup on your system. Refer to the system setup document for more information on how to install Rtools. Once this is done R Studio offers great integration with Rtools, which makes package building really easy. The build pannel in R Studio is by default located in the upper right window.
+\textit{\textbf{Prerequisites}}\\
+In order to be able to build package, you must have \textbf{Rtools} installed and properly setup on your system. Refer to the system setup document for more information on how to install Rtools. Once this is done R Studio offers great integration with Rtools, which makes package building really easy. The build panel in R Studio is by default located in the upper right window.
 
-\emph{\textbf{Check and build}}\\
+\textit{\textbf{Check and build}}\\
 In order to be operational on your system the R package you just created has to be checked and built. This is a critical step since everything has to be perfect in order to pass the check step. Simple things like a missing line in a function documentation file mail result in the package not passing the checks. Although a package that does not fully passes the check may still be built in some cases, this is not recommended, and it is therefore preferable to deal with the errors returned in the check console before building.\\
 Another option for building package is to do so directly from a remote git repository using the devtools package. This aspect of package building, together with general consideration on version control systems is presented in the next section.
 
@@ -423,7 +423,7 @@ In this lecture, we won't go into the details of version control, however, we wi
 
 \subsubsection*{What is version control?}
 
-Version control, also called revision control or source control, refers to the management of changes to documents, files or set of files. The version control management can be performed locally or directly on a remote online repository, and the code is usually stored on an online repository, available from anywhere. Version control is very well suited to large software development projects and for that reason it is an indispensable part of such projects. Although we are not software developpers, version control systems present a set of advantages from which we, and the scientists who use scripting in  general, can benefit. 
+Version control, also called revision control or source control, refers to the management of changes to documents, files or set of files. The version control management can be performed locally or directly on a remote online repository, and the code is usually stored on an online repository, available from anywhere. Version control is very well suited to large software development projects and for that reason it is an indispensable part of such projects. Although we are not software developers, version control systems present a set of advantages from which we, and the scientists who use scripting in  general, can benefit. 
 Among others, some arguments in favour of using version control are that:
 
 \begin{itemize}
@@ -431,11 +431,11 @@ Among others, some arguments in favour of using version control are that:
 \item Allows you to keep your code archived in a safe place (the cloud)
 \item Allows you to go back to previous version of your code
 \item Allows you to have experimental branches without breaking your code
-\item Keep different versions of your code without having to worry about filenames and archiving organization
+\item Keep different versions of your code without having to worry about file names and archiving organization
 \end{itemize}
 	
 \subsubsection*{What systems exist for version control?}
-The three main revision control software are Git, Subversion (abreviated as svn), and mercurial (abreviated as hg). Since we are not full time software developpers we are only interested in a limited set of functionalities provided by these systems, most differences between them may appear futile to us. However, a few points of consideration remain, particularly regarding the integration with R Studio and R in general.\\
+The three main revision control software are Git, Subversion (abbreviated as svn), and mercurial (abbreviated as hg). Since we are not full time software developers we are only interested in a limited set of functionalities provided by these systems, most differences between them may appear futile to us. However, a few points of consideration remain, particularly regarding the integration with R Studio and R in general.\\
 Since the R Studio IDE provides integration for git and svn, we will only focus on these two system from here on. Table~\ref{gitsvn} provides an overview of most online repositories options for svn and git, and level of integration with R package building. Please note that online repositories are not the only options for hosting of the remote repository. It is common practice in companies to have an internally hosted central repository.
 
 
@@ -454,7 +454,7 @@ Since the R Studio IDE provides integration for git and svn, we will only focus 
 
 \subsubsection*{Semantics of version control}
 \textbf{Commits}: Consists of adding the latest changes to the repository. This is done locally with Git and directly on a remote repository with svn. Commits can be seen as a milestones in the versioning of a file or set of files. It is always possible to return to previous commits.\\
-\textbf{Push} (git only): Add previous changes commited to the local repository, to the remote repository.\\
+\textbf{Push} (git only): Add previous changes committed to the local repository, to the remote repository.\\
 \textbf{Clone} (git)/\textbf{Checkout} (svn): Copy the content of the remote repository locally.\\
 \textbf{Branch} (git): Create a branch (a parallel version of the code in the repository)\\
 \textbf{Merge}: Merges two versions (branches) into one.
@@ -463,7 +463,7 @@ Since the R Studio IDE provides integration for git and svn, we will only focus 
 To be able to perform the following tutorial, you must have git installed on your machine. Please refer to the system setup vignette to know how to install and setup git and allow it to be embedded into R Studio.\\
 Tutorial on how to start a R package with version control, hosted on GitHub.\\
 Note that although this tutorial illustrates the case of an R package maintained on GitHub, the package creation step is optional. 
-And version control offers many benefits that are not tied to packages. The same type of R projects, symbolyzed by a ''projectName.Rproj'' file can be used to maintain simple scripts and stand alone functions.
+And version control offers many benefits that are not tied to packages. The same type of R projects, symbolized by a ''projectName.Rproj'' file can be used to maintain simple scripts and stand alone functions.
 
 \begin{enumerate}
   \item Create a GitHub account (only if you don't have one already)
@@ -487,6 +487,54 @@ And version control offers many benefits that are not tied to packages. The same
 
 Note that such packages, that are maintained on git repositories can be installed and compiled directly on the fly using the devtools package. See function \code{install\_github} and \code{install\_bitbucket} for further details.
 If you are concerned about always having a ''compile-able'' version of your code, use different branches. Create a ''dev'' branch on which you develop your new functions or do any kind of experiments, and keep the stable version of your package on the ''master'' branch. Once the ''dev'' branch becomes stable, merge it with the ''master'' branch.
+
+\section{Exercise}
+\subsection*{Exercise description}
+Write a function that calculate whether a given year is a leap year or not. If you put the function in a package, that will give you additional points. The function should behave as follows:\\*
+
+<<echo=FALSE>>=
+is.leap <- function(x) {
+  if (!class(x) == 'numeric') {
+    stop('argument of class numeric expected')
+  }
+  if (x > 1582) {
+    if (x %% 400 == 0) {
+      a <- TRUE
+    } else if (x %% 100 == 0) {
+      a <- FALSE
+    } else if (x %% 4 == 0) {
+      a <- TRUE
+    } else {
+      a <- FALSE
+    }
+  } else {
+    a <- sprintf('%d is out of the valid range', x)
+  }
+  return(a)
+}
+@
+
+<<>>=
+is.leap(2000)
+is.leap(1581)
+is.leap(2002)
+
+#is.leap('john') should return an error 
+#error: argument of class numeric expected
+@
+
+
+
+\subsection*{Useful references}
+\url{https://www.google.com}\\
+\url{http://en.wikipedia.org/wiki/Leap_year}\\
+\url{http://stat.ethz.ch/R-manual/R-devel/library/base/html/Arithmetic.html}\\
+
+\subsection*{Assessment}
+Assessment will consider the completeness of the function (or package) and whether it works as intended, but also its readability. Therefore, try as much as possible to use all good practices mentioned in this course.
+
+\subsection*{How to submit?}
+In order to submit, add the function (or package) to a repository on your own GitHub account and send the clone url to me by e-mail.
 
 
 
