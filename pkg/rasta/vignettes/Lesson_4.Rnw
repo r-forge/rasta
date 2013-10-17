@@ -82,6 +82,7 @@ The example below shows how you can create spatial point objects from these coor
 <<SimplePoints>>=
 # load sp package
 library(sp)
+library(rgdal)
 
 # coordinates of two points identiefied in Google Earth, for example
 pnt1_xy <- cbind(5.6660, 51.9872)   # enter your own coordinates
@@ -151,20 +152,20 @@ Try to understand the above code and its results by studying help.
 \subsection*{Writing and reading spatial vector data using OGR}
 What now follows is a brief intermezzo before we continu with the classess for polygons. Let us first export the objects created thusfar to kml files that can be displayed in Google Earth. We will use OGR functionality for that purpose, which is available through the package \texttt{rgdal}.
 
-<<writeOGR>>=
+<<writeOGR, eval=FALSE, echo=TRUE>>=
 library(rgdal)
 # write to kml ; below we assume a subdirectory data within the current 
 # working directory.
 writeOGR(mypointsdf, "data/mypointsGE.kml", "mypointsGE", driver="KML", 
-         overwrite_layer=T)
+         overwrite_layer=TRUE)
 writeOGR(mylinesdf, "data/mylinesGE.kml", "mylinesGE", driver="KML", 
-         overwrite_layer=T)
+         overwrite_layer=TRUE)
 @
 
 Check whether the attribute data were written to the kml output.\\
 
 The function \texttt{readOGR} allows reading OGR compatible data into a suitable Spatial vector object. Similar to \texttt{writeOGR}, the function requires entries for the arguments \texttt{dsn} (data source name) and \texttt{layer} (layer name). The interpretation of these enties vary by driver. Please study details in the help file.\\
-Digitize a path (e.g. a bicycle route) between the two points of interest you selected earlier in Google Earth. This can be achieved using the \texttt{Add Path} functionality of Gogle Earth. Save the path in the data folder within the working directory under the name \texttt{route.kml}. We will read this file into a spatial lines object and add it to the already existing \texttt{SpatialLinesDataFrame} object.
+Digitize a path (e.g. a bicycle route) between the two points of interest you selected earlier in Google Earth. This can be achieved using the \texttt{Add Path} functionality of Google Earth. Save the path in the data folder within the working directory under the name \texttt{route.kml}. We will read this file into a spatial lines object and add it to the already existing \texttt{SpatialLinesDataFrame} object.
 
 <<readOGR>>=
 myroute <- readOGR("data/route.kml", "route.kml")
@@ -261,10 +262,23 @@ We will read the data and convert these in a spatial data frame and next use a c
 \subsection*{Read and preprocess the yield data}
 In the previous section you created spatial point data from scratch. Of course \texttt{sp} has functionality for converting tabular data with coordinates into spatial objects. Below, the \texttt{sp} function \texttt{coordinates} is used for that purpose. Notice also the arguments passed to \texttt{spplot} for plotting the data.
 
-<<fig=TRUE>>=
+<<echo = FALSE>>=
+if (!file.exists("data/kroonven.rda")) {
+  download.file("http://rasta.r-forge.r-project.org/kroonven.csv", "kroonven.csv")
+  borne_data = read.table("kroonven.csv", sep = ",", header = TRUE)
+  save(borne_data, file = "data/kroonven.rda", compress="xz")
+} else {
+  load("data/kroonven.rda")
+}
+@
+
+<<eval=FALSE>>=
 # download and read data
 download.file("http://rasta.r-forge.r-project.org/kroonven.csv", "kroonven.csv")
-borne_data = read.table("kroonven.csv", sep = ",", header = T)
+borne_data = read.table("kroonven.csv", sep = ",", header = TRUE)
+@
+
+<<fig=TRUE>>=
 names(borne_data)
 # make spatial
 coordinates(borne_data) <- c("lon.degr.","lat.degr.")
@@ -298,9 +312,20 @@ The trajectory of the harvester can be represented by a series of continuous tra
 all_rd <- as.data.frame(all_rd)
 # make sure points are temporally ordered
 all_rd <- all_rd[order(all_rd$datetime),]
-
-# call function from rasta to create lines; will take a minute or so
 library(rasta)
+@
+
+<<echo=FALSE>>=
+if (!file.exists("data/sp_lines_df.rda")) {
+  sp_lines_df <- CreateHarvestTracks(all_rd, prj_string_RD)
+  save(sp_lines_df, file = "data/sp_lines_df.rda", compress = "xz")
+} else {
+  load("data/sp_lines_df.rda")
+}
+@
+
+<<eval=FALSE>>= 
+# call function from rasta to create lines; will take a minute or so
 sp_lines_df <- CreateHarvestTracks(all_rd, prj_string_RD)
 @
 
