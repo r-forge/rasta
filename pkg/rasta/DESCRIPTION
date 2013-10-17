@@ -5,7 +5,7 @@ Title: Reproducible and Applied Spatial and Temporal Analysis (RASTA)
 Authors@R: c(person(given = "Jan", family = "Verbesselt", role = c("aut", "cre"), email = "Jan.Verbesselt@wur.nl"))
 Author: Jan Verbesselt [aut, cre]
 Description: Functions, data sets, examples, demos, and vignettes for the Geo-scripting course at Wageningen University
-Depends: R (>= 2.15.0), raster, bitops, rgdal, sp, ggplot2, maptools, rasterVis, reshape2, rgeos, scales, spatstat, spdep
+Depends: R (>= 2.15.0), raster, bitops, rgdal, sp, ggplot2, maptools, rasterVis, reshape2, rgeos, scales, spatstat, spdep, RColorBrewer, randomForest, reshape
 Imports: raster, zoo, strucchange
 License: GPL-2
 LazyLoad: yes
