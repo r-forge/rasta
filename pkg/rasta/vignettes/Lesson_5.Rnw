@@ -103,7 +103,7 @@ Check the home page of the raster package \url{http://cran.r-project.org/web/pac
 
   \subsection*{Read/write raster data into R using the raster package}
   
-  <<>>=
+<<>>=
 
 @
 
@@ -123,15 +123,20 @@ r
 \section{Raster objects manipulations}
   \subsection*{Reading and writing from/to file}
   The actual data used in geo processing projects often comes as geo-data on files, such as GeoTiff or other comonly used file formats. Reading data directly from these files into the R working environment (as objects belonging to one of the 3 raster objects classes), is made possible thanks to the raster package. The three main commands for reading raster objects from file are the \code{raster()}, \code{stack()}, and \code{brick()} functions, refering to RasterLayer, RasterStack and RasterBrick objects respectively. \\ Writing one of the three raster objects classes to file is achieved with the \code{writeRaster()} function.\\
-  To illustrate the reading and writing of raster files, we will use the data stored in the /inst/extdata/ directory within the rasta package. For the conveignance of that course, we have added data directly to the package; they are read using the \code{}
+  To illustrate the reading and writing of raster files, we will use the data stored in the /inst/extdata/ directory within the rasta package. For the conveignance of that course, we have added data directly to the package. The \code{system.file()} command is used to access these ''external'' data saved into packages.
+See the example below.
   
 <<>>=
 # Reading a single raster layer 
 
 # Reading a multilayer raster object
-
-
+gewata <- brick(system.file("extdata/LE71700552001036SGS00_SR_Gewata_INT1U.tif", package="rasta"))
 @
+Let's take a look at the structure of this object.
+<<>>=
+gewata
+@
+The metadata above informs us that the gewata object is a relatively small (593x653 pixels) RasterBrick with 6 layers.
 
 Note that in addition to supporting most commonly used geodata formats, the raster package has its own format. Saving a file using the \code{.grd} extension (\code{'filename.grd'}) will automatically save the object to the raster package format. This format has great advantages when performing geo processing in R (one advantage for instance is that it conserve original filenames as layer names in multilayer objects), however, saving your final results in this file format might be risky as the GDAL drivers for that file format do not seem to exist yet.
 
@@ -139,8 +144,7 @@ Note that in addition to supporting most commonly used geodata formats, the rast
 \subsection*{Geo processing, in memory Vs. on disk}
 When looking at the documentation of most functions of the raster package, you will notice that the list of arguments is almost always ended by ... It is called and ellipsis, and means that extra arguments can be passed to the function. Often these arguments are those that can be passed to the \code{writeRaster()} function; meaning that most geo-processing functions are able to write their result directly to file, on disk. This reduces the number of steps and is always a good consideration when working with big raster objects that tend to overload the memory if not written directly to file.
 
-  \subsection*{Re-projections}
-  The \code{projectRaster()} function allows re-projection of raster objects to any projection one can think of. However, if re-projecting and mosaicking is really a large part of your project, you may want to consider using directly the \code{gdalwarp} command line utility \url{}. Although there is R interface to \code{gdalwarp}, the string handling capabilities of R can be of great help when building \code{gdalwarp} expressions.
+  
   
   \subsection*{Croping a raster object}
   \code{crop()} is the raster package function that allows you to crop data to smaller spatial extents. A great advantage of the crop function is that it acceps almost all spatial object class of R as ''extent'' input.
@@ -156,17 +160,120 @@ Performing simple raster operations with raster objects is fairly easy. For inst
 Different spectral bands of a same satellite image scene are often stored in multi layers objects. This means that you will very likely import them in you R working environment as RasterBrick or RasterStack objects. As a consequence, to perform calculations between these bands, you will have to write an expression refering to individual layers of the object. Referring to individual layers in a RasterBrick or RasterStack object is done by using square brackets ''[[]]''.
 Let's look for instance at how the famous NDVI index would have to be calculated from a RasterBrick object containing the spectral bands of Landsat 8 data.
 
-Vectorized expressions\\
-Calc and overlay\\
-Examples:\\
-Perform cloud replacement
-\begin{enumerate}
-  \item vectorized
-  \item with calc(); 
-\end{enumerate}
+TODO. Quick description of the data.
 
-Calculate NDVI
-Zonal statistics (using vector layer as input)? Ben?
+<<>>=
+ndvi <- (gewata[[4]] - gewata[[3]]) / (gewata[[4]] + gewata[[3]])
+@
+
+<<>>=
+plot(ndvi)
+@
+
+The resulting NDVI can be viewed in Figure X. As expected the NDVI ranges from about 0.2, which corresponds to nearly bare soils, to 0.9 which means that there is some dense vegetation in the area.
+ 
+Although this is a quick and efficient way to perform the calculation, directly adding, substracting, multiplying, etc, the layers of big raster objects is not recommended. When working with big objects, it is more advisable to use the calc function to perform these types of calculaions. The reason is that R needs to load all the data first into its internal memory beform performing the calculation and then runs everything in one block. It is really easy to ''flood'' the RAM when doing that. a big advantage of the calc function is that they it has a built-in block processing option for any vectorized function, allowing such calculations to be fully ''RAM friendly''. The example below illustrate how to calculate NDVI from the same date set using the \code{calc} function.
+
+<<>>=
+# Define the function to calculate NDVI from 
+ndvCalc <- function(x) {
+  ndvi <- (x[[4]] - x[[3]]) / (x[[4]] + x[[3]])
+  return(ndvi)
+}
+ndvi2 <- calc(x=gewata, fun=ndvCalc)
+
+@
+Note that overlay can also be used in that case to obtain the same result, with the same level of RAM friendlyness. The advantage of overlay being that the number of input RasterLayers is lees limiting. As a consequence specifying the layers does not happen in the function call but in the \code{overlay} call instead. In that specific case, both techiques work equaly well, however, in more real cases it is quite likely that \code{overlay} will be much easier to implement than \code{calc}, or vice versa.
+
+<<>>=
+ndvOver <- function(x, y) {
+  ndvi <- (y - x) / (x + y)
+  return(ndvi)
+}
+ndvi3 <- overlay(x=gewata[[3]], y=gewata[[4]], fun=ndvOver)
+@
+
+TODO(): FInd a way to compare the values of these rasters.
+
+\subsection*{Re-projections}
+By the way, we still don't know where this area is. In order to investigate that, we are going to try projecting it in Google Earth. As you know Google Earth is all in Lat/Long, so we have to get our data to re-project our data to lat/long first. The \code{projectRaster()} function allows re-projection of raster objects to any projection one can think of. 
+TODO() Talk about PROJ4 and spatialreference.org here.
+
+<<>>=
+# It all fit in one line, 
+# It does not matter which of ndvi, ndvi2, or ndvi3 we coose since they are all the same
+ndviLL <- projectRaster(ndvi, crs='+proj=longlat')
+@
+
+
+Note that if re-projecting and mosaicking is really a large part of your project, you may want to consider using directly the \code{gdalwarp} command line utility \url{http://www.gdal.org/gdalwarp.html}. Although there is no R interface to \code{gdalwarp}, the string handling capabilities of R can be of great help when building \code{gdalwarp} expressions.
+
+Now that we have our ndvi layer in lat/long, let's write it to a kml file, which is one of the two Google Earth formats.
+
+<<eval = FALSE>>=
+# Since this function will write a file to your working directory
+# you want to make sure that it is set where you want the file to be written
+# It can be changed using setwd()
+getwd()
+# Note that we are using the filename argument, contained in the elypsis of function,
+# since we want to write the output directly to file.
+KML(x=ndviLL, filename='gewataNDVI.kml')
+@
+Note that you need to have Google Earth installed on your system in order to perform the following step.
+Now go find this file that we have just written and double click it, and see how Google Earth brings us all the way to ... Ethiopia. More information will come in Lesson 6 about that specific area.
+
+
+We are done with this data set for this lesson. So let's explore another data set, from the newly launched Landsat 8 sensor. This dataset will allow us to find other interesting raster operations to perform.  
+
+\subsection*{More raster arythmetics, perform simple replacements}
+The Landsat 8 data delivered up to now come with a Quality Assessment (QA) band; it is an extra layer, matching the extent and the resolution of the other bans, and containing information about the quality of the data. Such extra QA layers are becomming increasingly common (Landsat 8, MODIS had it from its beggining) and are very valuable information. In the following section we will use that QA layer to mask out remaining clouds in the scene.\\
+About the area: The area selected for this exercise is located in Tahiti, French Polynesia. It is located right in the middle of the island, where the two volcanoes that form the island intersect (on the isthmus). According to wikipedia, about 5000 people live in the municipality of Afaahiti-Taravao.\\
+For convenience, this scene subset has been added as a build in data set of the rasta package. Therefore it can simply be loaded using the \code{data} command. Let's load it.
+
+<<>>=
+library(rasta)
+data(taravao)
+taravao
+@
+
+The 9th band has the suffixe QA, which means that it is the one containing the quality information. The information contained in this layer is codded bitwise, see \url{http://landsat.usgs.gov/L8QualityAssessmentBand.php} for further details, which means that we need an extra step to extract this information into something we can simply use and understand.
+This step will be automatically performed by the \code{QA2cloud\{rasta\}} function since the details of that step are slightly beyond the scope of this course. When applied to the QA layer, the function returns for each pixel, either the value 1 or the value 0. 1 meaning presence and 0 absence of cloud. The use of \code{calc} is indispensable for applying that function to the band.
+<<>>=
+# Generate the cloud mask using QA2cloud wrapped into calc()
+cloud <- calc(taravao[[9]], fun=QA2cloud) 
+# Replace 0s by NAs (to improve visual display)
+cloud[cloud == 0] <- NA 
+
+# Display data and the cloud mask 
+plotRGB(taravao, 5, 3, 4) 
+@
+Note the clouds at the top and bottom of the image.
+<<>>=
+plot(cloud, add=TRUE)
+@
+
+These cloudy pixels are not really usefull to us, therefore we will exclude them from the RasterBrick. But first, we do not need that band 9 anymore, so let's drop it from the brick. We use the dropLayer for that, which returns a RasterStack object. 
+
+<<>>=
+taravao8 <- dropLayer(x=taravao, i=9)
+@
+
+Excluding data from a mask can be done either by directly performing vector replacement operations, or with the \code{calc()} function. The same considerations of data size and RAM management than above apply when selecting one method or the other. For the purpose of the example, the two methods are illustrated below. The dataset is small enough to be safely manipulated in the memory.
+What we want to do is replace the cloudy pixels by a NA.
+<<>>=
+taravao8[cloud == 1] <- NA
+@
+
+<<>>=
+taravao8_2 <- dropLayer(x=taravao, i=9)
+cloud2NA <- function(x, y){
+  x[y == 1] <- NA
+  return(x)
+}
+taravao8_3 <- overlay(taravao8_2, cloud, fun=cloud2NA)
+@
+
+
 
 
 \section{Hdf files (Not part of the course)}
