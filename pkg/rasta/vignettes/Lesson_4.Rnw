@@ -227,6 +227,7 @@ circlesdf <- SpatialPolygonsDataFrame(spcircles, circledat)
 @
 
 Similar results can be obtained using the function gBuffer of the package rgeos, as demonstrated below. Notice the use of two overlay functions from the package \texttt{rgeos}.
+
 <<Buffering>>=
 buffpoint <- gBuffer(mypointsRD[1,], width=mylinesdf$length[1], quadsegs=25)
 mydiff <- gDifference(circlesdf[1,], buffpoint)
@@ -277,10 +278,11 @@ spplot(all_rd, zcol="yield.ton.ha.", colorkey=T, zlim=c(0,100),
        cex=0.25, main="Recorded yields ton/ha")
 @
 
-The time attribute of the yield data file is spread over 6 attributes. The base package of R includes two basic classes of date/times: \texttt{POSIXct} and \texttt{POSIXlt}. The former represents the (signed) number of seconds since the beginning of 1970 (in the UTC timezone) as a numeric vector. On the other hand, class \texttt{POSIXlt} is a named list of vectors representing seconds, minutes, hours, day of the month, month and year. The function \texttt{as.POSIXct} can be used for converting an object such as a character string to an object of class \texttt{POSIXct}.
+\subsection*{Date and time classes}
+The date and time information in the yield data file is spread over 6 attributes. The base package of R includes two basic classes of date/times: \texttt{POSIXct} and \texttt{POSIXlt}. The former represents the (signed) number of seconds since the beginning of 1970 (in the UTC timezone) as a numeric vector. On the other hand, class \texttt{POSIXlt} is a named list of vectors representing seconds, minutes, hours, day of the month, month and year. The function \texttt{as.POSIXct} can be used for converting an object such as a character string to an object of class \texttt{POSIXct}.
 
 <<>>=
-# add datetime attribute using POSIX* class
+# add datetime attribute using POSIX class
 all_rd$datetime <- as.POSIXct(paste(paste(all_rd$year, all_rd$month, all_rd$day, 
                               sep="-"), paste(all_rd$hr, all_rd$min, all_rd$sec, 
                               sep=":")), tz="Europe/Andorra")
@@ -289,7 +291,7 @@ all_rd$datetime <- as.POSIXct(paste(paste(all_rd$year, all_rd$month, all_rd$day,
 Try to understand the above code and its results by studying help.
 
 \subsection*{Computing tracks and swaths}
-The trajectory of the harvester can be represented by a series of continuous tracks, which correspond to different load numbers, working widths and harvest dates, while points within a track are separated by a maximum distance. The function \texttt{CreateHarvestTracks} (\texttt{rasta}) creates such tracks from a \emph{data frame} with \emph{temporally ordered} input records. Note that the previous sentence refers to a data frame, NOT a spatial data frame.
+The trajectory of the harvester can be represented by a series of continuous tracks, which correspond to different loads (identified by load number and date), working widths and harvest dates, while points within a track are separated by a maximum distance. The function \texttt{CreateHarvestTracks} (\texttt{rasta}) creates such tracks from a \emph{data frame} with \emph{temporally ordered} input records. Note that the previous sentence refers to a data frame, NOT a spatial data frame.
 
 <<>>=
 # coerce spatial data frame to data frame
@@ -302,18 +304,20 @@ library(rasta)
 sp_lines_df <- CreateHarvestTracks(all_rd, prj_string_RD)
 @
 
-<<eval=FALSE>>=
+<<fig=TRUE>>=
 # inspect results
 names(sp_lines_df)
 spplot(sp_lines_df, zcol="ID", lwd=1.5, col.regions = 
          bpy.colors(nlevels(sp_lines_df$ID)))
 @
 
+
+\textbf{Task 1}:\\
+Inspect the help and code of of the function \texttt{CreateHarvestTracks} (for the latter, type the name of the function on the R prompt) and explain what it does and how it works.
 \\
-\textbf{Task 1}: Inspect the help and code of of the function \texttt{CreateHarvestTracks} (for the latter, type the name of the function on the R prompt) and explain what it does and how it works.
-\\
-\\
+
 The code below uses buffering to create swaths and to fill narrow spaces between adjacent swaths. Next, the functions difftime and gDifference are used to delete line segments that overlap swaths that were already harvested.
+
 <<>>=
 # Buffer lines to make swaths
 sp_polys <- gBuffer(sp_lines_df,byid=T, width=0.5*sp_lines_df$width, 
