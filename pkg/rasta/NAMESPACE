@@ -3,5 +3,6 @@ import("graphics", "stats", "strucchange", "zoo", "raster", "bitops")
 export(
   "mysummary",
   "QA2cloud",
-  "CreateHarvestTracks"
+  "CreateHarvestTracks",
+  "getSceneinfo"
 )
