@@ -546,7 +546,7 @@ as.Date(dates, format = "%Y%j")
 There is a function in the rasta package, getSceneinfo() that will parse these names and output a data.frame with all of these attributes.
 
 <<results = hide>>=
-?getSceneinfo
+# ?getSceneinfo
 sceneinfo <- getSceneinfo(names(tura))
 print(sceneinfo)
 # add a 'year' column to the sceneinfo dataframe and plot #scenes/year
@@ -609,7 +609,7 @@ levelplot(tura[[1:8]], names.attr = sceneinfo$date[1:8])
 # define a more logical colour scale
 library(RColorBrewer)
 # this package has a convenient tool for defining colour palettes
-?brewer.pal
+# ?brewer.pal
 display.brewer.all()
 cols <- brewer.pal(11, 'PiYG')
 # to change the colour scale in levelplot(), we first have to define a rasterTheme object
@@ -811,7 +811,7 @@ tsplot
 \item example 2: compute a time series metric over an entire RasterBrick using the calc() function
 \end{itemize}
 
-\bibliographystyle{model5-names}
-\bibliography{refs}
+% \bibliographystyle{model5-names}
+% \bibliography{refs}
 
 \end{document}
