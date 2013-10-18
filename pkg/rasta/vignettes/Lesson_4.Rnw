@@ -41,17 +41,18 @@
 In today's lecture, we will explore the basics of handling spatial vector data in R. There are several R packages for this purpose but we will focus on using \texttt{sp}, \texttt{rgdal}, \texttt{rgeos} and some  related packages. At the end of the lecture, you should be able to
 \begin{itemize}
   \item create point, line and polygon objects from scratch;
-  \item explore the structure of \texttt{sp} classes for spatial data;
+  \item explore the structure of \texttt{sp} classes for spatial vector data;
+  \item plot spatial vector data;
   \item transform between datums and map projections; 
   \item apply basic operations on vector data, such as buffering, intersection and area calculation;
   \item use a Date-Time class;
-  \item write spatial data to a kml file;
-  \item convert spatial data read from a plain text file into a spatial class.
+  \item write spatial vector data to a kml file;
+  \item convert spatial data read from a plain text file into a spatial class for vector data.
 \end{itemize}
 
 \section{Some packages for working with spatial vector data in R}
 
-The packages \texttt{sp} and \texttt{rgdal} are widely used throughout this course. Both packages not only provide functionallity for raster data but also for vector data. For example, rgdal includes bindings to parts of the OGR Simple Feature Library which provides access to a variety of vector file formats such as ESRI Shapefiles and kml. Similarly, rgeos is an interface to the powerful Geometry Engine  Open Source (GEOS) library for all kind of operations on geometries (buffering, overlaying, area calculations, etc.).  Thus, functionality that you commonly find in expensive GIS software is also available within R, using free but very powerful software libaries. The possiblities are huge; in this course we can only scratch the surface with some essentials which hopefully invite you to experiment further and use them in your research. Details can be found in the book Applied Spatial Data Analysis with R and several vignettes authored by Roger Bivand, Edzer Pebesma and Virgilio Gomez-Rubio \citep{Bivand:2013ux}. Owing to time constraints, this lecture cannot cover the related package spacetime with classes and methods for spatio-temporal data.
+The packages \texttt{sp} and \texttt{rgdal} are widely used throughout this course. Both packages not only provide functionallity for raster data but also for vector data. For example, rgdal includes bindings to parts of the OGR Simple Feature Library which provides access to a variety of vector file formats such as ESRI Shapefiles and kml. Similarly, rgeos is an interface to the powerful Geometry Engine  Open Source (GEOS) library for all kind of operations on geometries (buffering, overlaying, area calculations, etc.).  Thus, functionality that you commonly find in expensive GIS software is also available within R, using free but very powerful software libaries. The possiblities are huge; in this course we can only scratch the surface with some essentials which hopefully invite you to experiment further and use them in your research. Details can be found in the book Applied Spatial Data Analysis with R \citep{Bivand:2013ux} and several vignettes authored by Roger Bivand, Edzer Pebesma and Virgilio Gomez-Rubio. Owing to time constraints, this lecture cannot cover the related package \texttt{spacetime} with classes and methods for spatio-temporal data.
 
 \section{Creating and manipulating geometries}
 
@@ -74,7 +75,8 @@ rings     & {\tt SpatialPolygonsDataFrame} & {\tt data.frame} \\
 \end{tabular}
 \end{center}
 
-We will go through a few examples of creating geometries from scratch to familiarize yourself with these classes. First, start Google Earth on your computer and make a note of the longitude and latitude of two points in Wageningen that are relevant to you. Use a decimal degree notation with at least 4 digits after the decimal point. To change the settings in Google Earth click \texttt{Tools | Options} and change the Show lat/Long setting on the 3D View Tab. 
+We will go through a few examples of creating geometries from scratch to familiarize yourself with these classes.\\
+First, start Google Earth on your computer and make a note of the longitude and latitude of two points in Wageningen that are relevant to you. Use a decimal degree notation with at least 4 digits after the decimal point. To change the settings in Google Earth click \texttt{Tools | Options} and change the Show lat/Long setting on the 3D View Tab. 
 
 \subsection*{Points}
 The example below shows how you can create spatial point objects from these coordinates. Type \texttt{?<function name>} (e.g. \texttt{?cbind}) for finding help on the functions used.
@@ -239,14 +241,19 @@ print(paste("The difference in area =", round(100 * gArea(mydiff) /
                                              gArea(myintersection),3), "%"))
 @
 
-Plot results using a few more advanced options of \texttt{spplot}.
+Here is an example of a plot of the results which employs a few more advanced options of \texttt{spplot}.
 
-<<fig=TRUE>>=
+<<basicGeometry, fig=TRUE, include=FALSE>>=
 spplot(circlesdf, zcol="Name", col.regions=c("gray60", "gray40"), 
        sp.layout=list(list("sp.points", mypointsRD, col="red", pch=19, cex=1.5), 
                       list("sp.lines", mylinesRD, lwd=1.5)))
 @
 
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_4-basicGeometry}
+\caption{Basic points, lines and polygons plotted with \texttt{spplot}.}
+\end{figure}
 
 \section{Real world example}
 We will now study a data set acquired by a potato harvester equiped with a yield monitoring system (YieldMasterPro of Probotiq / Van den Borne). The data come in a comma delimited text file and correspond to GPS positions (WGS84) and yield data at point locations along with other attributes. The typical working width is 3 meters, i.e. the potatos are harvested over such width. The harvester has a load capacity of approximately 25 metric tons after which the bunker is emptied.\\
@@ -278,7 +285,7 @@ download.file("http://rasta.r-forge.r-project.org/kroonven.csv", "kroonven.csv")
 borne_data = read.table("kroonven.csv", sep = ",", header = TRUE)
 @
 
-<<fig=TRUE>>=
+<<yieldPoints, fig=TRUE, include=FALSE>>=
 names(borne_data)
 # make spatial
 coordinates(borne_data) <- c("lon.degr.","lat.degr.")
@@ -291,6 +298,12 @@ spplot(all_rd, zcol="yield.ton.ha.", colorkey=T, zlim=c(0,100),
        col.regions=c(bpy.colors(25), rep("yellow", 75)), pch=19, 
        cex=0.25, main="Recorded yields ton/ha")
 @
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_4-yieldPoints}
+\caption{Yields per point. Note that the legend bar accomodates unrealistically high yield measurements.}
+\end{figure}
 
 \subsection*{Date and time classes}
 The date and time information in the yield data file is spread over 6 attributes. The base package of R includes two basic classes of date/times: \texttt{POSIXct} and \texttt{POSIXlt}. The former represents the (signed) number of seconds since the beginning of 1970 (in the UTC timezone) as a numeric vector. On the other hand, class \texttt{POSIXlt} is a named list of vectors representing seconds, minutes, hours, day of the month, month and year. The function \texttt{as.POSIXct} can be used for converting an object such as a character string to an object of class \texttt{POSIXct}.
@@ -305,7 +318,7 @@ all_rd$datetime <- as.POSIXct(paste(paste(all_rd$year, all_rd$month, all_rd$day,
 Try to understand the above code and its results by studying help.
 
 \subsection*{Computing tracks and swaths}
-The trajectory of the harvester can be represented by a series of continuous tracks, which correspond to different loads (identified by load number and date), working widths and harvest dates, while points within a track are separated by a maximum distance. The function \texttt{CreateHarvestTracks} (\texttt{rasta}) creates such tracks from a \emph{data frame} with \emph{temporally ordered} input records. Note that the previous sentence refers to a data frame, NOT a spatial data frame.
+The trajectory of the harvester can be represented by a series of continuous tracks, which correspond to different loads (identified by load number and date) and working widths, while points within a track are separated by a maximum distance. The function \texttt{CreateHarvestTracks} (\texttt{rasta}) creates such tracks from a \emph{data frame} with \emph{temporally ordered} input records. Note that the previous sentence refers to a data frame, NOT a spatial data frame.
 
 <<>>=
 # coerce spatial data frame to data frame
@@ -329,13 +342,18 @@ if (!file.exists("data/sp_lines_df.rda")) {
 sp_lines_df <- CreateHarvestTracks(all_rd, prj_string_RD)
 @
 
-<<fig=TRUE>>=
+<<harvestTracks, fig=TRUE, include=FALSE>>=
 # inspect results
 names(sp_lines_df)
 spplot(sp_lines_df, zcol="ID", lwd=1.5, col.regions = 
          bpy.colors(nlevels(sp_lines_df$ID)))
 @
 
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_4-harvestTracks}
+\caption{Tracks of the harvester identified by date and load number. Notice the occurrence of overlapping tracks.}
+\end{figure}
 
 \textbf{Task 1}:\\
 Inspect the help and code of of the function \texttt{CreateHarvestTracks} (for the latter, type the name of the function on the R prompt) and explain what it does and how it works.
@@ -379,12 +397,64 @@ Create a documented script with code for the following tasks:
 \begin{enumerate}
   \item buffering the cleaned lines to create harvest blocks;
   \item fill small holes between blocks by swelling and shrinking;
-  \item compute for each block the yield per hectare and add it to the spatial polygons data frame
-  \item export the spatial polygons data frame for display in Google Earth using either writeOGR or \texttt{kml} from the package \texttt{plotKML}.
+  \item compute for each block the yield per hectare and add it to the spatial polygons data frame;
+  \item plot the results of the previous step in a map;
+  \item export the spatial polygons data frame for display in Google Earth using either \texttt{writeOGR} or \texttt{kml} from the package \texttt{plotKML}.
 \end{enumerate}
 
-Mail your code along with your response to \textbf{task 1} above to Sytze de Bruin.
+Mail your R code along with your response to \textbf{task 1} above to Sytze de Bruin.
 
+<<Answers, eval=FALSE, echo=FALSE>>=
+# test test test
+# Q1 -- Buffer lines to make swaths
+sp_polys2 <- gBuffer(cln_lines_df,byid=T,id=as.character(cln_lines_df$ID), 
+                    width=0.5*cln_lines_df$width, capStyle="FLAT")
+# Q2 fill small holes by swelling and shrinking
+sp_polys2 <- gBuffer(sp_polys2, byid=T,id=rownames(sp_polys2), width = 2.0)
+sp_polys2 <- gBuffer(sp_polys2, byid=T,id=rownames(sp_polys2), width = -2.0)
+
+sp_polys_df2 <- SpatialPolygonsDataFrame(sp_polys2, cln_lines_df@data)
+
+# Q3 compute area and ton/ha
+sp_polys_df2$area <- gArea(sp_polys_df2, byid=T)
+sp_polys_df2$ton_ha <- 10000 * sp_polys_df2$loads / sp_polys_df2$area
+names(sp_polys_df2)
+# Q4 plot
+spplot(sp_polys_df2["ton_ha"], col="transparent", col.regions=bpy.colors(100), 
+       main="Potato yield (ton/ha)")
+
+# Q 5 Google Earth output
+# (1) Export to Google Earth using writeOGR
+sp_polys_WGS <- spTransform(sp_polys_df2, CRS("+proj=longlat +datum=WGS84"))
+writeOGR(sp_polys_WGS, "data/testkml.kml", "testkml", driver="KML", overwrite_layer=T)
+
+# (2) Idem, using package "plotKML" Tomislav Hengl
+library(plotKML)
+kml(sp_polys_wgs, colour = ton_ha, colour_scale=bpy.colors(), outline=F)
+
+# (3) Add a legend as a screen overlay
+kml_legend.bar(sp_polys_wgs$ton_ha, legend.file="leg.png", pointsize = 10, 
+               legend.pal=bpy.colors())
+
+kml_open("sp_polys_wgs2.kml")
+kml_layer(sp_polys_wgs, colour = ton_ha, colour_scale=bpy.colors(), outline=F)
+kml_screen("leg.png", position = "UL")
+kml_close("sp_polys_wgs2.kml")
+
+# Extra: Animation data acquisition with time
+borne_data = read.table(in_file, sep = ",", header = T)
+# make spatial
+coordinates(borne_data) <- c("lon.degr.","lat.degr.")
+TimeStamp <- paste(paste(borne_data$year, sprintf("%02d", borne_data$month), 
+                sprintf("%02d", borne_data$day), sep="-"),
+                paste(sprintf("%02d", borne_data$hr),  sprintf("%02d", 
+                borne_data$min), sprintf("%02d", borne_data$sec), sep=":"),sep="T")
+borne_data@proj4string <- CRS("+proj=longlat +datum=WGS84")
+max_t <- tail(TimeStamp,1)
+kml(borne_data, colour = loadnr, colour_scale=bpy.colors(), labels = "", 
+    TimeSpan.begin = TimeStamp, TimeSpan.end=max_t)
+
+@
 
 \bibliographystyle{model5-names}
 \bibliography{refs}
