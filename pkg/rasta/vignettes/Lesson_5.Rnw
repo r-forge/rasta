@@ -102,7 +102,6 @@ Check the home page of the raster package \url{http://cran.r-project.org/web/pac
 
 
   \subsection*{Read/write raster data into R using the raster package}
-  
 <<>>=
 
 @
@@ -123,7 +122,7 @@ r
 \section{Raster objects manipulations}
   \subsection*{Reading and writing from/to file}
   The actual data used in geo processing projects often comes as geo-data on files, such as GeoTiff or other comonly used file formats. Reading data directly from these files into the R working environment (as objects belonging to one of the 3 raster objects classes), is made possible thanks to the raster package. The three main commands for reading raster objects from file are the \code{raster()}, \code{stack()}, and \code{brick()} functions, refering to RasterLayer, RasterStack and RasterBrick objects respectively. \\ Writing one of the three raster objects classes to file is achieved with the \code{writeRaster()} function.\\
-  To illustrate the reading and writing of raster files, we will use the data stored in the /inst/extdata/ directory within the rasta package. For the conveignance of that course, we have added data directly to the package. The \code{system.file()} command is used to access these ''external'' data saved into packages.
+  To illustrate the reading and writing of raster files, we will use the data stored in the /inst/extdata/ directory within the rasta package. The \code{system.file()} command is used to access these ''external'' data saved into packages. Gewata is the name of the data set added, it is a multi Layer tiff object, its file name is LE71700552001036SGS00\_SR\_Gewata\_INT1U.tif, telling us that this is a subset from a scene acquired by the Landsat 7 sensor. Let's not worry about the region that the data cover for, we will find a  nice way to discover that later on in that tutorial.
 See the example below.
   
 <<>>=
@@ -156,7 +155,7 @@ When looking at the documentation of most functions of the raster package, you w
 \subsection*{}
 Performing simple raster operations with raster objects is fairly easy. For instance, if you want to substract two RasterLayers of same extent, r1 and r2; simply doing r1 - r2 will give the expected output, which is, every pixel value of r2 will be substracted to the matching pixel value of r1. These types of pixel based operations almost always require a set of conditions to be met in order to be executed; the two RasterLayers need to be identical in term of extent, resolution , projection, etc.
 
-\subsection{Subsetting layers from from RasterStack and RasterBrick}
+\subsection*{Subsetting layers from from RasterStack and RasterBrick}
 Different spectral bands of a same satellite image scene are often stored in multi layers objects. This means that you will very likely import them in you R working environment as RasterBrick or RasterStack objects. As a consequence, to perform calculations between these bands, you will have to write an expression refering to individual layers of the object. Referring to individual layers in a RasterBrick or RasterStack object is done by using square brackets ''[[]]''.
 Let's look for instance at how the famous NDVI index would have to be calculated from a RasterBrick object containing the spectral bands of Landsat 8 data.
 
@@ -166,11 +165,20 @@ TODO. Quick description of the data.
 ndvi <- (gewata[[4]] - gewata[[3]]) / (gewata[[4]] + gewata[[3]])
 @
 
-<<>>=
+<<ndvi, echo=FALSE, fig=TRUE, include=FALSE>>=
 plot(ndvi)
 @
 
-The resulting NDVI can be viewed in Figure X. As expected the NDVI ranges from about 0.2, which corresponds to nearly bare soils, to 0.9 which means that there is some dense vegetation in the area.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_5-ndvi}
+\caption{NDVI calculated with the gewata data set}
+\label{ndvi}
+\end{figure}
+
+
+The resulting NDVI can be viewed in Figure~\ref{ndvi}. As expected the NDVI ranges from about 0.2, which corresponds to nearly bare soils, to 0.9 which means that there is some dense vegetation in the area.
  
 Although this is a quick and efficient way to perform the calculation, directly adding, substracting, multiplying, etc, the layers of big raster objects is not recommended. When working with big objects, it is more advisable to use the calc function to perform these types of calculaions. The reason is that R needs to load all the data first into its internal memory beform performing the calculation and then runs everything in one block. It is really easy to ''flood'' the RAM when doing that. a big advantage of the calc function is that they it has a built-in block processing option for any vectorized function, allowing such calculations to be fully ''RAM friendly''. The example below illustrate how to calculate NDVI from the same date set using the \code{calc} function.
 
@@ -193,7 +201,7 @@ ndvOver <- function(x, y) {
 ndvi3 <- overlay(x=gewata[[3]], y=gewata[[4]], fun=ndvOver)
 @
 
-TODO(): FInd a way to compare the values of these rasters.
+TODO(): Find a way to compare the values of these rasters.
 
 \subsection*{Re-projections}
 By the way, we still don't know where this area is. In order to investigate that, we are going to try projecting it in Google Earth. As you know Google Earth is all in Lat/Long, so we have to get our data to re-project our data to lat/long first. The \code{projectRaster()} function allows re-projection of raster objects to any projection one can think of. 
@@ -226,8 +234,9 @@ Now go find this file that we have just written and double click it, and see how
 We are done with this data set for this lesson. So let's explore another data set, from the newly launched Landsat 8 sensor. This dataset will allow us to find other interesting raster operations to perform.  
 
 \subsection*{More raster arythmetics, perform simple replacements}
-The Landsat 8 data delivered up to now come with a Quality Assessment (QA) band; it is an extra layer, matching the extent and the resolution of the other bans, and containing information about the quality of the data. Such extra QA layers are becomming increasingly common (Landsat 8, MODIS had it from its beggining) and are very valuable information. In the following section we will use that QA layer to mask out remaining clouds in the scene.\\
-About the area: The area selected for this exercise is located in Tahiti, French Polynesia. It is located right in the middle of the island, where the two volcanoes that form the island intersect (on the isthmus). According to wikipedia, about 5000 people live in the municipality of Afaahiti-Taravao.\\
+The Landsat 8 data delivered up to now come with a Quality Assessment (QA) band; it is an extra layer, matching the extent and the resolution of the other bands, and containing information about the quality of the data. Such extra QA layers are becomming increasingly common (Landsat 8, MODIS had it from its beggining) and are very valuable information. In the following section we will use that QA layer to mask out remaining clouds in the scene.
+\subsubsection*{About the area}
+The area selected for this exercise is located in Tahiti, French Polynesia. It is located right in the middle of the island, where the two volcanoes that form the island intersect (on the isthmus). According to wikipedia, about 5000 people live in the municipality of Afaahiti-Taravao.\\
 For convenience, this scene subset has been added as a build in data set of the rasta package. Therefore it can simply be loaded using the \code{data} command. Let's load it.
 
 <<>>=
@@ -236,21 +245,31 @@ data(taravao)
 taravao
 @
 
-The 9th band has the suffixe QA, which means that it is the one containing the quality information. The information contained in this layer is codded bitwise, see \url{http://landsat.usgs.gov/L8QualityAssessmentBand.php} for further details, which means that we need an extra step to extract this information into something we can simply use and understand.
-This step will be automatically performed by the \code{QA2cloud\{rasta\}} function since the details of that step are slightly beyond the scope of this course. When applied to the QA layer, the function returns for each pixel, either the value 1 or the value 0. 1 meaning presence and 0 absence of cloud. The use of \code{calc} is indispensable for applying that function to the band.
+The 9th band has the suffixe QA, which means that it is the one containing the quality information. The information contained in this layer is codded bitwise (see \url{http://landsat.usgs.gov/L8QualityAssessmentBand.php} for further details), which means that we need an extra step to extract this information into something we can simply use and understand.
+This step will be automatically performed using the \code{QA2cloud\{rasta\}} function since the details of that step are slightly beyond the scope of this course. When applied to the QA layer, the function returns for each pixel, either the value 1 or the value 0. 1 meaning presence and 0 absence of cloud. As seen earlier, applying a pixel based function to a RasterLayer is what the \code{calc()} function does well; so let's do it.
 <<>>=
 # Generate the cloud mask using QA2cloud wrapped into calc()
 cloud <- calc(taravao[[9]], fun=QA2cloud) 
 # Replace 0s by NAs (to improve visual display)
 cloud[cloud == 0] <- NA 
+@
 
+A nice preview of the result can be achived using the \code{plotRGB()} function. The resulting plot is presented in figure~\ref{rgb}
+<<rgb, echo=FALSE, fig=TRUE, include=FALSE>>=
 # Display data and the cloud mask 
 plotRGB(taravao, 5, 3, 4) 
+# Note the clouds at the top and bottom of the image.
+# Let's plot the cloud mask over them and see how they match
+plot(cloud, add=TRUE, legend=FALSE)
 @
-Note the clouds at the top and bottom of the image.
-<<>>=
-plot(cloud, add=TRUE)
-@
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_5-rgb}
+\caption{RGB colour composite of the Taravao area with cloud mask overlay, the band combination used is 5, 3, 4 (Landsat 8)}
+\label{ndvi}
+\end{figure}
+
 
 These cloudy pixels are not really usefull to us, therefore we will exclude them from the RasterBrick. But first, we do not need that band 9 anymore, so let's drop it from the brick. We use the dropLayer for that, which returns a RasterStack object. 
 
