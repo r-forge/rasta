@@ -28,12 +28,19 @@
 }
 
 \usepackage{Sweave} %% is essentially
+%\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=2em,
+%                                              frame=single}
+%\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em,
+%                                             frame=single}
+<<echo=FALSE>>=
+options(width=60)
+@
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
 \title{Lesson 2}
-\author{Jan Verbesselt}
+\author{Jan Verbesselt, Lo\"{i}c Dutrieux, Ben De Vries, Sytze de Bruyn}
 
 \maketitle
 
@@ -135,8 +142,11 @@ plot(kenya)
 \begin{figure}[!htp]
 \centering
 \includegraphics[width=0.6\textwidth]{Lesson_2-kenya}
-\caption{An example plot.}
+\caption{Adminstrative boundaries of Kenya}
 \end{figure}
+
+Here is an example for downloading of administrative boundaries for any country. This will be useful for the exercise.
+
 
 \clearpage
 \subsection{Exploring the Data within the vector file}
@@ -213,5 +223,11 @@ dp$values<-rnorm(100,5,10)
 #generates 100 values from a Normal distribution with mean 5, and sd-10
 head(dp)
 @
+
+\section{Special thanks and more info}
+
+Special acknowledgments go to \href{mailto:davenpor@geog.ucsb.edu}{Frank Davenport} 
+(\href{http://www.frankdavenport.com/blog/2012/6/19/notes-from-a-recent-spatial-r-class-i-gave.html}{Spatial R class}) for excellent R spatial introduction on which this lesson is based.
+
 
 \end{document}
