@@ -100,12 +100,6 @@ The introduction of the raster package to R has been a revolution for geo proces
 \end{itemize}
 Check the home page of the raster package (\url{http://cran.r-project.org/web/packages/raster/}), the package is extremely well documented, including vignettes and demos.
 
-
-  \subsection*{Read/write raster data into R using the raster package}
-<<>>=
-
-@
-
   \subsection*{Explore the raster objects}
 The raster package produces and uses R objects of three different classes. The \textbf{RasterLayer}, the \textbf{RasterStack} and the \textbf{RasterBrick}. A RasterLayer is the equivalent of a single layer raster, as an R workspace variable. The data themselves, depending on the size of the grid can be loaded in memory or on disk. The same stands for RasterBrick and RasterStack objects, which are the equivalent of multi-layer RasterLayer objects. RasterStack and RasterBrick are very similar, the difference being in the virtual characteristic of the RasterStack. While a RasterBrick has to refer to one multi-layer file or is in itself a multi-layer object with data loaded in memory, a RasterStack may ''virtually'' connect several raster objects written to different files or in memory. Processing will be more efficient for a RasterBrick than for a RasterStack, but RasterStack has the advantage of facilitating pixel based calculations on separate raster layers.\\
 
@@ -152,7 +146,7 @@ gewata
 The metadata above informs us that the gewata object is a relatively small (593x653 pixels) RasterBrick with 6 layers.\\
 Similarly, single layer objects can be read using the \code{raster()} function. Or if you try using the \code{raster()} function on a multi layer object, by default the first layer only will be read.
 <<eval=FALSE>>=
-gewataB1 <- gewata <- raster(system.file("extdata/LE71700552001036SGS00_SR_Gewata_INT1U.tif", package="rasta"))
+gewataB1 <- raster(system.file("extdata/LE71700552001036SGS00_SR_Gewata_INT1U.tif", package="rasta"))
 gewataB1
 @
 
@@ -167,7 +161,7 @@ When looking at the documentation of most functions of the raster package, you w
   \subsection*{Croping a raster object}
   \code{crop()} is the raster package function that allows you to crop data to smaller spatial extents. A great advantage of the crop function is that it acceps almost all spatial object class of R as its ''extent'' input argument. But the ''extent'' argument also simply accepts objects of class ''extent''. One way of obtaining such an extent object interactively is by using the \code{drawExtent()} function. In the exemple below, we will manually draw a regular extent that we will use later to crop the gewata RasterBrick.
   
-  <<eval=FALSE>>=
+<<eval=FALSE>>=
 # PLot the first layer of the RasterBrick
 plot(gewata, 1)
 e <- drawExtent(show=TRUE)
@@ -184,7 +178,32 @@ plot(gewataSub, 1)
   You should see on the resulting plot that the orinal image has been cropped. 
   
   \subsection*{Creating layer stacks}
-  To end this section on general files and raster objects manipulations, we will see how multi layer objects can be created from single layer objects. The object created as part of the example below is the same that we will use in Lesson 6 to perform time series analysis on raster objects. It is composed of NDVI layers derived from Landat acquisitions at different dates. 
+  To end this section on general files and raster objects manipulations, we will see how multi layer objects can be created from single layer objects. The object created as part of the example below is the same that we will use in Lesson 6 to perform time series analysis on raster objects. It is composed of NDVI layers derived from Landat acquisitions at different dates. The objective is therefore to create a multi layer NDVI object, for which each layer corresponds to a different date.
+  But first we need to fetch the data, since they were a bit too big to be kept into the rasta package, we left them online.
+<<eval=FALSE>>=
+# start by making sure that your working directory is properly set
+# If not you can set it using setwd()
+getwd()
+download.file(url='http://rasta.r-forge.r-project.org/tura.zip', destfile='tura.zip')
+unzip(zipfile='tura.zip')
+# Retrieve the content of the tura sub-directory
+list <- list.files(path='tura/', full.names=TRUE)
+@
+The object ''list'' contains the file names of all the single layers we have to stack. Let's open the first one to visualize it.
+<<eval=FALSE>>=
+plot(raster(list[1]))
+@
+We see a NDVI layer, with the cloud masked out. Let's now create the stack, the function for doing that is called \code{stack()}. Looking at the help page of the function , you can see that it can accep a list of file names as argument, which is exactly what the object ''list'' is. SO we can very simply create the layer stack by running the function.
+<<eval=FALSE>>=
+turaStack <- stack(list)
+turaStack
+@
+Now that we have our 166 layers RasterStack in memory, let's write it to disk using the \code{writeRaster()} function. Note that we decide here to save it as .grd file (the native format of the raster package); the reason for that is that this file format conserves original file names (in which information on dates is written) in the individual band names. The data range is comprised between -10000 and +10000, therefore such a file can be stored as signed double integer (INT2S).
+<<eval=FALSE>>=
+# Write this file at the root of the working directory
+writeRaster(x=turaStack, filename='turaStack.grd', datatype='INT2S')
+@
+Now this object is stored on your computer, ready to be archived for later use.
   
 \section{Simple raster arithmetic}
 \subsection*{Adding, substracting, multiplying and dividing RasterLayers}
@@ -341,9 +360,33 @@ The rgdal package does not include hdf drivers in its pre-built binary. Data can
 One easy way to do that is by calling it directly from R, via the command line utility.
 
 TODO(dutri001) add a not run example
+<<eval=FALSE>>=
+library(MODIS)
+# Get a list of sds names
+sds <- getSds('full/path/filename.hdf')
+# Isolate the name of the first sds
+name <- sds$SDS4gdal[1]
+# Optional: In case a sds name contains spaces, these 2 steps remove them
+name <- gsub("\"", "", name)
+name <- sprintf('\"%s\"', name)
+# Define output filename and create gdal_translate command
+filename <- 'name/of/output/file.tif'
+translate <- sprintf('gdal_translate %s %s', name, filename)
+system(translate)
+# Load the Geotiff created into R
+r <- raster(filename)
+@
 
 
 \subsection*{Linux}
+<<eval=FALSE>>=
+library(MODIS)
+# Get a list of sds names
+sds <- getSds('full/path/filename.hdf')
+# Any sds can then be read directly using the raster function
+r <- raster(sds$SDS4gdal[1])
+@
+
 
 \section{Further reading}
 
