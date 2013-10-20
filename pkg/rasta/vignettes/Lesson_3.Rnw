@@ -46,7 +46,7 @@
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-\title{Lesson 3}
+\title{Carrying out your R project}
 \author{Lo\"{i}c Dutrieux}
 
 \maketitle
@@ -361,7 +361,7 @@ r4 <- minusRaster(r, r2, plot=TRUE)
 \end{figure}
 
 \subsubsection*{Use of \code{try} and debugging your functions}
-\textit{\textbf{Use of try for error handling}}\\
+\noindent\textit{\textbf{Use of try for error handling}}\\
 The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (sub-function, piece of code) that is wrapped into \code{try} will not interrupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers. So \code{try} is a perfect way to deal with heterogeneous/unpredictable input data.\\
 Also \code{try} returns an object of different class when it fails. You can take advantage of that at a later stage of your processing chain to make your function more adaptive.
 See the example below that illustrate the use of \code{try} for sequentially calculating frequency on a list of auto-generated RasterLAyers.
@@ -417,7 +417,7 @@ out
 
 @
 
-\textit{\textbf{Function debugging}}
+\noindent\textit{\textbf{Function debugging}}
 
 Debugging a single line of code is usually relatively easy; simply double checking the classes of all input arguments often gives good pointers to why the line crashes. But when writing more complicated functions where objects created within the function are reused later on in that same function or in a nested function, it is easy to lose track of what is happening, and debugging can then become a nightmare. A few tricks can be used to make that process less painful. The first thing to investigate right after an error occurs is to run the \code{traceback()} function; just like that without arguments. Carefully reading the return of that function will tell you where exactly in your function the error occurred. In addition to \code{traceback()}, R has a more elaborated debugging mode that can be activated by calling \code{debug()}. Although the use of \code{debug()} is not covered in this lesson, fell free to explore by yourself these debugging functionalities (\url{http://www.stats.uwo.ca/faculty/murdoch/software/debuggingR/}).
 
@@ -453,10 +453,10 @@ The project functionalities of the R Studio IDE can greatly assist you in creati
 More package creation tips can be found online (\url{http://mages.github.io/R_package_development/#1})
 
 \subsubsection*{Package building}
-\textit{\textbf{Prerequisites}}\\
+\noindent\textit{\textbf{Prerequisites}}\\
 In order to be able to build package, you must have \textbf{Rtools} installed and properly setup on your system. Refer to the system setup document for more information on how to install Rtools. Once this is done R Studio offers great integration with Rtools, which makes package building really easy. The build panel in R Studio is by default located in the upper right window.
 
-\textit{\textbf{Check and build}}\\
+\noindent\textit{\textbf{Check and build}}\\
 In order to be operational on your system the R package you just created has to be checked and built. This is a critical step since everything has to be perfect in order to pass the check step. Simple things like a missing line in a function documentation file mail result in the package not passing the checks. Although a package that does not fully passes the check may still be built in some cases, this is not recommended, and it is therefore preferable to deal with the errors returned in the check console before building.\\
 Another option for building package is to do so directly from a remote git repository using the devtools package. This aspect of package building, together with general consideration on version control systems is presented in the next section.
 
