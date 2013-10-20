@@ -72,7 +72,7 @@ Scripting means that you often go beyond easy things and therefore face challeng
 
 \section{Finding help}
 
-There are many place where help can be found on the internet. So in case the function or package documentation is not sufficient for what you are trying to achieve, google is your best friend. Most likely by googling the right key words relating to your ''problem'', google will direct you to the archive of the R mailing list, or to some discussions on Stack Exchange \url{http://stackexchange.com/}. These two are reliable sources of information, and it is quite likely that the problem you were trying to  figure out has already been answered before.\\However, it may also happen that you discover a ''bug'' or something that you would qualify of abnormal behavior, or that you really have a question that no-one has ever asked (corollary: has never been answered). In that case, you may submit a question to one of the R mailing list. For general R question there is a general R mailing list (\url{https://stat.ethz.ch/mailman/listinfo/r-help}), while the spatial domain has its own mailing list (\url{https://stat.ethz.ch/mailman/listinfo/r-sig-geo}). Geo related question should be posted to this latter mailing list.\\
+There are many place where help can be found on the internet. So in case the function or package documentation is not sufficient for what you are trying to achieve, google is your best friend. Most likely by googling the right key words relating to your ''problem'', google will direct you to the archive of the R mailing list, or to some discussions on Stack Exchange (\url{http://stackexchange.com/}). These two are reliable sources of information, and it is quite likely that the problem you were trying to  figure out has already been answered before.\\However, it may also happen that you discover a ''bug'' or something that you would qualify of abnormal behavior, or that you really have a question that no-one has ever asked (corollary: has never been answered). In that case, you may submit a question to one of the R mailing list. For general R question there is a general R mailing list (\url{https://stat.ethz.ch/mailman/listinfo/r-help}), while the spatial domain has its own mailing list (\url{https://stat.ethz.ch/mailman/listinfo/r-sig-geo}). Geo related question should be posted to this latter mailing list.\\
 Warning, these mailing list have heavy mail traffic, use your mail client efficiently and set filters, otherwise it will quickly bother you.\\
 These mailing lists have a few rules, and it's important to respect them in order to ensure that:
 
@@ -117,11 +117,17 @@ s[50:150] <- 151
 r[s %in% c(150, 151)] <- NA
 # Visualize the result
 @
-\begin{center}
-<<fig = TRUE>>=
+
+<<raster-1, echo=FALSE, fig=TRUE, include=FALSE>>=
 plot(r)
 @
-\end{center}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-raster-1}
+\caption{Display of the raster layer after data replacement}
+\label{raster-1}
+\end{figure}
 
 
 Useful to know when writing a reproducible example; instead of generating your own small datasets (vectors or RasterLayers, etc) as part of your reproducible example, use some of R ''built-in'' datasets. They are part of the main R packages.
@@ -129,17 +135,23 @@ Some popular datasets are: cars, meuse.grid\_ll, Rlogo, iris, etc
 The auto completion menu of the \code{data} function will give you an overview of the datasets available
 
 <<>>=
-# This demonstration of datasets still need to be writen
-data(cars) # Imports the variable cars in the working environment
+# Imports the variable cars in the working environment
+data(cars) 
 class(cars)
-# head(cars) # Visualizes the first five rows of the variable
+# Visualizes the first five rows of the variable
+head(cars) 
 @
-\begin{figure}[H]
-\begin{center}
-<<label=cars, fig = TRUE>>=
-plot(cars) # The plot function on this type of dataset (class = data.frame, 2 column) automatically generates a scatterplot
+
+<<cars, echo=FALSE, fig=TRUE, include=FALSE>>=
+# The plot function on this type of dataset (class = data.frame, 2 column)
+# automatically generates a scatterplot
+plot(cars)
 @
-\end{center}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-cars}
 \caption{Visual representation of the cars data set}
 \label{cars}
 \end{figure}
@@ -151,28 +163,32 @@ The following example compiled from the help pages of the sp package.
 library(sp)
 # Load required datastes
 data(meuse)
-# The meuse dataset is not by default a spatial object, but its x, y coordinates are part of the data.frame
+# The meuse dataset is not by default a spatial object
+# but its x, y coordinates are part of the data.frame
 class(meuse)
 coordinates(meuse) <- c("x", "y")
 class(meuse)
 @
 Now that the object belongs to a spatial class, we can plot it using one of the vector plotting function of the sp package. See the resulting in figure~\ref{meuse1}.
 
-\begin{figure}[H]
-\begin{center}
-<<label=meuse1, fig = TRUE>>=
-bubble(meuse, "zinc", maxsize = 2.5, main = "zic concentrations (ppm)", key.entries = 2^(-1:4))
+<<meuse1, echo=TRUE, fig=TRUE, include=FALSE>>=
+bubble(meuse, "zinc", maxsize = 2.5,
+       main = "zic concentrations (ppm)", key.entries = 2^(-1:4))
 @
-\end{center}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-meuse1}
 \caption{The zinc concentration around the meuse river}
 \label{meuse1}
 \end{figure}
 
+
 The sp package help page contain multiple examples of how to explore its meuse built-in data set. Another example of multiple plots using meuse.grid is given in figure~\ref{meuse2}.
 
-\begin{figure}[H]
-\begin{center}
-<<label=meuse2, fig = TRUE>>=
+
+<<meuse2, echo=TRUE, fig=TRUE, include=FALSE>>=
 # Load meuse.riv dataset
 data(meuse.riv)
 # Create an object of class spatialPolygons from meuse.riv
@@ -190,7 +206,11 @@ spplot(meuse.grid, col.regions=bpy.colors(), main = "meuse.grid",
   )
 )
 @
-\end{center}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-meuse2}
 \caption{Another example of spatial data manipulation and spatial plot using the meuse data set from sp package}
 \label{meuse2}
 \end{figure}
@@ -265,6 +285,7 @@ HelloWorld <- function (x) {
   return(hello)
 }
 
+# Let's test it
 HelloWorld('john')
 @
 
@@ -299,11 +320,12 @@ is.character(32)
 is.numeric(32)
 @
 
-Also note that \code{is.character(32) == TRUE} is equivalent to \code{is.character(32)}. Therefore when checking logical arguments, you don't have to use the \code{== TRUE}. As an example, a function may have an argument (\code{plot}) that if set to \code{TRUE} will generate a plot, while if set to \code{FALSE} does not plot. This means that the function certainly contains an if statement. \code{if(plot)} in that case is equivalent to \code{if(plot == TRUE)}, it's just shorter.\\
-An example, with a function that subtract 2 RasterLayers, with the option to plot the resulting RasterLayer, or not.
+Also note that \code{is.character(32) == TRUE} is equivalent to \code{is.character(32)}. Therefore when checking logical arguments, you don't need to use the \code{== TRUE}. As an example, a function may have an argument (\code{plot}) that, if set to \code{TRUE} will generate a plot, and if set to \code{FALSE} does not generate a plot. It means that the function certainly contains an if statement. \code{if(plot)} in that case is equivalent to \code{if(plot == TRUE)}, it's just shorter.\\
+An example, with a function that subtracts 2 RasterLayers, with the option to plot the resulting RasterLayer, or not.
 <<>>=
 library(raster)
-minusRaster <- function(x, y, plot=FALSE) { # Function to substract 2 rasterLayers
+# Function to substract 2 rasterLayers
+minusRaster <- function(x, y, plot=FALSE) { 
   z <- x - y
   if (plot) {
     plot(z)
@@ -312,24 +334,38 @@ minusRaster <- function(x, y, plot=FALSE) { # Function to substract 2 rasterLaye
 }
 
 # Let's generate 2 rasters 
-r <- raster(system.file("external/rlogo.grd", package="raster")) # that one is the R logo raster converted to the raster package file format.
-r2 <- r # The second RasterLayer is calqued from the initial RasterLayer in order to avoid issues of non matching extent or resolution, etc
-r2[] <- (1:ncell(r2)) / 10 # Filling the rasterLayer with new values. The /10 simply makes the result more spectacular
-r3 <- minusRaster(r, r2) # simply performs the calculation
+# that first one is the R logo raster
+# converted to the raster package file format.
+r <- raster(system.file("external/rlogo.grd", package="raster")) 
+# The second RasterLayer is calqued from the initial RasterLayer in order
+# to avoid issues of non matching extent or resolution, etc
+r2 <- r 
+# Filling the rasterLayer with new values.
+# The /10 simply makes the result more spectacular
+r2[] <- (1:ncell(r2)) / 10
+# simply performs the calculation
+r3 <- minusRaster(r, r2) 
 @
 
-\begin{center}
-<<fig = TRUE>>=
-r4 <- minusRaster(r, r2, plot=TRUE) # Performs the claculation and plots the resulting RasterLayer
+
+<<minus, echo=TRUE, fig=TRUE, include=FALSE>>=
+# Now performs the claculation and plots the resulting RasterLayer
+r4 <- minusRaster(r, r2, plot=TRUE) 
 @
-\end{center}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-minus}
+\caption{Result of the \code{minusRaster()} function with \code{plot=TRUE}}
+\label{minus}
+\end{figure}
 
 \subsubsection*{Use of \code{try} and debugging your functions}
 \textit{\textbf{Use of try for error handling}}\\
 The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (sub-function, piece of code) that is wrapped into \code{try} will not interrupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers. So \code{try} is a perfect way to deal with heterogeneous/unpredictable input data.\\
 Also \code{try} returns an object of different class when it fails. You can take advantage of that at a later stage of your processing chain to make your function more adaptive.
 See the example below that illustrate the use of \code{try} for sequentially calculating frequency on a list of auto-generated RasterLAyers.
-<<a, eval=FALSE, echo=TRUE>>=
+<<a, eval=TRUE, echo=TRUE>>=
 library(raster)
 
 # Create a raster layer and fill it with "randomly" generated integer values
@@ -340,19 +376,25 @@ a[] <- floor(rnorm(n=ncell(a)))
 freq(a, value=-2)
 
 # Let's imagine that you want to run this function over a whole list of RasterLayer
-# But some elements of the list are impredictibly corrupted, so the list looks as follows
-b <- a # So that b is also a RasterLayer
+# but some elements of the list are impredictibly corrupted
+# so the list looks as follows
+b <- a
 c <- NA
 list <- c(a,b,c)
-
+# In that case, b and a are raster layers, c is ''corrupted''
+@
+<<a, eval=FALSE, echo=TRUE>>=
 # Running freq(c) would return an error and crash the whole process
 out <- list()
 for(i in 1:length(list)) {
-  out[i] <- freq(list[i], value=-2)
+  out[i] <- freq(list[[i]], value=-2)
 }
+@
 
-
-# So by building a function that includes a try(), we are able to catch the error, allowing the process to continue despite missing/corrupted data.
+<<eval=TRUE, echo=TRUE>>=
+# Therefore by building a function that includes a try()
+# we are able to catch the error
+# allowing the process to continue despite missing/corrupted data.
 fun <- function(x, value) {
   tr <- try(freq(x=x, value=value), silent=TRUE)
   if (class(tr) == 'try-error') {
@@ -362,19 +404,20 @@ fun <- function(x, value) {
   }
 }
 
-# So let's try to run the loops again
+# Let's try to run the loop again
 out <- list()
 for(i in 1:length(list)) {
-  out[i] <- freq(list[i], value=-2)
+  out[i] <- fun(list[[i]], value=-2)
 }
 out
 
-# Note that using a function of the apply family would be a more elegant/shorter way to obtain the same result
+# Note that using a function of the apply family would be a more
+# elegant/shorter way to obtain the same result
 (out <- sapply(X=list, FUN=fun, value=-2))
 
 @
-\\
-\textit{\textbf{Function debugging}}\\
+
+\textit{\textbf{Function debugging}}
 
 Debugging a single line of code is usually relatively easy; simply double checking the classes of all input arguments often gives good pointers to why the line crashes. But when writing more complicated functions where objects created within the function are reused later on in that same function or in a nested function, it is easy to lose track of what is happening, and debugging can then become a nightmare. A few tricks can be used to make that process less painful. The first thing to investigate right after an error occurs is to run the \code{traceback()} function; just like that without arguments. Carefully reading the return of that function will tell you where exactly in your function the error occurred. In addition to \code{traceback()}, R has a more elaborated debugging mode that can be activated by calling \code{debug()}. Although the use of \code{debug()} is not covered in this lesson, fell free to explore by yourself these debugging functionalities (\url{http://www.stats.uwo.ca/faculty/murdoch/software/debuggingR/}).
 
@@ -398,7 +441,7 @@ For these reasons, if you build a package, next year you will still be able to r
   \label{package}
 \end{figure}
 
-This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual \textit{Writing R extensions} \url{http://cran.r-project.org/doc/manuals/R-exts.html}.\\
+This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual \textit{Writing R extensions} (\url{http://cran.r-project.org/doc/manuals/R-exts.html}).\\
 The default basic structure of a package is as follows:\
 2 sub directories (R and man), NAMESPACE and DESCRIPTION files (Figure~\ref{package}). The \textbf{R directory} includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the \textbf{man directory}. These .Rd files are the functions documentation. \textbf{NAMESPACE} and \textbf{DESCRIPTION} files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalist package structure; more elaborate packages may include extra sub directories, such as data, demo or vignette.\\
 
@@ -407,9 +450,9 @@ The default basic structure of a package is as follows:\
 The \code{package.skeleton} function will help you get the package structure from a list of sourced functions. (A function opened in the R Studio editor panel can be sourced by pressing the ''Source'' in the top right hand corner of the panel)
 \code{prompt} creates a tailored documentation (.Rd) file from an existing function.
 The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including. Explore the menus and option under Project - New project. 
-More package creation tips can be found online \url{http://mages.github.io/R_package_development/#1}
+More package creation tips can be found online (\url{http://mages.github.io/R_package_development/#1})
 
-\subsubsection*{Package building}\\
+\subsubsection*{Package building}
 \textit{\textbf{Prerequisites}}\\
 In order to be able to build package, you must have \textbf{Rtools} installed and properly setup on your system. Refer to the system setup document for more information on how to install Rtools. Once this is done R Studio offers great integration with Rtools, which makes package building really easy. The build panel in R Studio is by default located in the upper right window.
 
@@ -442,7 +485,7 @@ Since the R Studio IDE provides integration for git and svn, we will only focus 
 \begin{table}[H]
   \caption {Git and svn for R projects}
   \centering
-  \begin{tabular}{| l | l | l |}
+  \begin{tabular}{| l | p{6cm} | p{6cm} |}
     \hline
     \textbf{Systems} & \textbf{Online repositories available} & \textbf{Integration with R} \\ \hline
     \textbf{Git} & Bitbucket, GitHub, SourceForge & Via devtools package \\ \hline
