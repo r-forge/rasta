@@ -14,7 +14,6 @@
 \usepackage{amsmath}
 \usepackage{url}
 \usepackage{float}
-\usepackage[demo]{graphicx}
 
 % hyperref setup
 \definecolor{Red}{rgb}{0.5,0,0}
@@ -137,7 +136,8 @@ See the example below.
   
 <<>>=
 # Reading a multilayer raster object
-gewata <- brick(system.file("extdata/LE71700552001036SGS00_SR_Gewata_INT1U.tif", package="rasta"))
+gewata <- brick(system.file("extdata/LE71700552001036SGS00_SR_Gewata_INT1U.tif",
+                            package="rasta"))
 @
 Let's take a look at the structure of this object.
 <<>>=
@@ -146,13 +146,13 @@ gewata
 The metadata above informs us that the gewata object is a relatively small (593x653 pixels) RasterBrick with 6 layers.\\
 Similarly, single layer objects can be read using the \code{raster()} function. Or if you try using the \code{raster()} function on a multi layer object, by default the first layer only will be read.
 <<eval=FALSE>>=
-gewataB1 <- raster(system.file("extdata/LE71700552001036SGS00_SR_Gewata_INT1U.tif", package="rasta"))
+gewataB1 <- raster(system.file("extdata/LE71700552001036SGS00_SR_Gewata_INT1U.tif",
+                               package="rasta"))
 gewataB1
 @
 
 Note that in addition to supporting most commonly used geodata formats, the raster package has its own format. Saving a file using the \code{.grd} extension (\code{'filename.grd'}) will automatically save the object to the raster package format. This format has great advantages when performing geo processing in R (one advantage for instance is that it conserve original filenames as layer names in multilayer objects), however, saving your final results in this file format might be risky as the GDAL drivers for that file format do not seem to exist yet.
 
-\\
 \subsection*{Geo processing, in memory Vs. on disk}
 When looking at the documentation of most functions of the raster package, you will notice that the list of arguments is almost always ended by ... It is called and ellipsis, and means that extra arguments can be passed to the function. Often these arguments are those that can be passed to the \code{writeRaster()} function; meaning that most geo-processing functions are able to write their result directly to file, on disk. This reduces the number of steps and is always a good consideration when working with big raster objects that tend to overload the memory if not written directly to file.
 
@@ -259,14 +259,15 @@ ndvOver <- function(x, y) {
 ndvi3 <- overlay(x=gewata[[3]], y=gewata[[4]], fun=ndvOver)
 @
 
-TODO(): Find a way to compare the values of these rasters.
+TODO(): Find a way to compare the values of these rasters... That could be the exercise.; write a function that checks that 2 rasterLayers are identical...
 
 \subsection*{Re-projections}
 By the way, we still don't know where this area is. In order to investigate that, we are going to try projecting it in Google Earth. As you know Google Earth is all in Lat/Long, so we have to get our data re-projected to lat/long first. The \code{projectRaster()} function allows re-projection of raster objects to any projection one can think of. As the function uses the PROJ.4\footnote{PROJ.4 (\url{https://trac.osgeo.org/proj/}) is the reference library (external to R) that handles cartographic projections and performs projections transformations. The rgdal package is the interface between that library and R} library to perform that operation, the \code{crs=} argument should receive a ''proj4'' expression. ''proj4'' expressions are strings that provide the projection parameters of cartographic projections. A central place to search for projections is the spatial reference website (\url{http://spatialreference.org/}), from this database you will be able to query almost any reference and retrieve it in any format, including its Proj4 expression.
 
 <<>>=
 # It all fit in one line, 
-# It does not matter which of ndvi, ndvi2, or ndvi3 we coose since they are all the same
+# It does not matter which of ndvi, ndvi2, or ndvi3 we choose
+# since they are all the same
 ndviLL <- projectRaster(ndvi, crs='+proj=longlat')
 @
 
@@ -311,7 +312,7 @@ cloud <- calc(taravao[[9]], fun=QA2cloud)
 cloud[cloud == 0] <- NA 
 @
 
-A nice preview of the result can be achived using the \code{plotRGB()} function. The resulting plot is presented in figure~\ref{rgb}
+A nice preview of the result can be achived using the \code{plotRGB()} function. The resulting plot is presented in figure~\ref{rgb}.
 <<rgb, echo=FALSE, fig=TRUE, include=FALSE>>=
 # Display data and the cloud mask 
 plotRGB(taravao, 5, 3, 4) 
@@ -324,7 +325,7 @@ plot(cloud, add=TRUE, legend=FALSE)
 \centering
 \includegraphics[width=0.6\textwidth]{Lesson_5-rgb}
 \caption{RGB colour composite of the Taravao area with cloud mask overlay, the band combination used is 5, 3, 4 (Landsat 8)}
-\label{ndvi}
+\label{rgb}
 \end{figure}
 
 
@@ -359,7 +360,6 @@ A file format that is getting increasingly common with geo-spatial gridded data 
 The rgdal package does not include hdf drivers in its pre-built binary. Data can therefore not be read directly from hdf into R (as object of class rasterLayer). A workaround is to convert the files externally to a different data format. Since you probably have gdal installed on your system (either via FWTools or OSGeo4W), you can use the command line utility gdal\_translate to perform this operation.
 One easy way to do that is by calling it directly from R, via the command line utility.
 
-TODO(dutri001) add a not run example
 <<eval=FALSE>>=
 library(MODIS)
 # Get a list of sds names
@@ -391,7 +391,7 @@ r <- raster(sds$SDS4gdal[1])
 \section{Further reading}
 
 \section{Packages you should know about}
-
+The newly released \href{https://r-forge.r-project.org/projects/gdalutils/}{gdalUtils} package should provide interesting wrappers facilitating the use of gdal functions from within R.
 
 
 
