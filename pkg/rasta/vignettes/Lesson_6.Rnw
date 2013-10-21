@@ -33,7 +33,7 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Raster Analysis}
-\author{Ben DeVries, Jan Verbesselt, Lo\"{i}c Dutrieux, Sytze de Bruin}
+\author{Ben DeVries, Jan Verbesselt, Lo\"{i}c Dutrieux}
 
 \maketitle
 
@@ -63,7 +63,6 @@ library(rasta)
 library(raster)
 library(rgdal)
 library(sp)
-library(rasterVis)
 library(ggplot2)
 @
 
@@ -77,30 +76,43 @@ Since being released to the public, the Landsat data archive has become an inval
 
 Landsat scenes are delivered via the USGS as a number of image layers representing the different bands captured by the sensors. In the case of the Landsat 7 Enhanced Thematic Mapper (ETM+) sensor, the bands are shown in figure xxx. Using different combination of these bands can be useful in describing land features and change processes.
 
-TODO: insert figure showing Landsat bands.
+\begin{center}
+\begin{figure}[t]
+\centering
+\includegraphics{figs/landsat_bands.jpg}
+  \caption{Bands included in the Landsat 7 (ETM+) and Landsat 8 (OLI/TIRS) sensors. Source: NASA.}
+  \label{landsatBands}
+\end{figure}
+\end{center}
 
 Part of a landsat scene, including bands 2-4 are included as part of the rasta package. These data have been processed using the LEDAPS framework (TODO: insert link), so the values contained in this dataset represent surface reflectance, scaled by 10000 (ie. divide by 10000 to get a reflectance value between 0 and 1).
 
 We will begin exploring these data simply by visualizing them (more methods for data exploration will be covered in Lesson 7).
 
-<<fig = TRUE>>=
+<<fig=FALSE, results=hide>>=
 # load in the data
 data(GewataB2)
 data(GewataB3)
 data(GewataB4)
 # check out the attributes
 GewataB2
-GewataB3
-GewataB4
+# some basic statistics using cellStats()
+cellStats(GewataB2, stat=max)
+# ...is equivalent to:
+maxValue(GewataB2)
+# what is the maximum value of all three bands?
+max(c(maxValue(GewataB2), maxValue(GewataB3), maxValue(GewataB4)))
+
 # plot the histograms of all bands
 hist(GewataB2)
 hist(GewataB3)
 hist(GewataB4)
 @
 
-We can improve these plots by adjusted the scale, etc., but the rasterVis package that has enhanced plotting capabilities which make it easier to make more attractive plots. First, to make the comparison easier, we will make a rasterBrick object from these three layers.
+We can improve these plots by adjusting the axis scale, bin size, etc., but the rasterVis package that has enhanced plotting capabilities which make it easier to make more attractive plots. First, to make the comparison easier, we will make a rasterBrick object from these three layers.
 
-<<fig = TRUE>>=
+<<fig=FALSE>>=
+library(rasterVis)
 gewata <- brick(GewataB2, GewataB3, GewataB4)
 # view all histograms together with rasterVis
 histogram(gewata)
@@ -108,17 +120,27 @@ histogram(gewata)
 
 The rasterVis package has several other raster plotting types inherited from the lattice pacakge. For multispectral data, one plot type which is particularly useful for data exploration is the scatterplot matrix, called by the splom() function.
 
-<<fig = TRUE>>=
+<<fig=FALSE>>=
 splom(gewata)
 @
+\begin{center}
+\begin{figure}[t]
+\centering
+<<echo=FALSE, fig=TRUE>>=
+splom(gewata)
+@
+\caption{Scatter plot matrix for Landsat bands 2, 3, and 4 of the 'Gewata' subscene.}
+\label{scatterplotmatrix}
+\end{figure}
+\end{center}
 
-Calling splom() on a rasterBrick reveals potential correlations between the layers themselves. In the case of bands 2-4 of the gewata subset, we can see that band 2 and 3 (in the visual part of the EM spectrum) are highly correlated, while band 4 contains significant non-redundant information. This band, situated in the near infrared (NIR) region of the EM spectrum, is often used to described vegetation-related features for this reason.
+Calling splom() on a rasterBrick reveals potential correlations between the layers themselves(Figure \ref{scatterplotmatrix}). In the case of bands 2-4 of the gewata subset, we can see that band 2 and 3 (in the visual part of the EM spectrum) are highly correlated, while band 4 contains significant non-redundant information. Given what we know about the location of these bands along the EM spectrum (Figure \ref{landsatBands}), how could these scatterplots be explained? ETM+ band 4 (nearly equivalent to band 5 in the Landsat 8 OLI sensor) is situated in the near infrared (NIR) region of the EM spectrum and is often used to described vegetation-related features.
 
-The rasterVis package will be demonstrated in more detail in this tutorial the section dealing with multilayered raster data.
+The rasterVis package will be demonstrated in more detail in this tutorial the section dealing with raster time series.
 
 \subsection*{Computing new rasters: Raster algebra}
 
-In the previous section, we observed a tight correlation between two of the Landsat bands of the gewata subset, but a very different distribution of values in band 4 (NIR). This distribution stems from the fact that vegetation reflects very highly in the NIR range, compared to the visual range of the EM spectrum. A commonly used metric for assessing vegetation dynamics, the normalized difference vegetation index (NDVI), takes advantage of this fact and is computed from Landsat bands 3 (red; R) and 4 (NIR) as follows:
+In the previous section, we observed a strong correlation between two of the Landsat bands of the gewata subset, but a very different distribution of values in band 4 (NIR). This distribution stems from the fact that vegetation reflects very highly in the NIR range, compared to the visual range of the EM spectrum. A commonly used metric for assessing vegetation dynamics, the normalized difference vegetation index (NDVI), takes advantage of this fact and is computed from Landsat bands 3 (red; R) and 4 (NIR) as follows:
 
 \begin{equation}
 NDVI=\frac{NIR-R}{NIR+R}
@@ -132,55 +154,62 @@ ndvi <- (GewataB4 - GewataB3) / (GewataB4 + GewataB3)
 
 Using raster algebra (above) is relatively easy and intuitive. However, with particularly large datasets or complex calculations, it is often desireable to use the overlay() function instead.
 
-<<>>=
-ndvi <- overlay(GewataB4, GewataB3, fun = function(x,y){(x-y)/(x+y)})
+<<eval=FALSE>>=
+ndvi <- overlay(GewataB4, GewataB3, fun=function(x,y){(x-y)/(x+y)})
 @
 
 One advantage of this function is the fact that the result can be written immediately to file by including the argument 'filename="..."', thus saving memory (especially important when working with large datasets).
 
 Plotting our new raster, we can immediately see how useful the NDVI metric is for identifying land features. Use the interactive 'drawExtent()' function to zoom into some of the features to inspect them more closely.
 
-\begin{Sinput}
-> # first, plot the raster
-> plot(ndvi)
-> # call drawExtent() to activate interactive mode
-> # and assign the result to an extent object e
-> e <- drawExtent()
-> # now click 2 points on the plot window
-> # these represent the top-right and bottom-left corner of your extent
-> # now plot ndvi again, but only the extent you defined interactively
-> plot(ndvi, ext = e)
-\end{Sinput}
+<<eval=FALSE>>=
+# first, plot the raster
+plot(ndvi)
+# call drawExtent() to activate interactive mode
+# and assign the result to an extent object e
+e <- drawExtent()
+# now click 2 points on the plot window
+# these represent the top-right and bottom-left corner of your extent
+# now plot ndvi again, but only the extent you defined interactively
+plot(ndvi, ext=e)
+@
 
 \section{Classifying raster data}
 
 One of the most important tasks in analysis of remote sensing image analysis is image classification. In classifying the image, we take the information contained in the various bands (possibly including other synthetic bands such as NDVI or principle components). In this tutorial we will explore two approaches for image classification: unsupervised (k-means) and supervised (random forest) classification.
 
-\subsection*{Supervised classification: Random Forest}
+\subsection*{Supervised classification: Random Forest\footnote{This section was written using code contributed by Valerio Avitabile.}}
 
-...TODO: add description of the random forest classifier, with links...
+The Random Forest classification algorithm is an ensemble learning method that is used for both classification and regression. In this study, we will use the algorithm to derive land cover classes given a set of training data. Random Forest builds a number of classification trees, and the final class assigned is based on the class with the maximum instances among the final set ('forest') of classes\footnote{For a more complete description of the Random Forests classification method, see \url{http://stat-www.berkeley.edu/users/breiman/RandomForests/cc\textunderscore home.htm}.
+}.
 
-We should first prepare the data on which the classification will be done. So far, we have prepared three bands from a ETM+ image in 2001 (bands 2, 3 and 4) as a rasterBrick, and have also calculated NDVI. In addition, there is a Vegetation Continuous Field (VCF) product available for the same period (2000). This product is also based on Landsat ETM+ data, and represents an estimate of tree cover (in \%). Since this layer could also be useful in classifying land cover types, we will also include it as a potential covariate in the random forest classification.
+One major advantage of the Random Forest method is the fact that an 'Out of the Box' (OOB) error estimate and an estimate of variable performace are performed. For each classification tree assembled, a fraction of the training data are left out and used to compute the error for each tree. In addition an importance score is computed for each variable in two forms: the mean decrease in accuracy for each variable, and the Gini impurity criterion.
 
-<<>>=
+We should first prepare the data on which the classification will be done. So far, we have prepared three bands from a ETM+ image in 2001 (bands 2, 3 and 4) as a rasterBrick, and have also calculated NDVI. In addition, there is a Vegetation Continuous Field (VCF) product available for the same period (2000)\footnote{For more information on the Landsat VCF product, see \url{http://glcf.umd.edu/data/landsatTreecover/}.}. This product is also based on Landsat ETM+ data, and represents an estimate of tree cover (in \%). Since this layer could also be useful in classifying land cover types, we will also include it as a potential covariate in the random forest classification.
+
+<<fig=FALSE>>=
 # load the data
 data(vcfGewata)
 plot(vcfGewata)
 histogram(vcfGewata) # or 'hist(vcfGewata)'
-# note that there are some strange values >> 100
-# let's replace these values with NA
+@
+
+Note that in the vcfGewata rasterLayer there are some values much greater than 100, which are flags for water, cloud or cloud shadow pixels. To avoid these layers, we can assign a value of NA to these pixels so they are not used in the classification.
+
+<<fig=FALSE>>=
 vcfGewata[vcfGewata > 100] <- NA
 plot(vcfGewata)
 histogram(vcfGewata)
 @
 
-To perform the classification in R, it is best to assemble all covariate layers into one rasterBrick object. In this case, we can simply append these new layers (NDVI and VCF) to our existing rasterBrick (currently consisting of bands 2, 3, and 4). But first, let's rescale the NDVI layer by 10000 (just as the others have been scaled) and store it as an integer raster.
+To perform the classification in R, it is best to assemble all covariate layers into one rasterBrick object. In this case, we can simply append these new layers (NDVI and VCF) to our existing rasterBrick (currently consisting of bands 2, 3, and 4). But first, let's rescale the NDVI layer by 10000 (just as the reflectance bands 2, 3, and 4 have been scaled) and store it as an integer raster.
 
-<<>>=
+<<fig=FALSE>>=
 ndvi <- calc(ndvi, fun = function(x) floor(x*10000))
 # change the data type
 # see ?dataType for more info
 dataType(ndvi) <- "INT2U"
+# name this layer to make plots interpretable
 names(ndvi) <- "NDVI"
 # make the covariate rasterBrick
 covs <- addLayer(gewata, ndvi, vcfGewata)
@@ -189,16 +218,17 @@ plot(covs)
 
 For this exercise, we will do a very simple classification for 2001 using three classes: forest, cropland and wetland. While for other purposes it is usually better to define more classes (and possibly fuse classes later), a simple classification like this one could be useful, for example, to construct a forest mask for the year 2001.
 
-<<>>=
+<<fig=FALSE, results=hide>>=
 # load the training polygons
 data(trainingPoly)
 # inspect the data
 trainingPoly@data
+# superimpose training polygons onto ndvi plot
 plot(ndvi)
 plot(trainingPoly, add = TRUE)
 @
 
-The training classes are labelled as string labels. For this exercise, we will need to work with integer classes, so we will need to first 'relabel' our training classes.
+The training classes are labelled as string labels. For this exercise, we will need to work with integer classes, so we will need to first 'relabel' our training classes. To do this, we will first make a function that will reclassify the strings representing land cover classes into integers 1, 2, and 3 using the conditional assigner ifelse().
 
 <<>>=
 # define a reclassification function
@@ -209,22 +239,23 @@ reclass <- function(x){
   return(y)
 }
 # apply this over the trainingPoly data slot
-trainingPoly@data$Code <- sapply(trainingPoly@data$Class, FUN = function(x) reclass(x))
+trainingPoly@data$Code <- sapply(trainingPoly@data$Class, 
+                                 FUN = function(x) reclass(x))
 @
 
 To train the raster data, we need to convert our training data to the same type using the rasterize() function. This function takes a spatial object (in this case a polygon object) and transfers the values to raster cells defined by a raster object. Here, we will define a new raster containing those values.
 
-<<fig = TRUE>>=
+<<fig=FALSE, results=hide>>=
 classes <- rasterize(trainingPoly, ndvi, field = 'Code')
 dataType(classes) <- "INT1U"
 plot(classes, col = c("dark green", "orange", "light blue"))
 @
 
-(Note: there is a handy 'progress = "text"' argument, which can be passed to many of the raster package functions and can help to monitor processing).
+(Note: there is a handy 'progress="text"' argument, which can be passed to many of the raster package functions and can help to monitor processing).
 
 Our goal in preprocessing these data is to have a table of values representing all layers (covariates) with \emph{known} values/classes. To do this, we will first need to create a version of our rasterBrick only representing the training pixels. Here the mask() function from the raster package will be very useful.
 
-<<fig = TRUE>>=
+<<fig=FALSE>>=
 covmasked <- mask(covs, classes)
 plot(covmasked)
 # add the classes layer to this new brick
@@ -235,22 +266,29 @@ plot(trainingbrick)
 
 Now it's time to add all of these values to a data.frame representing all training data. This data.frame will be used as an input into the RandomForest classification function. We will use getValues() to extract all of the values from the layers of the rasterBrick.
 
-<<>>=
+<<results=hide>>=
 # extract all values into a matrix
 valuetable <- getValues(trainingbrick)
-# convert to a data.frame
+# convert to a data.frame and inspect the first and last rows
 valuetable <- as.data.frame(valuetable)
 head(valuetable)
+tail(valuetable)
+@
+
+In inspecting this training data.frame, you will notice that a significant number of rows has the value NA for the class column, which will be problematic during the training phase. The rows with class=NA represent pixels found outside the training polygons, and these rows should therefore be removed before going ahead with deriving the Random Forest model.
+
+<<results=hide>>=
 # keep only rows where valuetable$classes has a value
 valuetable <- valuetable[!is.na(valuetable$class),]
 head(valuetable)
+tail(valuetable)
 # convert values in the class column to factors
 valuetable$class <- factor(valuetable$class, levels = c(1:3))
 @
 
-Now we have a convenient reference table which contains, for each of the three defined classes, all known values for all covariates. Let's visualize the distribution of some of these covariates using the ggplot() package.
+Now we have a convenient reference table which contains, for each of the three defined classes, all known values for all covariates. Before proceeding with the classification, let's visualize the distribution of some of these covariates using the ggplot() package.
 
-<<fig = TRUE>>=
+<<fig=FALSE>>=
 # 1. NDVI
 ggplot(data = valuetable, aes(x = NDVI)) + 
   geom_histogram() + 
@@ -287,53 +325,96 @@ Now it is time to build the Random Forest model using the training data containe
 delRows <- which(apply(valuetable, 1, FUN = function(x) NA %in% x))
 # remove these rows from valuetable
 valuetable <- valuetable[-delRows,]
+@
+<<eval=FALSE>>=
 # construct a random forest model
 # caution: this step takes fairly long!
 library(randomForest)
 modelRF <- randomForest(x = valuetable[,c(1:5)], y = valuetable$class,
                         importance = TRUE)
 @
+<<echo=FALSE, results=hide>>=
+library(randomForest)
+if(!file.exists("data/modelRF.rda")){
+  modelRF <- randomForest(x = valuetable[,c(1:5)], y = valuetable$class,
+                        importance = TRUE)
+  save(modelRF, file='data/www/modelRF.rda', compress="bzip2", ascii=FALSE)
+} else {
+  load('data/modelRF.rda')
+}
+@
 
 Since the random forest method involves the building and testing of many classification trees (the 'forest'), it is a computationally expensive step (and could take alot of memory for especially large training datasets). When this step is finished, it would be a good idea to save the resulting object with the save() command. Any R object can be saved as an .rda file and reloaded into future sessions.
 
-The resulting object from the randomForest() function is quite large and packed full of information. Since we set 'importance = TRUE', we now also have information on the statistical importance of each of our covariates which we can visualize using the varImpPlot() command.
+The resulting object from the randomForest() function is a specialized object of class "randomForest", which is a large list-type object packed full of information about the model output. Elements of this object can be called and inspected like any list object.
 
-<<fig = TRUE>>=
+<<results=hide>>=
+# inspect the structure and element names of the resulting model
+class(modelRF)
+str(modelRF)
+names(modelRF)
+# inspect the confusion matrix of the OOB error assessment
+modelRF$confusion
+@
+
+Since we set 'importance=TRUE', we now also have information on the statistical importance of each of our covariates which we can visualize using the varImpPlot() command.
+
+<<fig=FALSE>>=
 varImpPlot(modelRF)
 @
 
-...TODO: clarify this plot and show the OOB accuracy assessment...
+These two plots give two different reports on variable accuracy. In this case, it seems that Gewata bands 3 and 4 have the highest impact on accuracy, while bands 3 and 2 score highest with the Gini impurity criterion. For especially large datasets, it may be helpful to know this information, and leave out less important variables for subsequent runs of the randomForest() function.
+
+Since the VCF layer included NA's (which have also been excluded in our results) and scores relatively low according to the mean accuracy decrease criterion, try to construct an alternate random forest model as above, but excluding this layer. What effect does this have on the overall accuracy of the results (hint: compare the confusion matrices of the original and new outputs). What affect does leaving this variable out have on the processing time (hint: use system.time())?
 
 Now we can apply this model to the rest of the image and assign classes to all pixels. Note that for this step, the names of the raster layers in the input brick (here 'covs') must correspond to the column names of the training table. We will use the predict() function from the raster package to predict class values based on the random forest model we have just constructed. This function uses a pre-defined model to predict values of raster cells based on other raster layers. This model can be derived by a linear regression, for example. In our case, we will use the model provided by the randomForest() function we applied earlier.
 
-<<>>=
+<<fig=FALSE, results=hide>>=
 # check layer and column names
 names(covs)
 names(valuetable)
 # predict land cover using the RF model
-predLC <- predict(covs, model = modelRF, na.rm = TRUE)
+predLC <- predict(covs, model=modelRF, na.rm=TRUE)
 # plot the results
 # recall: 1 = forest, 2 = cropland, 3 = wetland
-plot(predLC, col = c("dark green", "orange", "light blue"))
+plot(predLC, col=c("dark green", "orange", "light blue"))
 @
+\begin{figure}[t]
+\centering
+<<echo=FALSE, fig=TRUE>>=
+plot(predLC, col=c("dark green", "orange", "light blue"))
+@
+\caption{Resulting land cover map using a Random Forest classifier.}
+\label{RandomForestLC}
+\end{figure}
 
 Note that the predict() function also takes arguments that can be passed to writeRaster() (eg. 'filename = ...'), so it would be a good idea to write to file as you perform this step (rather than keeping all output in memory).
 
 \subsection*{Unsupervised classification: k-means}
 
-...paragraph on k-means...
+In the absence of training data, an unsupervised classification can be carried out. Unsupervised classification methods assign classes based on inherent structures in the data without resorting to training of the algorithm. One such method, the k-means method, divides data into clusters based on Euclidean distances from cluster means in a feature space\footnote{For more information on the theory behind k-means clustering, see \url{http://home.deib.polimi.it/matteucc/Clustering/tutorial_html/kmeans.html\#macqueen}}.
 
 We will use the same layers (from the 'covs' rasterBrick) as in the Random Forest classification for this classification exercise. As before, we need to extract all values into a data.frame.
 
-<<>>=
+<<results=hide>>=
 valuetable <- getValues(covs)
 head(valuetable)
 @
 
 Now we will construct a kmeans object using the kmeans() function. Like the Random Forest model, this object packages useful information about the resulting class membership. In this case, we will set the number of clusters to three, presumably corresponding to the three classes defined in our random forest classification.
 
-<<>>=
+<<eval=FALSE>>=
 km <- kmeans(na.omit(valuetable), centers = 3, iter.max = 100, nstart = 10)
+@
+<<echo=FALSE>>=
+if(!file.exists('data/km.rda')){
+  km <- kmeans(na.omit(valuetable), centers = 3, iter.max = 100, nstart = 10)
+  save(km, file='data/km.rda', compres='bzip2', ascii=FALSE)
+} else {
+  load('data/km.rda')
+}
+@
+<<results=hide>>=
 # km contains the clusters (classes) assigned to the cells
 head(km$cluster)
 unique(km$cluster) # displays unique values
@@ -370,27 +451,37 @@ valuetable$class[rNA==1] <- NA
 
 Now we are finally ready to assign these cluster values to a raster. This will represent our final classified raster.
 
-<<fig = TRUE>>=
+<<fig=FALSE, results=hide>>=
 # create a blank raster
 classes <- raster(covs)
 # assign values from the 'class' column of valuetable
 classes <- setValues(classes, valuetable$class)
-plot(classes, col = c("dark green", "orange", "light blue"))
+plot(classes, col=c("dark green", "orange", "light blue"))
 @
+\begin{center}
+\begin{figure}[t]
+\centering
+<<>>=
+plot(classes, col=c("dark green", "orange", "light blue"))
+@
+\caption{Unsupervised land cover classification resulting from k-means method.}
+\label{kmeansLC}
+\end{figure}
+\end{center}
 
-These classes are much more difficult to interpret than those resulting from the random forest classification. Clearly, with a good training dataset, a supervised classification can provide a reasonably accurate land cover classification. However, unsupervised classification methods like k-means are useful for study areas for which little to no \emph{a priori} data exist. Is there a way we could improve the k-means classification performed in this example? Which one is computationally faster between random forest and k-means (hint: try the system.time() function)?
+These classes are much more difficult to interpret than those resulting from the random forest classification. We can see from Figure \ref{kmeansLC} that there is particularly high confusion between the (presumably) cropland and wetland classes. Clearly, with a good training dataset, a supervised classification can provide a reasonably accurate land cover classification. However, unsupervised classification methods like k-means are useful for study areas for which little to no \emph{a priori} data exist. Assuming there are no training data available, is there a way we could improve the k-means classification performed in this example? Which one is computationally faster between random forest and k-means (hint: try the system.time() function)?
 
 \subsection*{Applying a raster sieve}
 
 Although the land cover raster we created above is limited in the number of thematic classes it has, and we observed some confusion between wetland and cropland classes, it could be useful for constructing a forest mask. To do so, we have to fuse (and remove) non-forest classes, and then clean up the remaining pixels using focal algebra by applying a sieve.
 
-<<fig = TRUE>>=
+<<fig=FALSE>>=
 # Make an empty raster based on the LC raster attributes
 formask <- raster(predLC)
 # assign NA to all cells
 formask <- setValues(formask, value = NA)
 # assign 1 to all cells corresponding to the forest class
-formask[predLC == 1] <- 1
+formask[predLC==1] <- 1
 plot(formask, col = "dark green", legend = FALSE)
 @
 
@@ -400,40 +491,49 @@ To remove these pixel 'islands', we will use the focal() function of the raster 
 
 In the first case, we will define 'island' pixels as any pixel not having neighbours in any direction (including diagonals). To do this, we can simply apply a single numeric weight defining the dimensions of the matrix.
 
-\begin{figure}
-%% insert figure demonstrating the rm.diagonal cases
-\end{figure}
-
-<<>>=
+<<results=hide, fig=FALSE>>=
 # make an empty raster
 sievemask <- setValues(raster(formask), NA)
 # assign a value of 1 for all forest pixels
 sievemask[!is.na(formask)] <- 1
 # sum of all neighbourhood pixels
-sievemask <- focal(sievemask, w = 3, fun = sum, na.rm = TRUE)
+sievemask <- focal(sievemask, w=3, fun=sum, na.rm=TRUE)
 sievemask
 histogram(sievemask)
 @
 
 We now have a mask whose values are the sum of neighbourhood weights (each equal to 1/9, based on a 3X3 window). In cases where there are no neighbours (ie. the 'island' pixels), this sum will be equal to 1/9 exactly. In cases with one or more neighbours, the sum will be greater than 1/9, up to 1 (ie. if the pixel is completely surrounded by non-NA pixels). To apply the sieve and remove 'island' pixels, we want to select for only cases where sievemask == 1/9 and remove those from the original raster.
 
-<<fig = TRUE>>=
+<<fig=FALSE>>=
 # copy the original forest mask
 formaskSieve <- formask
 # assign NA to pixels where the sievemask == 1/9
-formaskSieve[sievemask == 1/9] <- NA
+formaskSieve[sievemask==1/9] <- NA
 # zoom in to a small extent to check the results
 # Note: you can define your own by using e <- drawExtent()
 e <- extent(c(811744.8, 812764.3, 849997.8, 850920.3))
-par(mfrow = c(1, 2)) # allow 2 plots side-by-side
-plot(formask, ext = e, col = "dark green", legend = FALSE)
-plot(formaskSieve, ext = e, col = "dark green", legend = FALSE)
-par(mfrow = c(1, 1)) # reset plotting window
+par(mfrow=c(1, 2)) # allow 2 plots side-by-side
+plot(formask, ext=e, col="dark green", legend=FALSE)
+plot(formaskSieve, ext=e, col="dark green", legend=FALSE)
+par(mfrow=c(1, 1)) # reset plotting window
 @
+\begin{center}
+\begin{figure}[t]
+\centering
+<<echo=FALSE>>=
+par(mfrow=c(1, 2)) # allow 2 plots side-by-side
+plot(formask, ext=e, col="dark green", legend=FALSE)
+plot(formaskSieve, ext=e, col="dark green", legend=FALSE)
+par(mfrow=c(1, 1)) # reset plotting window
+@
+\caption{Zoom of a forest mask before (left) and after (right) application of a sieve.}
+\label{sieve}
+\end{figure}
+\end{center}
 
 We have successfully removed all 'island' pixels from the forest mask using the focal() function. Suppose we define 'island' pixels as those have no immediate neighbours, \emph{not} considering diagonal neighbours. In that case, we would have to adjust the weight argument ('w') in focal(), and instead define our own 3X3 matrix which omits diagnoal pixels.
 
-<<>>=
+<<results=hide>>=
 # define a weights matrix
 w <- rbind(c(0, 1, 0),
            c(1, 1, 1),
@@ -451,7 +551,10 @@ sievemask <- focal(sievemask, w = w, fun = sum, na.rm = TRUE)
 
 When we define the matrix manually, the weights are not normalized (sum to 1) as they did when we set 'w = 3'. In this case, 'island' pixels would have a value of 1 (no other neighbours), and should be removed according to the sieve. Applying the new sieve as above should give the following results.
 
-<<fig = TRUE, echo = FALSE>>=
+\begin{center}
+\begin{figure}[t]
+\centering
+<<fig=TRUE, echo=FALSE>>=
 # copy the original forest mask
 formaskSieve <- formask
 # assign NA to pixels where the sievemask == 1/9
@@ -462,6 +565,10 @@ plot(formask, ext = e, col = "dark green", legend = FALSE)
 plot(formaskSieve, ext = e, col = "dark green", legend = FALSE)
 par(mfrow = c(1, 1))
 @
+\caption{Zoom of a forest mask before (left) and after (right) application of a sieve, without consideration for diagonal neighbours.}
+\label{sieveDiagonal}
+\end{figure}
+\end{center}
 
 In this case, not only pixels with absolutely no neighbours have been removed, but also those pixels with only diagonal neighbours as well. The second case could be considered as a more 'conservative' sieve.
 
@@ -494,19 +601,19 @@ lulc <- as.factor(lulcGewata)
 
 If you display the attributes of this raster (just type 'lulc'), it will do so, but will also return an error. This error arises because R expects that a raster with factor values should also have a raster attribute table.
 
-<<>>=
+<<results=hide>>=
 # assign a raster attribute table (RAT)
 levels(lulc) <- LUTGewata
 lulc
 @
 
-\section{Working with multilayered raster data}
+\section{Working with raster time series}
 
-When working with multispectral or multitemporal raster data, it is convenient to represent multiple raster layers as a single object in R. R works with two types of multilayer raster objects: stacks and bricks. The main difference between the two is that raster stacks can be read from several different data sources (files) and bricks are read from a single file (e.g. a multiband GeoTIFF).
+Since the opening of the Landsat data archive, image time series analysis has become a real possibility. In environmental research and monitoring, methods and tools for time series analysis are becoming increasingly important. With the brick and stack object types, the raster package in R allows for certain types of raster-based time series analysis, and allows for integration with other time series packages in R.
 
 A raster brick from a small area within the Kafa Biosphere Reserve in Southern Ethiopia can be found in the rasta package. Set the working directory to the packages home folder and load the raster brick from file by
 
-<<>>=
+<<results=hide>>=
 data(tura)
 
 # inspect the data
@@ -519,13 +626,13 @@ extent(tura) # the extent of the raster brick
 \subsection*{Extracting scene information}
 This RasterBrick was read from a .grd file. One advantage of this file format (over the GeoTIFF format, for example) is the fact that the specific names of the raster layers making up this brick have been preserved, a feature which is important for identifying raster layers, especially when doing time series analysis (where you need to know the values on the time axis). This RasterBrick was prepared from a Landsat 7 ETM+ time series, and the original scene names were inserted as layer names.
 
-<<results = hide>>=
+<<results=hide>>=
 names(tura) # displays the names of all layers in the tura RasterBrick
 @
 
 We can parse these names to extract information from them. The first 3 characters indicate which sensor the data come from, with 'LE7' indicating Landsat 7 ETM+ and 'LT5' or 'LT4' indicating Landsat 5 and Landsat 4 TM, respectively. The following 6 characters indicate the path and row (3 digits each), according to the WGS system. The following 7 digits represent the date. The date is formatted in such a way that it equals the year + the julian day. For example, February 5th 2001, aka the 36th day of 2001, would be '2001036'.
 
-<<results = hide>>=
+<<results=hide>>=
 # display the 1st 3 characters of the layer names
 sensor <- substr(names(tura), 1, 3)
 print(sensor)
@@ -545,23 +652,33 @@ as.Date(dates, format = "%Y%j")
 
 There is a function in the rasta package, getSceneinfo() that will parse these names and output a data.frame with all of these attributes.
 
-<<results = hide>>=
+<<results=hide, fig=FALSE>>=
 # ?getSceneinfo
 sceneinfo <- getSceneinfo(names(tura))
 print(sceneinfo)
 # add a 'year' column to the sceneinfo dataframe and plot #scenes/year
 sceneinfo$year <- factor(substr(sceneinfo$date, 1, 4), levels = c(1984:2013))
-@
-\begin{center}
-<<fig = TRUE>>=
-# barplot with number of scenes per year
-library(ggplot2)
+
 ggplot(data = sceneinfo, aes(x = year, fill = sensor)) + 
   geom_bar() + 
   labs(y = "number of scenes") + 
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45))
 @
+
+\begin{center}
+\begin{figure}[t]
+\centering
+<<fig=TRUE, echo=FALSE>>=
+ggplot(data = sceneinfo, aes(x = year, fill = sensor)) + 
+  geom_bar() + 
+  labs(y = "number of scenes") + 
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45))
+@
+\caption{Number of scenes available per year in the time series.}
+\label{landsatScenes}
+\end{figure}
 \end{center}
 
 Note that the values along the x-axis of this plot are evenly distributed, even though there are gaps in the values (e.g. between 1987 and 1994). The spacing is due to the fact that we defined sceneinfo\$year as a vector of \emph{factors} rather than a numeric vectors. Factors act as thematic classes and can be represented by numbers or letters. In this case, the actual values of the factors are not recognized by R. Instead, the levels defined in the factor() function define the hierarchy of the factors (in this case we have defined the levels from 1984 up to 2013, according to the range of acquisition dates). For more information on factors in R, check out \url{http://www.stat.berkeley.edu/classes/s133/factors.html}.
@@ -574,7 +691,7 @@ x <- as.numeric(as.character(x))
 \subsection*{Plotting RasterBricks}
 A RasterBrick can be plotted just as a RasterLayer, and the graphics device will automatically split into panels to accommodate the layers (to an extent: R will not attempt to plot 100 layers at once!). To plot the first 9 layers:
 \begin{center}
-<<fig = TRUE>>=
+<<fig=FALSE>>=
 plot(tura, c(1:9))
 # alternatively, you can use [[]] notation to specify layers
 plot(tura[[1:9]])
@@ -585,7 +702,7 @@ plot(tura[[1:9]], main = sceneinfo$date[c(1:9)])
 
 Unfortunately, the scale is different for each of the layers, making it impossible to make any meaningful comparison between the raster layers. This problem can be solved by specifying a breaks argument in the plot() function.
 
-<<>>=
+<<plot=FALSE, results=hide>>=
 # we need to define the breaks to harmonize the scales (to make the plots comparable)
 bks <- seq(0, 10000, by = 2000) # (arbitrarily) define the breaks
 # we also need to redefine the colour palette to match the breaks
@@ -597,14 +714,14 @@ plot(tura[[1:9]], main = sceneinfo$date[1:9], breaks = bks, col = cols)
 
 Alternatively, the rasterVis package has some enhanced plotting functionality for raster objects, including the levelplot() function, which automatically provides a common scale for the layers.
 
-<<>>=
+<<fig=FALSE, results=hide>>=
 library(rasterVis)
 levelplot(tura[[1:6]])
 # NOTE:
 # for rasterVis plots we must use the [[]] notation for extracting layers
-@
-<<>>=
-# providing titles to the layers is done using the 'names.attr' argument in place of 'main'
+
+# providing titles to the layers is done using 
+# the 'names.attr' argument in place of 'main'
 levelplot(tura[[1:8]], names.attr = sceneinfo$date[1:8])
 # define a more logical colour scale
 library(RColorBrewer)
@@ -612,7 +729,8 @@ library(RColorBrewer)
 # ?brewer.pal
 display.brewer.all()
 cols <- brewer.pal(11, 'PiYG')
-# to change the colour scale in levelplot(), we first have to define a rasterTheme object
+# to change the colour scale in levelplot(), 
+# we first have to define a rasterTheme object
 # see ?rasterTheme() for more info
 rtheme <- rasterTheme(region = cols)
 levelplot(tura[[1:8]], names.attr = sceneinfo$date[1:8], par.settings = rtheme)
@@ -621,7 +739,7 @@ levelplot(tura[[1:8]], names.attr = sceneinfo$date[1:8], par.settings = rtheme)
 This plot gives us a common scale which allows us to compare values (and perhaps detect trends) from layer to layer. In the above plot, the layer titles do not look very nice -- we will solve that problem a bit later.
 
 The rasterVis package has integrated plot types from other packages with the raster package to allow for enhanced analysis of raster data.
-<<results = hide>>=
+<<results=hide, fig=FALSE>>=
 # histograms of the first 6 layers
 histogram(tura[[1:6]])
 # box and whisker plot of the first 9 layers
@@ -633,7 +751,7 @@ More examples from the rasterVis package can be found @ \url{http://oscarperpina
 \subsection*{Calculating data loss}
 In this RasterBrick, the layers have all been individually preprocessed from the raw data format into NDVI values. Part of this process was to remove all pixels obscured by clouds or SLC-off gaps (for any ETM+ data acquired after March 2003). For this reason, it may be useful to know how much of the data has been lost to cloud cover and SLC gaps. First, we will calculate the percentage of no-data pixels in each of the layers using the freq() function. freq() returns a table (matrix) of counts for each value in the raster layer. It may be easer to represent this as a data.frame to access column values.
 
-<<>>=
+<<results=hide>>=
 # try for one layer first
 y <- freq(tura[[1]]) # this is a matrix
 y <- as.data.frame(y)
@@ -656,22 +774,34 @@ for(i in 1:nlayers(tura)){
     nas[i] <- with(y, count[is.na(value)]) / ncell(tura[[i]]) * 100
   }
 }
-# add this vector as a column in the sceneinfo data.frame (rounded to 2 decimal places)
+# add this vector as a column in the sceneinfo data.frame
+#(rounded to 2 decimal places)
 sceneinfo$nodata <- round(nas, 2)
-@
-\begin{center}
-<<fig = TRUE>>=
+
 # plot these values
 ggplot(data = sceneinfo, aes(x = date, y = nodata, shape = sensor)) +
   geom_point(size = 2) +
   labs(y = "% nodata") +
   theme_bw()
+
 @
+\begin{center}
+\begin{figure}[t]
+\centering
+<<fig=TRUE, echo=FALSE>>=
+ggplot(data = sceneinfo, aes(x=date, y=nodata, shape=sensor)) +
+  geom_point(size = 2) +
+  labs(y="% nodata") +
+  theme_bw()
+@
+\caption{\% NAs found in each scene of a Landsat time series.}
+\label{NAperScene}
+\end{figure}
 \end{center}
 
 We have now derived some highly valuable information about our time series. For example, we may want to select an image from our time series with relatively little cloud cover to perform a classification. For further time series analysis, the layers with 100\% data loss will be of no use to us, so it may make sense to get rid of these layers.
 
-<<>>=
+<<results=hide>>=
 # which layers have 100% data loss?
 which(sceneinfo$nodata == 100)
 # supply these indices to the dropLayer() command to get rid of these layers
@@ -688,7 +818,7 @@ With some analyses, it may also be desireable to apply a no-data threshold per s
 
 In some cases, there may be parts of the study area with more significant data loss due to persistant cloud cover or higher incidence of SLC-off gaps. To map the spatial distribution of data loss, we need to calculate the \% of NA in the time series for each \emph{pixel} (ie. looking 'through' the pixel along the time axis). To do this, it is convenient to use the calc() function and supply a special function which will count the number of NA's for each pixel along the time axis, divide it by the total number of data in the pixel time series, and output a percentage. calc() will output a raster with a percentage no-data value for each pixel.
 
-<<label = NAplot, include = FALSE>>=
+<<label=NAplot, include=FALSE, fig=FALSE>>=
 # calc() will apply a function over each pixel
 # in this case, each pixel represents a time series of NDVI values
 # e.g. all values of the 53rd pixel in the raster grid:
@@ -700,32 +830,9 @@ length(y[is.na(y)]) / length(y) * 100
 # now wrap this in a calc() to apply over all pixels of the RasterBrick
 nodata <- calc(tura, fun = function(x) length(x[is.na(x)]) / length(x) * 100)
 @
-\begin{center}
-<<fig = TRUE, echo = FALSE>>=
-plot(nodata)
-@
-\end{center}
-
-\subsection*{Summary statistics}
-
-In addition to calculating the \% of NA in the time series, there are many other ways we can describe this raster time series. For example, we may want to know the mean or median NDVI value over the whole time series, for example.
-
-...to do....
-
-\section{Times Series Analysis}
-\begin{itemize}
-\item making time series plots for selected pixels (interactively or otherwise)
-\item deriving time series statistics
-\begin{itemize}
-\item linear regression from pixel time series
-\item deriving seasonality parameters?
-\item creating figures maps using these statistics
-\end{itemize}
-\end{itemize}
 
 There is an easy way to interactively extract data from a single pixel using the raster package. First, a raster plot should be made from which to identify the pixel of interest. Then, the click() function allows for extraction of the data contained within that pixel. Simply calling click() with no further arguments will only return the (x, y) coordinates of that point as a 1-row matrix.
  
- % this code is not run in the compilation of the pdf, since this is an interactive function
  \begin{Sinput}
  > plot(tura, 101)
  > click()
@@ -733,20 +840,23 @@ There is an easy way to interactively extract data from a single pixel using the
 [1,] 819695.2 830544.3
  \end{Sinput}
 
-We can extract more meaningful information by passing the name of the object (in this case, a RasterBrick) as the first argument, followed by the argument 'n = 1' (or the number of desired points to identify).
+We can extract more meaningful information by passing the name of the object (in this case, a RasterBrick) as the first argument, followed by the argument 'n=1' (or the number of desired points to identify).
 
-\begin{Sinput}
-> plot(tura, 101)
-> click(tura, n = 1)
-\end{Sinput}
+<<eval=FALSE>>=
+plot(tura, 101)
+click(tura, n = 1)
+@
 
 In this case, all data from that pixel are extracted. These time series could then easily be coerced (or inserted) into a data.frame to plot the data and further analyze them. Let's take a look at a the time series of a few different pixels. Instead of using the interactive click() function to extract these data, suppose that we know the (x, y) coordinates of a land cover type (or other points of interest, from a field campaign or ground truth dataset, for example).
 
-<<results = hide>>=
+<<results=hide>>=
 # several pixel coordinate pairs expressed as separate 1-row matrices
-forest <- matrix(data = c(819935, 832004), nrow = 1, dimnames = list(NULL, c('x', 'y')))
-cropland <- matrix(data = c(819440, 829346), nrow = 1, dimnames = list(NULL, c('x', 'y')))
-wetland <- matrix(data = c(822432, 832076), nrow = 1, dimnames = list(NULL, c('x', 'y')))
+forest <- matrix(data=c(819935, 832004), nrow=1, 
+                 dimnames=list(NULL, c('x', 'y')))
+cropland <- matrix(data=c(819440, 829346), nrow=1, 
+                   dimnames=list(NULL, c('x', 'y')))
+wetland <- matrix(data = c(822432, 832076), nrow=1, 
+                  dimnames=list(NULL, c('x', 'y')))
 
 # recall that we can extract pixel data if we know the cell #
 # we can easily convert from xy matrix to cell number with cellFromXY()
@@ -756,7 +866,7 @@ tura[cellFromXY(tura, forest)] # returns a 1-row matrix with all ts values
 
 Now we are able to extract the time series data given a set of (x, y) coordinates. Let's put the data from these three points into a data.frame to facilitate plotting of the data.
 
-<<results = hide>>=
+<<results=hide, fig=FALSE>>=
 # prepare the data.frame
 ts <- data.frame(sensor = getSceneinfo(names(tura))$sensor,
                  date = getSceneinfo(names(tura))$date,
@@ -774,7 +884,7 @@ with(ts, plot(date, forest))
 
 Note the two large gaps in the time series during the 1990's, during which time there are no Landsat data available from the USGS. While we could still use these data to understand historical trends, we will only look at time series data from the ETM+ sensor (ie. data acquired after 1999) for the following exercises.
 
-<<>>=
+<<results=hide, fig=FALSE>>=
 # remove all data from the TM sensor and plot again
 ts <- ts[which(ts$sensor != "TM"), ]
 with(ts, plot(date, forest))
@@ -782,7 +892,7 @@ with(ts, plot(date, forest))
 
 A more informative plot would show these time series side by side with the same scale or on the same plot. These are possible with either the base plot() function or using ggplot2. Either way, there is some preparation needed, and in the case of ggplot2, this may not be immediately obvious. In the following example, we are going to make a facet\textunderscore wrap plot. In order to do so, we need to merge the time series columns to make a data.frame with many rows indeed. An additional column will be used to identify the class (forest, cropland or wetland) of each data point, and this class will be used to 'split' the data into 3 facets. The reshape package has a convenient function, melt(), which will 'automatically' reshape the data.frame to make it passable to the ggplot framework.
 
-<<>>=
+<<results=hide, fig=FALSE>>=
 library(reshape)
 # convert dates to characters, otherwise melt() returns an error
 ts$date <- as.character(ts$date)
@@ -792,16 +902,27 @@ names(tsmelt) <- c('sensor', 'date', 'class', 'value')
 # convert tsplot$date back to Date class to enable formatting of the plot
 tsmelt$date <- as.Date(tsmelt$date)
 
-tsplot <- ggplot(data = tsmelt, aes(x = date, y = value / 10000)) +
+ggplot(data = tsmelt, aes(x = date, y = value / 10000)) +
   geom_point() +
   scale_x_date() +
   labs(y = "NDVI") +
   facet_wrap(~ class, nrow = 3) +
   theme_bw()
-tsplot
 @
 
-
+\begin{center}
+\begin{figure}[t]
+\centering
+<<fig=TRUE, echo=FALSE>>=
+ggplot(data = tsmelt, aes(x = date, y = value / 10000)) +
+  geom_point() +
+  scale_x_date() +
+  labs(y = "NDVI") +
+  facet_wrap(~ class, nrow = 3) +
+  theme_bw()
+@
+\end{figure}
+\end{center}
 
 \section{Exercise}
 \begin{itemize}
