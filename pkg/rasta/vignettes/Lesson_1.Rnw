@@ -31,10 +31,10 @@
 
 % \SweaveOpts{engine = R, eps = FALSE, pdf = FALSE, png = TRUE, resolution = 120, keep.source = TRUE}
 \usepackage{Sweave} 
-%\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=0em,
-%                                             frame=single}
-%\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=0em,
-%                                            frame=single}
+\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=0em,
+                                             frame=single}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=0em,
+                                            frame=single}
 
 <<preliminaries, echo=FALSE, results=hide>>=
 options(width = 70, prompt = ">", continue = "+ ")
@@ -399,7 +399,7 @@ adm <- getData('GADM', country='PHL', level=2, path = datdir)
 \frametitle{Ex.Lesson 1: Write you own function to create a spatial map a country}
 
 <<phil, eval=TRUE, fig=TRUE, include=FALSE>>=
-mar<-(adm[adm$NAME_1=="Marinduque",])
+mar <- adm[adm$NAME_1=="Marinduque",]
 plot(mar, bg="dodgerblue", axes=T)
 plot(mar, lwd=10, border="skyblue", add=T)
 plot(mar, col="green4", add=T)
@@ -440,6 +440,47 @@ For more information about R please refer to the following links:
 \item \url{http://gis.stackexchange.com/questions/45327/tutorials-to-handle-spatial-data-in-r}
 \end{itemize}
 \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Extra challenge - for ggplot lovers}
+\textbf{Optional challenge}
+
+<<ggplotphil, eval=TRUE, fig=TRUE, include=FALSE>>=
+require(ggmap)
+shp.spdf <- adm[adm$NAME_1=="Marinduque",]
+shp.df <- fortify(shp.spdf)
+shp.centroids.df <- data.frame(long = coordinates(shp.spdf)[,1], 
+                               lat = coordinates(shp.spdf)[,2])
+# Get names and id numbers corresponding to administrative areas
+shp.centroids.df[, 'ID_1'] <- shp.spdf@data[,'ID_1']
+shp.centroids.df[, 'NAME_2'] <- shp.spdf@data[,'NAME_2']
+q <- qmap(location = "Marinduque", zoom = 10, maptype = "satellite")
+q = q +  geom_polygon(aes(x = long, y = lat, group = group), 
+    data = shp.df, 
+    colour = 'white', fill = 'black', alpha = .4, size = .3) 
+
+q = q + geom_text(data = shp.centroids.df, 
+    aes(label = NAME_2, x = long, y = lat, group = NAME_2), 
+                  size = 3, colour= "white")
+print(q)
+@
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Extra challenge - for ggplot lovers}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_1-ggplotphil}
+\caption{GoogleMap Satellite view of Marinduque}
+\end{figure}
+
+\end{frame}
+
+
+
+
+
 
 \bibliographystyle{model5-names}
 \bibliography{refs}
