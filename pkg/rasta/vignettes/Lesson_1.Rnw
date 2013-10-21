@@ -200,14 +200,14 @@ You now have requested the \textbf{class} attribute of $a$ and the console has r
 It is hard to unleash the full potential of R without writing your own functions. Luckily it's very easy to do. Here are some trivial examples:
 
 <<>>=
-add<-function(x){ 
+add <- function(x){ 
 #put the function arguments in () and the evaluation in {}
   x + 1
 }
 add(4) 
 
 # Set the default values for your function--
-add<-function(x = 5){
+add <- function(x = 5){
   x + 1
 }
 add()  #automatically evaluates x = 5
@@ -335,13 +335,38 @@ That concludes our basic introduction to data.frames and lists. There is alot mo
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Set Your Working Directory}
 
-\frametitle{Excercise Lesson 1: Write you own function to create a spatial map of the country of your choice}
+Let's do some basic set up first. 
+
+\begin{itemize}
+  \item{Create a folder which will be your working directory e.g. \emph{Lesson1}}
+	\item{Create an R script within that folder}
+	\item{Set your working directory to the \emph{Lesson2} folder}
+	\item{Create a $data$ folder within your working directory}
+\end{itemize}
+
+In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
+
+<<eval=FALSE>>=
+setwd("yourworkingdirectory")
+# This sets the working directory (where R looks for files)
+getwd() # Double check your working directory
+@
+
+<<>>=
+datdir <- file.path("data") ## path
+@
+\end{frame}
+
+\begin{frame}[fragile]
+
+\frametitle{Ex.Lesson 1: Write you own function to create a spatial map a country}
 \textbf{Write a function to visualise data and plots different variables}
 \begin{itemize}
 \item Submit a clear, reproducible, and documented script to create a spatial map
 \item The script needs to contain your name
-\item {Filename \emph{lastnamefirstname.R}}
+\item {Filename: \emph{lastnamefirstname.R}}
 \end{itemize}
 
 \medskip
@@ -349,30 +374,35 @@ This will be a test to see if your R scripting levels are ok to continue the cou
 
 <<>>=
 ## Load required packages
-library(maptools)
 library(raster)
 @
 
-%<<echo=FALSE, eval=TRUE>>=
-%## Download data from gadm.org 
-%if()
-%adm <- getData('GADM', country='PHL', level=2)
-%@
+<<echo=FALSE, eval=TRUE>>=
+## Download data from gadm.org 
+require(raster)
+if (!file.exists(datdir)) { dir.create(datdir)}
+if (!file.exists(file.path(datdir, "PHL_adm2.RData"))) {
+  adm <- getData('GADM', country = 'PHL', level=2, path = 'data/')
+} else {
+  load(file.path(datdir, "PHL_adm2.RData"))
+  adm <- gadm
+}
+@
 
 <<echo=TRUE, eval=FALSE>>=
 ## Download data from gadm.org 
-adm <- getData('GADM', country='PHL', level=2)
+adm <- getData('GADM', country='PHL', level=2, path = datdir)
 @
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Excercise Lesson 1: Write you own function to create a spatial map of the country of your choice}
+\frametitle{Ex.Lesson 1: Write you own function to create a spatial map a country}
 
-<<eval=FALSE>>=
+<<phil, eval=TRUE, fig=TRUE, include=FALSE>>=
 mar<-(adm[adm$NAME_1=="Marinduque",])
 plot(mar, bg="dodgerblue", axes=T)
 plot(mar, lwd=10, border="skyblue", add=T)
-plot(mar,col="green4", add=T)
+plot(mar, col="green4", add=T)
 grid()
 box()
 invisible(text(getSpPPolygonsLabptSlots(mar), 
@@ -385,6 +415,16 @@ Coordinate System: WGS 1984\n
 Data Source: GADM.org\n
 Created by: ARSsalvacion", adj=c(0,0), cex=0.7, col="grey20")
 @
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Ex.Lesson 1: Write you own function to create a spatial map a country}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_1-phil}
+\caption{Adminstrative boundaries of Marinduque}
+\end{figure}
 
 \end{frame}
 
