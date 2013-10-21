@@ -223,7 +223,7 @@ with NIR and R being band 4 and 3 of Landsat respectively.
 ndvi <- (gewata[[4]] - gewata[[3]]) / (gewata[[4]] + gewata[[3]])
 @
 The \code{plot} function automatically recognises the objects of raster classes and returns an appropriate spatial plot.
-<<ndvi, echo=FALSE, fig=TRUE, include=FALSE>>=
+<<ndvi, echo=TRUE, fig=TRUE, include=FALSE>>=
 plot(ndvi)
 @
 
@@ -259,7 +259,12 @@ ndvOver <- function(x, y) {
 ndvi3 <- overlay(x=gewata[[3]], y=gewata[[4]], fun=ndvOver)
 @
 
-TODO(): Find a way to compare the values of these rasters... That could be the exercise.; write a function that checks that 2 rasterLayers are identical...
+We can verify that the three layers ndvi, ndvi2 and ndvi3 are actually identical using the \code{all.equal()} function from the raster package. 
+<<>>=
+all.equal(ndvi, ndvi2)
+all.equal(ndvi, ndvi3)
+@
+
 
 \subsection*{Re-projections}
 By the way, we still don't know where this area is. In order to investigate that, we are going to try projecting it in Google Earth. As you know Google Earth is all in Lat/Long, so we have to get our data re-projected to lat/long first. The \code{projectRaster()} function allows re-projection of raster objects to any projection one can think of. As the function uses the PROJ.4\footnote{PROJ.4 (\url{https://trac.osgeo.org/proj/}) is the reference library (external to R) that handles cartographic projections and performs projections transformations. The rgdal package is the interface between that library and R} library to perform that operation, the \code{crs=} argument should receive a ''proj4'' expression. ''proj4'' expressions are strings that provide the projection parameters of cartographic projections. A central place to search for projections is the spatial reference website (\url{http://spatialreference.org/}), from this database you will be able to query almost any reference and retrieve it in any format, including its Proj4 expression.
@@ -313,7 +318,7 @@ cloud[cloud == 0] <- NA
 @
 
 A nice preview of the result can be achived using the \code{plotRGB()} function. The resulting plot is presented in figure~\ref{rgb}.
-<<rgb, echo=FALSE, fig=TRUE, include=FALSE>>=
+<<rgb, echo=TRUE, fig=TRUE, include=FALSE>>=
 # Display data and the cloud mask 
 plotRGB(taravao, 5, 3, 4) 
 # Note the clouds at the top and bottom of the image.
