@@ -1,4 +1,4 @@
-import("graphics", "stats", "strucchange", "zoo", "raster", "bitops")
+import("graphics", "stats", "bitops")
 
 export(
   "mysummary",
