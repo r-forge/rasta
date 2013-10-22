@@ -31,10 +31,10 @@
 
 % \SweaveOpts{engine = R, eps = FALSE, pdf = FALSE, png = TRUE, resolution = 120, keep.source = TRUE}
 \usepackage{Sweave} 
-\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=0em,
-                                             frame=single}
-\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=0em,
-                                            frame=single}
+% \DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=0em,
+%                                              frame=single}
+% \DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=0em,
+%                                             frame=single}
 
 <<preliminaries, echo=FALSE, results=hide>>=
 options(width = 70, prompt = ">", continue = "+ ")
@@ -364,9 +364,14 @@ datdir <- file.path("data") ## path
 \frametitle{Ex.Lesson 1: Write you own function to create a spatial map a country}
 \textbf{Write a function to visualise data and plots different variables}
 \begin{itemize}
-\item Submit a clear, reproducible, and documented script to create a spatial map
-\item The script needs to contain your name
-\item {Filename: \emph{lastnamefirstname.R}}
+\item Submit a clear, reproducible, and documented script containing a function to create a spatial map
+  \begin{itemize}
+  \item define a function
+  \item demonstrate the function
+  \item make sure the script is tested by somebody else
+  \end{itemize}
+\item{Filename: \emph{lastnamefirstname.R}}
+\item{the next slide contains an example script which you can use as a template for creating your function}
 \end{itemize}
 
 \medskip
@@ -445,7 +450,7 @@ For more information about R please refer to the following links:
 \frametitle{Extra challenge - for ggplot lovers}
 \textbf{Optional challenge}
 
-<<ggplotphil, eval=TRUE, fig=TRUE, include=FALSE>>=
+<<ggplotphil, eval=FALSE, fig=TRUE, include=FALSE>>=
 require(ggmap)
 shp.spdf <- adm[adm$NAME_1=="Marinduque",]
 shp.df <- fortify(shp.spdf)
@@ -466,16 +471,16 @@ print(q)
 @
 \end{frame}
 
-\begin{frame}[fragile]
-\frametitle{Extra challenge - for ggplot lovers}
-
-\begin{figure}[!htp]
-\centering
-\includegraphics[width=0.6\textwidth]{Lesson_1-ggplotphil}
-\caption{GoogleMap Satellite view of Marinduque}
-\end{figure}
-
-\end{frame}
+% \begin{frame}[fragile]
+% \frametitle{Extra challenge - for ggplot lovers}
+% 
+% \begin{figure}[!htp]
+% \centering
+% \includegraphics[width=0.6\textwidth]{Lesson_1-ggplotphil}
+% \caption{GoogleMap Satellite view of Marinduque}
+% \end{figure}
+% 
+% \end{frame}
 
 
 
