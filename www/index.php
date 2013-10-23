@@ -47,7 +47,7 @@ echo $contents; } ?>
 <p> <ul>
 <li> <strong>Lesson 1-2:</strong> shape file kenya <a href="http://rasta.r-forge.r-project.org/kenyashape.zip">kenyashape.zip</a> </li>
 <li> <strong>Lesson 4:</strong> data set. More info here (Sytze) <a href="http://rasta.r-forge.r-project.org/kroonven.csv">kroonven.csv</a> </li>
-<li> <strong> Rasta </strong>package for windows (0.4 version). <a href="http://rasta.r-forge.r-project.org/rasta_0.4.zip">rasta_0.4.zip</a> </li>
+<li> <strong> Rasta </strong>package for windows (0.4 version). <a href="http://rasta.r-forge.r-project.org/rasta_04.zip">rasta_04.zip</a> </li>
 </ul> </p>
 
 <p> Contact: Jan.Verbesselt'@'wur.nl. To install the most recent version directly within R type: <strong> install.packages("rasta", repos="http://R-Forge.R-project.org") </strong> </p>
