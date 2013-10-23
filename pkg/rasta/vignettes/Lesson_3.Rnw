@@ -449,8 +449,7 @@ The default basic structure of a package is as follows:\
 
 The \code{package.skeleton} function will help you get the package structure from a list of sourced functions. (A function opened in the R Studio editor panel can be sourced by pressing the ''Source'' in the top right hand corner of the panel)
 \code{prompt} creates a tailored documentation (.Rd) file from an existing function.
-The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including. Explore the menus and option under Project - New project. 
-More package creation tips can be found online (\url{http://mages.github.io/R_package_development/#1})
+The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including. Explore the menus and option under Project - New project.
 
 \subsubsection*{Package building}
 \noindent\textit{\textbf{Prerequisites}}\\
@@ -579,7 +578,11 @@ Assessment will consider the completeness of the function (or package) and wheth
 \subsection*{How to submit?}
 In order to submit, add the function (or package) to a repository on your own GitHub account and send the clone url to me by e-mail.
 
-
+\section{References}
+Reference document for creating R packages: \href{http://cran.r-project.org/doc/manuals/R-exts.html}{Writing R extensions}\\*
+A set of good practices when creating packages: \href{http://mages.github.io/R_package_development/#1}{R package development}\\*
+R Studio documentation on version control: \href{http://www.rstudio.com/ide/docs/version_control/overview}{Using Version Control with RStudio}\\*
+Video tutorial to use revision control with R Studio and GitHUb/BitBucket \href{http://www.youtube.com/watch?v=jGeCCxdZsDQ&noredirect=1}{Youtube link}
 
 \bibliographystyle{model5-names}
 \bibliography{refs}
