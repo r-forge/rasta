@@ -14,7 +14,7 @@
 \usepackage{amsmath}
 \usepackage{url}
 \usepackage{float}
-\usepackage[demo]{graphicx}
+\usepackage{listings}
 
 % hyperref setup
 \definecolor{Red}{rgb}{0.5,0,0}
@@ -59,24 +59,30 @@ Having your system properly set-up is a cricial step before before starting any 
 \section{On windows}
 
 \subsection*{R and R Studio}
-TODO
-Refer to R manual and R Studio Manual
+For information on how to install R and R Studio, please refer to the \href{http://cran.r-project.org/doc/manuals/r-devel/R-admin.html#Installing-R-under-Windows}{R installation manual for windows} and the \href{http://www.rstudio.com/ide/download/}{R Studio download page}.
 
 \subsection*{Rtools}
-TODO
-Provide download page. Has to fit the version of R you are using.
-Important to select the option ''add the following directories to your system path''.
+RTools is essential if you want to build R package. It is relatively easy to install, simply download the binary associated with your R version from \href{http://cran.r-project.org/bin/windows/Rtools/}{this page}, and follow the instructions from the installer. When prompted for ''adding the following directories to your system path'', you must say yes.
+
+
 
 \subsection*{GDAL/OGR/PROJ4 libraries}
-FWTools, a bit outdated.
-Installation via OSGeo4W installer.
-Possibly the bin directory path has to be appended to system PATH.
+TODO() Check that this is actually required.
+Many options are available for installing these libraries on Windoes system.
+\begin{itemize}
+\item FWTools (a bit outdated).
+\item Installation via OSGeo4W installer.
+\item By installing Quantum GIS.
+\end{itemize}
+In either cases, the bin directory path (containing the gdal executables) has to be appended to system PATH.
 
 \subsection*{Version control software}
 Installing these software is not an absolute necessity, however it might come handy if you plan to implement some of the good practices discussed in Lesson 3. Refer to \hyperref[Lesson_3.pdf]{Lesson 3} for more details.
 
 \subsubsection*{Git and SlickSVN}
-Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system.
+Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system. These software are very straightforward to install, simply download the executables and follow the instructions from the installer. \href{http://git-scm.com/downloads}{Git} download page, and \href{http://www.sliksvn.com/en/download}{slickSVN} download page.
+
+\footnotetext{Note that FWTools is one example of binary distribution for windows, you can also install gdal/ogr/proj.4 from OSGeo4W, (linux: by compiling it yourself from source or from a package archive)}
 
 \subsubsection*{Integration with the R Studio IDE}
 It is possible that R Studio automatically detects Git and SlickSVN on your system, however this is not systematic. In case the Git/Svn buttons in R Studio are innactive, after installing either Git or SlickSVN, follow the steps described bellow.\\
@@ -86,9 +92,33 @@ Restart RStudio.
 \subsection*{Specific R packages}
 Not all packages are hosted on the CRAN package repository, this is the case for instance of the MODIS package that is maintained on R Forge, and requires an extra argument in the \code{install.packages()} function to be installed. The install line, to be copy pasted in the R shell is often given on the package R forge home page.
 
+\section{Linux}
+\subsection*{R and R Studio}
+INformation on how to install R and RStudio on linux systems can be found \href{http://cran.r-project.org/bin/linux/ubuntu/README}{here} and \href{http://www.rstudio.com/ide/download/desktop}{here}.
+\subsection*{GDAL/OGR/PROJ4/GEOS libraries}
+\subsubsection*{Debian/Ubuntu}
+The easiest is probably to install from an apt repository. Recent versions of these libraries are maintained on the Ubuntu GIS ppa.
+\noindent First add it to your list of ppa.
+\begin{lstlisting}[language=bash]
+  sudo add-apt-repository ppa:ubuntugis/ppa
+  sudo apt-get update
+\end{lstlisting}
+
+\noindent Then install the libraries with apt-get.
+\begin{lstlisting}[language=bash]
+  sudo apt-get install gdal
+  sudo apt-get install proj
+  sudo apt-get install geos
+\end{lstlisting}
+Your system should be ready to install rgdal and rgeos R packages.
 
 
-\footnotetext{Note that FWTools is one example of binary distribution for windows, you can also install gdal/ogr/proj.4 from OSGeo4W, (linux: by compiling it yourself from source or from a package archive)}
+
+\subsubsection*{Redhat/CentOS}
+
+
+\section{Mac}
+
 
 
 
