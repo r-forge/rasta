@@ -64,8 +64,8 @@ At the end of the lecture, you should be able to:
 
 \begin{figure}[t]
   \centering
-  \includegraphics[height=0.6\textwidth]{figs/system_overview_2.png}
-  \caption [Caption for LOF]{System architecture overview\protect\footnotemark}
+  \fbox{\includegraphics[height=0.6\textwidth]{figs/system_overview_2.png}}
+  \caption [Caption for LOF]{System architecture overview}
 
   \label{overview}
 \end{figure}
@@ -83,8 +83,6 @@ getGDALVersionInfo()
 
 The previous function should return the version number of the current version of GDAL installed on your machine. 1.10.1 is the most recent stable release. In case the function above returns an error, or if you cannot install rgdal at all, you should verify that all required software and libraries are properly installed. Please refer to the system setup vignette in that same package.
 
-% Text for the footnote
-\footnotetext{Note that FWTools is one example of binary distribution for windows, you can also install gdal/ogr/proj.4 from OSGeo4W, (linux: by compiling it yourself from source or from a package archive)}
 
 \section{Overview of the raster package}
 The raster package is the reference R package for raster processing, Robert J. Hijmans is the original developer of the package.

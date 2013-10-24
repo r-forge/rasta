@@ -50,8 +50,8 @@ Having your system properly set-up is a cricial step before before starting any 
 
 \begin{figure}[t]
   \centering
-  \includegraphics[height=0.6\textwidth]{figs/system_overview_2.png}
-  \caption [Caption for LOF]{System architecture overview\protect\footnotemark}
+  \fbox{\includegraphics[height=0.6\textwidth]{figs/system_overview_2.png}}
+  \caption [Caption for LOF]{System architecture overview}
 
   \label{overview}
 \end{figure}
@@ -67,14 +67,15 @@ RTools is essential if you want to build R package. It is relatively easy to ins
 
 
 \subsection*{GDAL/OGR/PROJ4 libraries}
-TODO() Check that this is actually required.
-Many options are available for installing these libraries on Windoes system.
+Installing these libraries on Windows is not an absolute necessity, however they will come in handy if reprojecting data represent a large part of your work or if you plan on doing a lot of file format conversions. They are an absolute necessity if you have to work with hdf4 format data.\\
+Many options are available for installing these libraries on Windows systems.
 \begin{itemize}
-\item FWTools (a bit outdated).
+\item FWTools.
 \item Installation via OSGeo4W installer.
 \item By installing Quantum GIS.
 \end{itemize}
-In either cases, the bin directory path (containing the gdal executables) has to be appended to system PATH.
+The two latter option should be prefered over FWTools since they contain the most up to date versions of gdal.\\*
+Note that if you want to call some gdal utilities (i.e.: \code{gdalwarp}, \texttt{gdal\_translate}, \texttt{gdal\_merge.py}, etc) via \texttt{system()} command from R, you will need to append the bin directory containing gdal utilities to your user or system path.
 
 \subsection*{Version control software}
 Installing these software is not an absolute necessity, however it might come handy if you plan to implement some of the good practices discussed in Lesson 3. Refer to \hyperref[Lesson_3.pdf]{Lesson 3} for more details.
@@ -82,7 +83,6 @@ Installing these software is not an absolute necessity, however it might come ha
 \subsubsection*{Git and SlickSVN}
 Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system. These software are very straightforward to install, simply download the executables and follow the instructions from the installer. \href{http://git-scm.com/downloads}{Git} download page, and \href{http://www.sliksvn.com/en/download}{slickSVN} download page.
 
-\footnotetext{Note that FWTools is one example of binary distribution for windows, you can also install gdal/ogr/proj.4 from OSGeo4W, (linux: by compiling it yourself from source or from a package archive)}
 
 \subsubsection*{Integration with the R Studio IDE}
 It is possible that R Studio automatically detects Git and SlickSVN on your system, however this is not systematic. In case the Git/Svn buttons in R Studio are innactive, after installing either Git or SlickSVN, follow the steps described bellow.\\
@@ -94,10 +94,10 @@ Not all packages are hosted on the CRAN package repository, this is the case for
 
 \section{Linux}
 \subsection*{R and R Studio}
-INformation on how to install R and RStudio on linux systems can be found \href{http://cran.r-project.org/bin/linux/ubuntu/README}{here} and \href{http://www.rstudio.com/ide/download/desktop}{here}.
+Information on how to install R and RStudio on linux systems can be found \href{http://cran.r-project.org/bin/linux/ubuntu/README}{here} and \href{http://www.rstudio.com/ide/download/desktop}{here}.
 \subsection*{GDAL/OGR/PROJ4/GEOS libraries}
 \subsubsection*{Debian/Ubuntu}
-The easiest is probably to install from an apt repository. Recent versions of these libraries are maintained on the Ubuntu GIS ppa.
+The easiest solution is probably to install these library directly from an apt repository. Recent versions of these libraries are maintained on the Ubuntu GIS ppa.
 \noindent First add it to your list of ppa.
 \begin{lstlisting}[language=bash]
   sudo add-apt-repository ppa:ubuntugis/ppa
