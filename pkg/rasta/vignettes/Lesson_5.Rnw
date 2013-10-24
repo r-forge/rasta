@@ -129,7 +129,7 @@ The RasterBrick metadata displayed above are mostly similar to what we saw earli
   \subsection*{Reading and writing from/to file}
   The actual data used in geo processing projects often comes as geo-data, stored on files such as GeoTiff or other comonly used file formats. Reading data directly from these files into the R working environment (as objects belonging to one of the 3 raster objects classes), is made possible thanks to the raster package. The three main commands for reading raster objects from file are the \code{raster()}, \code{stack()}, and \code{brick()} functions, refering to RasterLayer, RasterStack and RasterBrick objects respectively. \\ Writing one of the three raster objects classes to file is achieved with the \code{writeRaster()} function.\\
   To illustrate the reading and writing of raster files, we will use the data stored in the /inst/extdata/ directory within the rasta package. The \code{system.file()} command is used to access these ''external'' data saved into packages.\\
-  Gewata is the name of the data set added, it is a multi Layer tiff object, its file name is LE71700552001036SGS00\_SR\_Gewata\_INT1U.tif, telling us that this is a subset from a scene acquired by the Landsat 7 sensor. Let's not worry about the region that the data cover for, we will find a  nice way to discover that later on in that tutorial.
+  Gewata is the name of the data set added, it is a multi Layer tiff object, its file name is LE71700552001036SGS00\_SR\_Gewata\_INT1U.tif, informing us that this is a subset from a scene acquired by the Landsat 7 sensor. Let's not worry about the region that the data cover for now, we will find a  nice way to discover that later on in that tutorial.
 See the example below.
   
 <<>>=
@@ -149,10 +149,10 @@ gewataB1 <- raster(system.file("extdata/LE71700552001036SGS00_SR_Gewata_INT1U.ti
 gewataB1
 @
 
-Note that in addition to supporting most commonly used geodata formats, the raster package has its own format. Saving a file using the \code{.grd} extension (\code{'filename.grd'}) will automatically save the object to the raster package format. This format has great advantages when performing geo processing in R (one advantage for instance is that it conserve original filenames as layer names in multilayer objects), however, saving your final results in this file format might be risky as the GDAL drivers for that file format do not seem to exist yet.
+Note that in addition to supporting most commonly used geodata formats, the raster package has its own format. Saving a file using the \code{.grd} extension (\code{'filename.grd'}) will automatically save the object to the raster package format. This format has great advantages when performing geo processing in R (one advantage for instance is that it conserves original filenames as layer names in multilayer objects), however, saving your final results in this file format might be risky as the GDAL drivers for that file format do not seem to exist yet.
 
 \subsection*{Geo processing, in memory Vs. on disk}
-When looking at the documentation of most functions of the raster package, you will notice that the list of arguments is almost always ended by ... It is called and ellipsis, and means that extra arguments can be passed to the function. Often these arguments are those that can be passed to the \code{writeRaster()} function; meaning that most geo-processing functions are able to write their result directly to file, on disk. This reduces the number of steps and is always a good consideration when working with big raster objects that tend to overload the memory if not written directly to file.
+When looking at the documentation of most functions of the raster package, you will notice that the list of arguments is almost always ended by ... It is called and ellipsis, and means that extra arguments can be passed to the function. Often these arguments are those that can be passed to the \code{writeRaster()} function; meaning that most geo-processing functions are able to write their output directly to file, on disk. This reduces the number of steps and is always a good consideration when working with big raster objects that tend to overload the memory if not written directly to file.
 
   
  % Maybe that section should come at the end 
@@ -191,7 +191,7 @@ The object ''list'' contains the file names of all the single layers we have to 
 <<eval=FALSE>>=
 plot(raster(list[1]))
 @
-We see a NDVI layer, with the cloud masked out. Let's now create the stack, the function for doing that is called \code{stack()}. Looking at the help page of the function , you can see that it can accep a list of file names as argument, which is exactly what the object ''list'' is. SO we can very simply create the layer stack by running the function.
+We see a NDVI layer, with the cloud masked out. Let's now create the stack, the function for doing that is called \code{stack()}. Looking at the help page of the function , you can see that it can accep a list of file names as argument, which is exactly what the object ''list'' is. So we can very simply create the layer stack by running the function.
 <<eval=FALSE>>=
 turaStack <- stack(list)
 turaStack
@@ -208,7 +208,7 @@ Now this object is stored on your computer, ready to be archived for later use.
 Performing simple raster operations with raster objects is fairly easy. For instance, if you want to substract two RasterLayers of same extent, r1 and r2; simply doing r1 - r2 will give the expected output, which is, every pixel value of r2 will be substracted to the matching pixel value of r1. These types of pixel based operations almost always require a set of conditions to be met in order to be executed; the two RasterLayers need to be identical in term of extent, resolution , projection, etc.
 
 \subsection*{Subsetting layers from from RasterStack and RasterBrick}
-Different spectral bands of a same satellite image scene are often stored in multi layers objects. This means that you will very likely import them in you R working environment as RasterBrick or RasterStack objects. As a consequence, to perform calculations between these bands, you will have to write an expression refering to individual layers of the object. Referring to individual layers in a RasterBrick or RasterStack object is done by using double square brackets ''[[]]''.
+Different spectral bands of a same satellite image scene are often stored in multi layers objects. This means that you will very likely import them in you R working environment as RasterBrick or RasterStack objects. As a consequence, to perform calculations between these bands, you will have to write an expression refering to individual layers of the object. Referring to individual layers in a RasterBrick or RasterStack object is done by using double square brackets \code{''[[]]''}.
 Let's look for instance at how the famous NDVI index would have to be calculated from the gewata RasterBrick object read earlier, and that contains the spectral bands of Landsat 7 sensor. And in case you have forgotten, the ndvi formula is as follows.
 
 \begin{equation}
@@ -220,7 +220,7 @@ with NIR and R being band 4 and 3 of Landsat respectively.
 <<>>=
 ndvi <- (gewata[[4]] - gewata[[3]]) / (gewata[[4]] + gewata[[3]])
 @
-The \code{plot} function automatically recognises the objects of raster classes and returns an appropriate spatial plot.
+The \code{plot()} function automatically recognises the objects of raster classes and returns an appropriate spatial plot.
 <<ndvi, echo=TRUE, fig=TRUE, include=FALSE>>=
 plot(ndvi)
 @
@@ -236,7 +236,7 @@ plot(ndvi)
 
 The resulting NDVI can be viewed in Figure~\ref{ndvi}. As expected the NDVI ranges from about 0.2, which corresponds to nearly bare soils, to 0.9 which means that there is some dense vegetation in the area.
  
-Although this is a quick way to perform the calculation, directly adding, substracting, multiplying, etc, the layers of big raster objects is not recommended. When working with big objects, it is advisable to use the \code{calc()} function to perform these types of calculaions. The reason is that R needs to load all the data first into its internal memory beform performing the calculation and then runs everything in one block. It is really easy to ''flood'' the RAM when doing that. a big advantage of the \code{calc()} function is that it has a built-in block processing option for any vectorized function, allowing such calculations to be fully ''RAM friendly''. The example below illustrates how to calculate NDVI from the same date set using the \code{calc()} function.
+Although this is a quick way to perform the calculation, directly adding, substracting, multiplying, etc, the layers of big raster objects is not recommended. When working with big objects, it is advisable to use the \code{calc()} function to perform these types of calculaions. The reason is that R needs to load all the data first into its internal memory beform performing the calculation and then runs everything in one block. It is really easy to ''flood'' the RAM when doing that. A big advantage of the \code{calc()} function is that it has a built-in block processing option for any vectorized function, allowing such calculations to be fully ''RAM friendly''. The example below illustrates how to calculate NDVI from the same date set using the \code{calc()} function.
 
 <<>>=
 # Define the function to calculate NDVI from 
@@ -247,7 +247,7 @@ ndvCalc <- function(x) {
 ndvi2 <- calc(x=gewata, fun=ndvCalc)
 
 @
-Note that overlay can also be used in that case to obtain the same result, with the same level of RAM friendlyness. The advantage of overlay being that the number of input RasterLayers is lees limiting. As a consequence specifying the layers does not happen in the function call but in the \code{overlay()} call instead. In that specific case, both techiques work equaly well, however, in more real cases it is quite likely that \code{overlay()} will be much easier to implement than \code{calc()}, or vice versa.
+Note that \code{overlay()} can also be used in that case to obtain the same result, with the same level of RAM friendlyness. The advantage of overlay being that the number of input RasterLayers is less limiting. As a consequence specifying the layers does not happen in the function call but in the \code{overlay()} call instead. 
 
 <<>>=
 ndvOver <- function(x, y) {
@@ -263,14 +263,13 @@ all.equal(ndvi, ndvi2)
 all.equal(ndvi, ndvi3)
 @
 
+In the simple case of calculating NDVI, we were easily able to produce the same result with \code{calc()} and \code{overlay()}, however, it is often the case that one function is preferable to the other. As a general rule, a calculation that needs to refer to multiple individual layers separately will be easier to set up in \code{overlay()} than in \code{calc()}.
 
 \subsection*{Re-projections}
 By the way, we still don't know where this area is. In order to investigate that, we are going to try projecting it in Google Earth. As you know Google Earth is all in Lat/Long, so we have to get our data re-projected to lat/long first. The \code{projectRaster()} function allows re-projection of raster objects to any projection one can think of. As the function uses the PROJ.4\footnote{PROJ.4 (\url{https://trac.osgeo.org/proj/}) is the reference library (external to R) that handles cartographic projections and performs projections transformations. The rgdal package is the interface between that library and R} library to perform that operation, the \code{crs=} argument should receive a ''proj4'' expression. ''proj4'' expressions are strings that provide the projection parameters of cartographic projections. A central place to search for projections is the spatial reference website (\url{http://spatialreference.org/}), from this database you will be able to query almost any reference and retrieve it in any format, including its Proj4 expression.
 
 <<>>=
-# It all fit in one line, 
-# It does not matter which of ndvi, ndvi2, or ndvi3 we choose
-# since they are all the same
+# One single line is sufficient to project any raster to any projection
 ndviLL <- projectRaster(ndvi, crs='+proj=longlat')
 @
 
@@ -284,18 +283,18 @@ Now that we have our ndvi layer in lat/long, let's write it to a kml file, which
 # you want to make sure that it is set where you want the file to be written
 # It can be changed using setwd()
 getwd()
-# Note that we are using the filename argument, contained in the elypsis of function,
-# since we want to write the output directly to file.
+# Note that we are using the filename argument, contained in the elypsis of 
+# the function, since we want to write the output directly to file.
 KML(x=ndviLL, filename='gewataNDVI.kml')
 @
 Note that you need to have Google Earth installed on your system in order to perform the following step.
-Now let's find that file that we have just written and double click it, and watch how Google Earth brings us all the way to ... Ethiopia. More information will come in Lesson 6 about that specific area.
+Now let's find that file that we have just written and double click it, and watch how Google Earth brings us all the way to ... Ethiopia. More information will come in Lesson 6 about that specific area.\\
 
 
 We are done with this data set for this lesson. So let's explore another data set, from the newly launched Landsat 8 sensor. This dataset will allow us to find other interesting raster operations to perform.  
 
 \subsection*{More raster arythmetics, perform simple replacements}
-The Landsat 8 data delivered up to now come with a Quality Assessment (QA) band; it is an extra layer, matching the extent and the resolution of the other bands, and containing information about the quality of the data. Such extra QA layers are becomming increasingly common (Landsat 8, MODIS had it from its beggining) and are very valuable information. In the following section we will use that QA layer to mask out remaining clouds in the scene.
+The Landsat 8 data delivered up to now come with a Quality Assessment (QA) band; it is an extra layer, matching the extent and the resolution of the other bands, and containing information about the quality of the data. Such extra QA layers are becomming increasingly common (Landsat 8, most moderate resolution sensors) and are very valuable information. In the following section we will use that QA layer to mask out remaining clouds in the scene.
 \subsubsection*{About the area}
 The area selected for this exercise is located in Tahiti, French Polynesia. It is located right in the middle of the island, where the two volcanoes forming the island intersect (on the isthmus). According to wikipedia, about 5000 people live in the municipality of Afaahiti-Taravao.\\
 For convenience, this scene subset has been added as a build in data set of the rasta package. Therefore it can simply be loaded using the \code{data()} command. Let's load it.
@@ -336,6 +335,8 @@ These cloudy pixels are not really usefull to us, therefore we will exclude them
 
 <<>>=
 taravao8 <- dropLayer(x=taravao, i=9)
+# Let's duplicate that RasterStack and save it for later
+taravao8_2 <- taravao8
 @
 
 Excluding data from a raster object using a mask can be done either by directly performing vector replacement operations, or with the \code{calc()} function. The same considerations of data size and RAM management than above apply when selecting one method or the other. For the purpose of the example, the two methods are illustrated below. The dataset is small enough to be safely handled in memory.
@@ -345,7 +346,6 @@ taravao8[cloud == 1] <- NA
 @
 
 <<>>=
-taravao8_2 <- dropLayer(x=taravao, i=9)
 cloud2NA <- function(x, y){
   x[y == 1] <- NA
   return(x)
@@ -357,7 +357,7 @@ taravao8_3 <- overlay(taravao8_2, cloud, fun=cloud2NA)
 
 
 \section{Hdf files (Not part of the course)}
-A file format that is getting increasingly common with geo-spatial gridded data is the hdf format. Hdf stands for hierarchical data format. For instance MODIS data have been delivered in hdf format since its beginning, Landsat has adopted the hdf format for delivering its Level 2 surface reflectance data recently. This data format has an architecture that makes it very convenient to store data of different kind in one file, but requires slightly more effort from the researcher to work with conveniently.
+A file format that is getting increasingly common with geo-spatial gridded data is the hdf format. Hdf stands for hierarchical data format. For instance MODIS data have been delivered in hdf format since its beginning, Landsat has adopted the hdf format for delivering its Level 2 surface reflectance data recently. This data format has an architecture that makes it very convenient to store data of different kind in one file, but requires slightly more effort from the scientist to work with conveniently.
 
 \subsection*{Windows}
 The rgdal package does not include hdf drivers in its pre-built binary. Data can therefore not be read directly from hdf into R (as object of class rasterLayer). A workaround is to convert the files externally to a different data format. Since you probably have gdal installed on your system (either via FWTools or OSGeo4W), you can use the command line utility gdal\_translate to perform this operation.
@@ -396,7 +396,41 @@ r <- raster(sds$SDS4gdal[1])
 \section{Packages you should know about}
 The newly released \href{https://r-forge.r-project.org/projects/gdalutils/}{gdalUtils} package should provide interesting wrappers facilitating the use of gdal functions from within R.
 
+\section{Exercise}
+Idea of exercise, using a second image of taravao, that I will provide, taken at a different date, also cloudy, write a compositing function.
+Requires:
+\begin{itemize}
+\item Cropping to extent (The second scene will be a bit bigger)
+\item Apply the QA2Cloud function again
+\item perform replacement
+\end{itemize}
 
+<<eval=FALSE>>=
+# Download and unpack
+
+# Read data taravao
+data(taravao)
+taravao2 <- brick('filename2.tif')
+taravao2 <- crop(x=taravao2, y=taravao)
+cloud <- calc(taravao[[9]], fun=QA2cloud) 
+cloud2 <- calc(taravao2[[9]], fun=QA2cloud)
+taravao <- dropLayer(x=taravao, i=9)
+taravao2 <- dropLayer(x=taravao2, i=9)
+compose <- function(c1, c2, b1, b2){
+  if(c1 == 1 & c2 == 1) {
+    x <- NA
+  } else if (c1 == 0 & c2 == 0) {
+    x <- mean(c(b1, b2))
+  } else if (c1 == 1 & c2 == 0) {
+    x <- b2
+  } else if (c1 == 0 & c2 == 1) {
+    x <- b1
+  }
+  return(x)
+}
+taravaoComposit <- overlay(cloud, cloud2, taravao, taravao2, fun=compose(cloud, cloud2, taravao, taravao2))
+@
+  
 
 
 
