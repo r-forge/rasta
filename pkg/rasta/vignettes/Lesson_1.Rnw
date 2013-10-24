@@ -292,7 +292,8 @@ Type ?read.table in your console for some other examples.
 % Let's read in a basic csv file. 
 
 <<readcsvexample>>=
-f <- system.file("extdata/kenpop89to99.csv", package="rasta")
+f <- system.file("extdata/kenpop89to99.csv", package ="rasta")
+print(f)
 mydat<-read.csv(f)
 @
 We can explore the data using the  names(), summary(), head(), and tail() commands (we will use these frequently through out the exercise)

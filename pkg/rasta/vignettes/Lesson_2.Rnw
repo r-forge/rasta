@@ -45,7 +45,8 @@ options(width=60)
 \maketitle
 
 \begin{abstract}
-An intro to reading in spatial data: rasta and vector data with R.
+This is an introduction to the course Applied Geo-Scripting where we will explore the potential of R and libraries which enable reading, writing, analysis, and visualisation of spatial data.
+
 \end{abstract}
 
 \section{Today's learning objectives}
@@ -71,11 +72,13 @@ In the code block below type in the file path to where your data is being held a
 
 <<eval=FALSE>>=
 setwd("yourworkingdirectory")
-# This sets the working directory (where R looks for files)
+#This sets the working directory (where R looks for files)
+#getwd() 
+# Double check your working directory
+@
 
-getwd() # Double check your working directory
-datdir <- "data/" #This is an example of a Mac file path
-# datdir<- "/data/" #This is an example of a PC file path
+<<eval=TRUE>>=
+datdir <- file.path("data") ## path
 @
 
 \subsection{Load Libraries}
@@ -112,8 +115,8 @@ Read OGR can be used for almost any vector data format. To read in a shapefile, 
 % to illustrate how a file can be downloaded and read-in
 <<eval=FALSE>>=
 download.file('http://rasta.r-forge.r-project.org/kenyashape.zip',  
-      'data/kenyashape.zip')
-unzip('data/kenyashape.zip', exdir = datdir)
+      file.path(datdir, 'kenyashape.zip'))
+unzip(file.path(datdir, 'kenyashape.zip'), exdir = datdir)
 kenya <- readOGR(dsn = datdir, layer = 'kenya')
 @
 
@@ -131,6 +134,7 @@ Plotting is easy, use the \verb+plot()+ command:
 <<eval=FALSE>>=
 plot(kenya)
 @
+
 Obviously there are more options to dress up your plot and make a proper map/graphic. A common method is to use \verb+spplot()+ from the sp package. However I prefer to use the functions available in the ggplot2 package as I think they are more flexible and intuitive. We will address maps and graphics later in the in the class. For now, let us move onto reading in some tabular data and merging that data to our shapefile (similar to the join operation in ArcGIS).
 
 <<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
@@ -176,10 +180,9 @@ We access slots using the @ sign.
 
 <<accessdata>>=
 #--------------------------ACCESS THE SHAPEFILE DATA------------------------------
-dsdat<-as(kenya, "data.frame")  #extract the data into a regular data.frame
+dsdat <- as(kenya, "data.frame")  # extract the data into a regular data.frame
 head(dsdat)
-
-kenya$new<- 1:nrow(dsdat) #add a new colunm, just like adding data to a data.frame
+kenya$new <- 1:nrow(dsdat) # add a new colunm, just like adding data to a data.frame
 head(kenya@data)
 @
 
@@ -189,18 +192,24 @@ We are going to do a point in polygon spatial join. However before we do that we
 
 <<ranpoints>>=
 #--------------------------GENERATE RANDOM POINTS------------------------------
-win<-bbox(kenya) #the bounding box around the Kenya dataset
+win <- bbox(kenya) #the bounding box around the Kenya dataset
 win
-win<-t(win) #transpose the bounding box matrix
+win <- t(win) #transpose the bounding box matrix
 win
-win<-as.vector(win) #convert to a vector for input into runifpoint()
+win <- as.vector(win) #convert to a vector for input into runifpoint()
 win
-dran<-runifpoint(100,win=as.vector(t(bbox(kenya)))) #create 100 random points
+dran1 <- runifpoint(100, win = as.vector(t(bbox(kenya)))) #create 100 random points
+@
+
+<<alternative>>=
+win <- extent(kenya)
+dran2 <- runifpoint(n = 100, win = as.vector(win))
 @
 
 <<rndp_kenya, echo=TRUE, fig=TRUE, include=FALSE>>=
 plot(kenya)
-plot(dran,add=T)
+plot(dran1, add = TRUE, col = "red")
+plot(dran2, add = TRUE, col = "blue", pch = 19, cex = 0.5)
 @
 
 \begin{figure}[!htp]
@@ -210,22 +219,103 @@ plot(dran,add=T)
 \end{figure}
 
 Now that we have created some random points, we will extract the x coordinates (longitude), y coordinates (latitude), and then simulate some values to go with them. 
-%%%????
+
 %The purpose of doing this is to create a text file with x,y, and some values. We will then write those values out as a .csv file, read them back in, convert them to a shapefile, and then do a point in polygon spatial join.
 
 <<converttocoordinatestextfile>>=
 #--------------------------CONVERT RANDOM POINTS TO DATA.FRAME------------------
-dp <- as.data.frame(dran) #This creates a simple data frame with 2 colunms, x and y
+dp <- as.data.frame(dran1) #This creates a simple data frame with 2 colunms, x and y
 head(dp)
-
-# Now we will add some values that will be aggregated in the next exercise
+#Now we will add some values that will be aggregated in the next exercise
 dp$values<-rnorm(100,5,10) 
 #generates 100 values from a Normal distribution with mean 5, and sd-10
 head(dp)
 @
 
-\section{Special thanks and more info}
+\section{Do a Point in Polygon Spatial Join}
 
+In the last exercise we generated some random points along with some random values. Now we will read that data in, convert it to a shapefile (or a SpatialPointsDataFrame object) and then do a point in polygon spatial join. The command for converting coordinates to spatial points is \emph{SpatialPointsDataFrame()}
+
+<<converttospatialpoints>>=
+#--------------------------CONVERT RANDOM POINTS TO SPATIAL POINTS DATAFRAME----
+dsp <- SpatialPointsDataFrame(coords = dp[,c('x','y')], data = data.frame('values' = dp$values))
+summary(dsp)
+
+#---Since the Data was Generated from a source with same projection as our Kenya data, we will go ahead and define the projection"
+dsp@proj4string <- kenya@proj4string
+@
+Now that we have created some points and defined their projection, we are ready to do a point in polygon spatial join. We will use the \verb+over()+ command (short for overlay()).
+
+In the over() command we feed it a spatial polygon object (ds), a spatial points object (dsp), and tell it what function we want to use to aggregate the spatial point up. In this case we will use the mean (but we could use any function or write our own). The result will give us a data.frame, and we will then put the resulting aggregated values back into the data.frame() associated with ds (ds@data).
+
+See ?over() for more information.
+
+<<overlay>>=
+#--------------------------POINT IN POLY JOIN------------------------------
+
+#--The data frame tells us for each point the index of the polygon it falls into
+dsdat <- over(kenya, dsp, fn = mean) #do the join
+head(dsdat) #look at the data
+
+inds <- row.names(dsdat) #get the row names of dsdat so that we can put the data back into ds
+head(inds)
+
+str(kenya@data)
+kenya@data[inds, 'pntvals'] <- dsdat #use the row names from dsdata to add the aggregated point values to ds@data
+head(kenya@data)
+@
+
+\section{Do a Pixel in Polygon Spatial Join}
+
+In this section we will explore another common spatial join operation. In this case you you have raster data that you want to aggregate up to the level of the polygons. A common example is that you have a surface of observed or interpolated temperature measurements and you want to find out what the average (or sum, max, min, et cetera) temperature is for each polygon (which could represent states, counties, et cetera). 
+
+<<raster,eval=TRUE, fig=TRUE, include=FALSE>>=
+#--------------------------READ AND CROP A RASTER--
+library(rasta)
+filepath <- system.file("extdata", "anom.2000.03.tiff", package ="rasta")
+g <- raster(filepath)
+# plot
+plot(g)
+plot(kenya, add = TRUE) #plot kenay on top to get some sense of the extent
+@
+
+<<crop,eval=TRUE, fig=TRUE, include=FALSE>>=
+#------Crop the Raster Dataset to the Extent of the Kenya Shapefile
+gc <- crop(g, kenya) #clip the raster to the extent of the shapefile
+#Then test again to make sure they line up
+plot(gc)
+plot(kenya, add = TRUE)
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_2-raster}
+\caption{Temperature anomaly for Africa (for March 2003)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_2-crop}
+\caption{Kenian temperature anomaly for March 2003}
+\end{figure}
+
+In the last step we read in a raster file, cropped it to the extent of the Kenya data (just to cut down on the file size and demonstrate that function). Now we will aggregate the pixel values up the polygon values using the \verb+extract()+ function. 
+
+<<rasterextract, eval=FALSE>>=
+#--------------------------PIXEL IN POLY SPATIAL JOIN------------------------------
+#Unweighted- only assigns grid to district if centroid is in that district
+kenya@data$precip <- extract(gc, kenya, fun = mean, weights=FALSE) 
+@
+
+Weighted (more accurate, but slower) weights aggregation by the amount of the grid cell that falls within the district boundary:
+<<eval=FALSE>>=
+kenya@data$precip_wght <- extract(gc, kenya, fun = mean, weights = TRUE) 
+#If you want to see the actual values and the weights associated with them do this:
+rastweight <- extract(gc, kenya, weights = TRUE)
+@
+Now that we've added all this data to our shapefile, we'll write it out as a new shapefile and then load it in to make some maps in the next exercise.
+
+\section{Special thanks and more info}
 Special acknowledgments go to \href{mailto:davenpor@geog.ucsb.edu}{Frank Davenport} 
 (\href{http://www.frankdavenport.com/blog/2012/6/19/notes-from-a-recent-spatial-r-class-i-gave.html}{Spatial R class}) for excellent R spatial introduction on which this lesson is based.
 
