@@ -45,7 +45,7 @@
 \maketitle
 
 \section{Introduction}
-Having your system properly set-up is a cricial step before before starting any geo-processing with R. This short tutorial will guide you through some important steps that you should follw in order to have the required software installed and appropriately set-up. Figure~\ref{overview} provides an overview of the different components of the system and how they are connected with each others.
+Having your system properly set-up is a cricial step before starting any geo-processing with R. This short tutorial will guide you through some important steps that you should follw in order to have the required software installed and appropriately set-up. Figure~\ref{overview} provides an overview of the different components of the system and how they are connected with each others.
 
 
 \begin{figure}[t]
@@ -62,7 +62,7 @@ Having your system properly set-up is a cricial step before before starting any 
 For information on how to install R and R Studio, please refer to the \href{http://cran.r-project.org/doc/manuals/r-devel/R-admin.html#Installing-R-under-Windows}{R installation manual for windows} and the \href{http://www.rstudio.com/ide/download/}{R Studio download page}.
 
 \subsection*{Rtools}
-RTools is essential if you want to build R package. It is relatively easy to install, simply download the binary associated with your R version from \href{http://cran.r-project.org/bin/windows/Rtools/}{this page}, and follow the instructions from the installer. When prompted for ''adding the following directories to your system path'', you must say yes.
+RTools is essential if you want to build R package. It is relatively easy to install, simply download the binary associated with your R version from \href{http://cran.r-project.org/bin/windows/Rtools/}{this page}, and follow the instructions from the installer. When prompted for ''Edit the system path'', you must say yes.
 
 
 
@@ -78,14 +78,14 @@ The two latter option should be prefered over FWTools since they contain the mos
 Note that if you want to call some gdal utilities (i.e.: \code{gdalwarp}, \texttt{gdal\_translate}, \texttt{gdal\_merge.py}, etc) via \texttt{system()} command from R, you will need to append the bin directory containing gdal utilities to your user or system path.
 
 \subsection*{Version control software}
-Installing these software is not an absolute necessity, however it might come handy if you plan to implement some of the good practices discussed in Lesson 3. Refer to \hyperref[Lesson_3.pdf]{Lesson 3} for more details.
+Installing these software is not an absolute necessity, however it might come handy if you plan to implement some of the good practices discussed in Lesson 3. Refer to Lesson 3 for more details.
 
 \subsubsection*{Git and SlickSVN}
-Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system. These software are very straightforward to install, simply download the executables and follow the instructions from the installer. \href{http://git-scm.com/downloads}{Git} download page, and \href{http://www.sliksvn.com/en/download}{slickSVN} download page.
+Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system. Only git is required if you plan to follow the full tutorial of Lesson 3.\\* These software are very straightforward to install, simply download the executables and follow the instructions from the installer. \href{http://git-scm.com/downloads}{Git} download page, and \href{http://www.sliksvn.com/en/download}{slickSVN} download page.
 
 
 \subsubsection*{Integration with the R Studio IDE}
-It is possible that R Studio automatically detects Git and SlickSVN on your system, however this is not systematic. In case the Git/Svn buttons in R Studio are innactive, after installing either Git or SlickSVN, follow the steps described bellow.\\
+It is possible that R Studio automatically detects Git and SlickSVN on your system, however this is not systematic. In case the Git/Svn buttons in R Studio are innactive (for instance under project - Create Project - Version Control), after installing either Git or SlickSVN, follow the steps described bellow.\\
 Once SlikSVN (or git) has been installed, in order to allow it to interact with RStudio, its path has to be set. Conveniently that can be done directly from within RStudio. In R Studio, navigate to Tools - Options - Git/SVN - SVN (or Git) - Browse and select the SVN.exe (or git.exe) executable in C:/Program Files/SlikSVN/bin/ (or C:/Program Files/git/bin/)
 Restart RStudio.
 
