@@ -47,7 +47,7 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Carrying out your R project}
-\author{Lo\"{i}c Dutrieux}
+\author{Lo\"{i}c Dutrieux, Jan Verbesselt}
 
 \maketitle
 
@@ -118,7 +118,7 @@ r[s %in% c(150, 151)] <- NA
 # Visualize the result
 @
 
-<<raster-1, echo=FALSE, fig=TRUE, include=FALSE>>=
+<<raster-1, echo=TRUE, fig=TRUE, include=FALSE>>=
 plot(r)
 @
 
@@ -132,17 +132,17 @@ plot(r)
 
 Useful to know when writing a reproducible example; instead of generating your own small datasets (vectors or RasterLayers, etc) as part of your reproducible example, use some of R ''built-in'' datasets. They are part of the main R packages.
 Some popular datasets are: cars, meuse.grid\_ll, Rlogo, iris, etc
-The auto completion menu of the \code{data} function will give you an overview of the datasets available
+The auto completion menu of the \code{data()} function will give you an overview of the datasets available.
 
 <<>>=
 # Imports the variable cars in the working environment
 data(cars) 
 class(cars)
-# Visualizes the first five rows of the variable
+# Visualizes the first six rows of the variable
 head(cars) 
 @
 
-<<cars, echo=FALSE, fig=TRUE, include=FALSE>>=
+<<cars, echo=TRUE, fig=TRUE, include=FALSE>>=
 # The plot function on this type of dataset (class = data.frame, 2 column)
 # automatically generates a scatterplot
 plot(cars)
@@ -239,17 +239,17 @@ In order to achieve these objectives, you should try to follow a few good practi
 \item	Document your functions
 \item	Build a package 
 \item Keep a TODO list
-\item	Use version control to develop/maintain your package
+\item	Use version control to develop/maintain your functions and packages
 
 \end{itemize}
 
 \subsection*{Function writing}
 
-The objective of this section is to provide a few advice to help you write efficiently function. That is functions that are simple, generic and flexible, so that they integrate well in a processing/analysis chain and can easily be re-used in a slightly different chain if needed.
+The objective of this section is to provide a few advices to help you write efficiently function. That is functions that are simple, generic and flexible, so that they integrate well in a processing/analysis chain and can easily be re-used in a slightly different chain if needed.
 More flexibility in your function can be achieve thanks to some easy tricks provided by control flow. The following section develops further this concept and provides examples of how control flow can help your functions becoming more flexible.
 
 \subsection*{Control flow}
-Control flow refers to the use of conditions in your code that redirect the flow to different directions depending on variables values of classes. Make use of that in your code, as this will make your functions more flexible and generic.
+Control flow refers to the use of conditions in your code that redirect the flow to different directions depending on variables values or classe. Make use of that in your code, as this will make your functions more flexible and generic.
 
 \subsection*{Object classes and Control flow}
 You have seen in a previous lesson already that every variable in your R working environment belongs to a class. You can take advantage of that, using control flow, to make your functions more flexible.
@@ -306,7 +306,7 @@ HelloWorld(21)
 
 @
 
-The function does not crashes anymore, but returns a warning instead.
+The function does not crash anymore, but returns a warning instead.
 
 Note that most common object classes have their own logical function, that returns \code{TRUE} or \code{FALSE}.
 For example.
@@ -362,9 +362,9 @@ r4 <- minusRaster(r, r2, plot=TRUE)
 
 \subsubsection*{Use of \code{try} and debugging your functions}
 \noindent\textit{\textbf{Use of try for error handling}}\\
-The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (sub-function, piece of code) that is wrapped into \code{try} will not interrupt the bigger function that contains \code{try}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try} you allow the overall process to continue until its end, regardless of the success of individual layers. So \code{try} is a perfect way to deal with heterogeneous/unpredictable input data.\\
-Also \code{try} returns an object of different class when it fails. You can take advantage of that at a later stage of your processing chain to make your function more adaptive.
-See the example below that illustrate the use of \code{try} for sequentially calculating frequency on a list of auto-generated RasterLAyers.
+The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (sub-function, piece of code) that is wrapped into \code{try()} will not interrupt the bigger function that contains \code{try()}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try()} you allow the overall process to continue until its end, regardless of the success of individual layers. So \code{try()} is a perfect way to deal with heterogeneous/unpredictable input data.\\
+Also \code{try()} returns an object of different class when it fails. You can take advantage of that at a later stage of your processing chain to make your function more adaptive.
+See the example below that illustrate the use of \code{try()} for sequentially calculating frequency on a list of auto-generated RasterLayers.
 <<a, eval=TRUE, echo=TRUE>>=
 library(raster)
 
@@ -373,6 +373,7 @@ a <- raster(nrow=50, ncol=50)
 a[] <- floor(rnorm(n=ncell(a)))
 
 # The freq() function returns the frequency of a certain value in a RasterLayer
+# We want to know how many times the value -2 is present in the RasterLayer
 freq(a, value=-2)
 
 # Let's imagine that you want to run this function over a whole list of RasterLayer
@@ -419,10 +420,10 @@ out
 
 \noindent\textit{\textbf{Function debugging}}
 
-Debugging a single line of code is usually relatively easy; simply double checking the classes of all input arguments often gives good pointers to why the line crashes. But when writing more complicated functions where objects created within the function are reused later on in that same function or in a nested function, it is easy to lose track of what is happening, and debugging can then become a nightmare. A few tricks can be used to make that process less painful. The first thing to investigate right after an error occurs is to run the \code{traceback()} function; just like that without arguments. Carefully reading the return of that function will tell you where exactly in your function the error occurred. In addition to \code{traceback()}, R has a more elaborated debugging mode that can be activated by calling \code{debug()}. Although the use of \code{debug()} is not covered in this lesson, fell free to explore by yourself these debugging functionalities (\url{http://www.stats.uwo.ca/faculty/murdoch/software/debuggingR/}).
+Debugging a single line of code is usually relatively easy; simply double checking the classes of all input arguments often gives good pointers to why the line crashes. But when writing more complicated functions where objects created within the function are reused later on in that same function or in a nested function, it is easy to lose track of what is happening, and debugging can then become a nightmare. A few tricks can be used to make that process less painful. The first thing to investigate right after an error occurs is to run the \code{traceback()} function; just like that without arguments. Carefully reading the return of that function will tell you where exactly in your function the error occurred. In addition to \code{traceback()}, R has a more elaborated debugging mode that can be activated by calling \code{debug()}. Although the use of \code{debug()} is not covered in this lesson, fell free to explore by yourself these debugging functionalities. Refer to the reference section of this document for further information on function debugging.
 
 \subsection*{Package building}
-Also part of good programming practices, building a R package is a great way to stay organized, keep track of what you are doing and be able to use it quickly and properly at any time.
+Also part of good programming practices, building an R package is a great way to stay organized, keep track of what you are doing and be able to use it quickly and properly at any time.
 
 \subsubsection*{Why building a package?}
 \begin{itemize}
@@ -430,9 +431,10 @@ Also part of good programming practices, building a R package is a great way to 
 \item Dependencies are automatically imported and functions are sourced (reduces the risk of having broken dependencies)
 \item Documentation is attached to the functions and cannot be lost (or forgotten)
 \end{itemize}
-For these reasons, if you build a package, next year you will still be able to run the functions you wrote yesterday. Which is often not the case for stand alone functions that are poorly documented and depend on a millions other functions ... that you cannot find anymore.
+For these reasons, if you build a package, next year you will still be able to run the functions you wrote yesterday. Which is often not the case for stand alone functions that are poorly documented and may depend on many other functions ... that you cannot find anymore. So to summarize R packages are not only a way to extend the functionalities of R, they are also the standard way to archive and save R functions.
 
 \subsubsection*{Structure of a package}
+Note that R package structure and creation are not necessarily easy things to understand. As a consequence, although there are many reasons why you should always consider working with packages, and depending on your understanding of the concepts described above, you may want to consider this part of the lesson as additional/optional. This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual \textit{Writing R extensions} (\url{http://cran.r-project.org/doc/manuals/R-exts.html}).\\
 
 \begin{figure}[h]
   \centering
@@ -441,22 +443,34 @@ For these reasons, if you build a package, next year you will still be able to r
   \label{package}
 \end{figure}
 
-This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual \textit{Writing R extensions} (\url{http://cran.r-project.org/doc/manuals/R-exts.html}).\\
 The default basic structure of a package is as follows:\
 2 sub directories (R and man), NAMESPACE and DESCRIPTION files (Figure~\ref{package}). The \textbf{R directory} includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the \textbf{man directory}. These .Rd files are the functions documentation. \textbf{NAMESPACE} and \textbf{DESCRIPTION} files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalist package structure; more elaborate packages may include extra sub directories, such as data, demo or vignette.\\
 
 \subsubsection*{Useful tips for package creation}
 
-The \code{package.skeleton} function will help you get the package structure from a list of sourced functions. (A function opened in the R Studio editor panel can be sourced by pressing the ''Source'' in the top right hand corner of the panel)
-\code{prompt} creates a tailored documentation (.Rd) file from an existing function.
-The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch, including. Explore the menus and option under Project - New project.
+The \code{package.skeleton()} function will help you get the package structure from a list of sourced functions. (A function opened in the R Studio editor panel can be sourced by pressing the ''Source'' in the top right hand corner of the panel)
+\code{prompt()} creates a tailored documentation (.Rd) file from an existing function.
+The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch. Explore the menus and option under Project - New project.\\
+
+For example, we created earlier a function called \code{minusRaster()}. We can try to create a package containing this function, let's call that package rasterOperations. The function was ran, which is equivalent than sourcing it, therefore it should appear in the list of workspace variables in the top right pannel in R Studio.
+
+<<eval=FALSE>>=
+# Since this function will write some files to your working directory
+# you want to make sure that it is set where you want the file to be written
+# It can be changed using setwd()
+getwd()
+# Now we can create the package structure
+package.skeleton(name='rasterOperations', list=c('minusRaster'))
+@
+The structure of the package has been generated now, you can go and explore the different files and directories that have been created. If you want to go further and successfully pass the checks and build the package, some file have to be manually edited. 
+
 
 \subsubsection*{Package building}
 \noindent\textit{\textbf{Prerequisites}}\\
-In order to be able to build package, you must have \textbf{Rtools} installed and properly setup on your system. Refer to the system setup document for more information on how to install Rtools. Once this is done R Studio offers great integration with Rtools, which makes package building really easy. The build panel in R Studio is by default located in the upper right window.
+In order to be able to build package, you must have \textbf{Rtools} installed and properly setup on your system. Refer to the system setup document for more information on how to install Rtools. Once this is done R Studio offers great integration with Rtools, which makes package building really easy. Assuming you have installed and set up Rtools properly, the build panel in R Studio should be by default located in the upper right window.\\
 
 \noindent\textit{\textbf{Check and build}}\\
-In order to be operational on your system the R package you just created has to be checked and built. This is a critical step since everything has to be perfect in order to pass the check step. Simple things like a missing line in a function documentation file mail result in the package not passing the checks. Although a package that does not fully passes the check may still be built in some cases, this is not recommended, and it is therefore preferable to deal with the errors returned in the check console before building.\\
+In order to be operational on your system the R package you just created has to be checked and built. This is a critical step since everything has to be perfect in order to pass the check step. Simple things like a missing line in a function documentation file may result in the package not passing the checks. Although a package that does not fully passes the check may still be built in some cases, this is not recommended, and it is therefore preferable to deal with the errors returned in the check console before building.\\
 Another option for building package is to do so directly from a remote git repository using the devtools package. This aspect of package building, together with general consideration on version control systems is presented in the next section.
 
 
@@ -501,16 +515,15 @@ Since the R Studio IDE provides integration for git and svn, we will only focus 
 \textbf{Branch} (git): Create a branch (a parallel version of the code in the repository)\\
 \textbf{Merge}: Merges two versions (branches) into one.
 
-\subsubsection*{How to}
+\subsubsection*{How to start an R package using R Studio projects and version control}
 To be able to perform the following tutorial, you must have git installed on your machine. Please refer to the system setup vignette to know how to install and setup git and allow it to be embedded into R Studio.\\
-Tutorial on how to start a R package with version control, hosted on GitHub.\\
 Note that although this tutorial illustrates the case of an R package maintained on GitHub, the package creation step is optional. 
-And version control offers many benefits that are not tied to packages. The same type of R projects, symbolized by a ''projectName.Rproj'' file can be used to maintain simple scripts and stand alone functions.
+Also version control offers many benefits that are not tied to packages. The same type of R projects, symbolized by a ''projectName.Rproj'' file can be used to maintain simple scripts and stand alone functions.
 
 \begin{enumerate}
   \item Create a GitHub account (only if you don't have one already)
   \item From GitHub, create a new repository and name it after the name of the package you want to start
-  \item Choose for the option to add a README
+  \item Choose for the option to ''Initialize this repository with a README''
   \item Copy the clone URL of the repository (Figure~\ref{github})
   \item From R Studio, go to project - Create project - Version Control - Git. In the repository URL field, enter the clone URL that you just copied from GitHub. Project directory name should appear automatically. Choose a location for your project.
 
@@ -527,7 +540,7 @@ And version control offers many benefits that are not tied to packages. The same
   \item In the git panel of R Studio (by default on the upper right), add all the objects added to the package by checking them - press commit - write a commit message - commit - push. You should be prompted for your GitHub username and password, once this is done, your package is added to your GitHub remote repository.
 \end{enumerate}
 
-Note that such packages, that are maintained on git repositories can be installed and compiled directly on the fly using the devtools package. See function \code{install\_github} and \code{install\_bitbucket} for further details.
+Note that such packages, that are maintained on git repositories can be installed and compiled directly on the fly using the devtools package. See function \code{install\_github()} and \code{install\_bitbucket()} functions for further details.
 If you are concerned about always having a ''compile-able'' version of your code, use different branches. Create a ''dev'' branch on which you develop your new functions or do any kind of experiments, and keep the stable version of your package on the ''master'' branch. Once the ''dev'' branch becomes stable, merge it with the ''master'' branch.
 
 \section{Exercise}
@@ -582,7 +595,8 @@ In order to submit, add the function (or package) to a repository on your own Gi
 Reference document for creating R packages: \href{http://cran.r-project.org/doc/manuals/R-exts.html}{Writing R extensions}\\*
 A set of good practices when creating packages: \href{http://mages.github.io/R_package_development/#1}{R package development}\\*
 R Studio documentation on version control: \href{http://www.rstudio.com/ide/docs/version_control/overview}{Using Version Control with RStudio}\\*
-Video tutorial to use revision control with R Studio and GitHUb/BitBucket \href{http://www.youtube.com/watch?v=jGeCCxdZsDQ&noredirect=1}{Youtube link}
+Video tutorial to use revision control with R Studio and GitHUb/BitBucket \href{http://www.youtube.com/watch?v=jGeCCxdZsDQ&noredirect=1}{Youtube link}\\*
+Reference manual for function debugging in R: \href{http://www.stats.uwo.ca/faculty/murdoch/software/debuggingR/}{Manual}.
 
 \bibliographystyle{model5-names}
 \bibliography{refs}
