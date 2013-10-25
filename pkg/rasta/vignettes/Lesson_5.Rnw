@@ -39,7 +39,7 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Lesson 5: Introduction to raster based analysis in R}
-\author{Lo\"{i}c Dutrieux}
+\author{Lo\"{i}c Dutrieux, Ben deVries, Jan Verbesselt}
 
 \maketitle
 
@@ -208,7 +208,7 @@ Now this object is stored on your computer, ready to be archived for later use.
 Performing simple raster operations with raster objects is fairly easy. For instance, if you want to substract two RasterLayers of same extent, r1 and r2; simply doing r1 - r2 will give the expected output, which is, every pixel value of r2 will be substracted to the matching pixel value of r1. These types of pixel based operations almost always require a set of conditions to be met in order to be executed; the two RasterLayers need to be identical in term of extent, resolution , projection, etc.
 
 \subsection*{Subsetting layers from from RasterStack and RasterBrick}
-Different spectral bands of a same satellite image scene are often stored in multi layers objects. This means that you will very likely import them in you R working environment as RasterBrick or RasterStack objects. As a consequence, to perform calculations between these bands, you will have to write an expression refering to individual layers of the object. Referring to individual layers in a RasterBrick or RasterStack object is done by using double square brackets \code{''[[]]''}.
+Different spectral bands of a same satellite image scene are often stored in multi layers objects. This means that you will very likely import them in you R working environment as RasterBrick or RasterStack objects. As a consequence, to perform calculations between these bands, you will have to write an expression refering to individual layers of the object. Referring to individual layers in a RasterBrick or RasterStack object is done by using double square brackets ''\code{[[]]}''.
 Let's look for instance at how the famous NDVI index would have to be calculated from the gewata RasterBrick object read earlier, and that contains the spectral bands of Landsat 7 sensor. And in case you have forgotten, the ndvi formula is as follows.
 
 \begin{equation}
@@ -398,11 +398,13 @@ The newly released \href{https://r-forge.r-project.org/projects/gdalutils/}{gdal
 
 \section{Exercise}
 Idea of exercise, using a second image of taravao, that I will provide, taken at a different date, also cloudy, write a compositing function.
-Requires:
+
+Some pointers
 \begin{itemize}
-\item Cropping to extent (The second scene will be a bit bigger)
-\item Apply the QA2Cloud function again
-\item perform replacement
+\item Prepare the datasets (generate the two cloud masks, get rid of QA layer)
+\item Write a simple function that works for 4 input numeric arguments
+\item Vectorize the function using mapply
+\item Use overlay to run the vectorized function, with 4 arguments
 \end{itemize}
 
 <<eval=FALSE>>=
@@ -410,12 +412,14 @@ Requires:
 
 # Read data taravao
 data(taravao)
-taravao2 <- brick('filename2.tif')
+# taravao2 <- taravao
+taravao2 <- brick('filename2.tif') # that does not exists yet, use line above for tests
 taravao2 <- crop(x=taravao2, y=taravao)
 cloud <- calc(taravao[[9]], fun=QA2cloud) 
 cloud2 <- calc(taravao2[[9]], fun=QA2cloud)
 taravao <- dropLayer(x=taravao, i=9)
 taravao2 <- dropLayer(x=taravao2, i=9)
+# Write function for single values
 compose <- function(c1, c2, b1, b2){
   if(c1 == 1 & c2 == 1) {
     x <- NA
@@ -428,7 +432,52 @@ compose <- function(c1, c2, b1, b2){
   }
   return(x)
 }
-taravaoComposit <- overlay(cloud, cloud2, taravao, taravao2, fun=compose(cloud, cloud2, taravao, taravao2))
+
+composeV <- function(c1, c2, b1, b2) {
+  v <- mapply(FUN=compose, c1, c2, b1, b2)
+  return(v)  
+}
+  
+taravaoComposit <- overlay(cloud, cloud2, taravao, taravao2, fun=composeV)
+@
+
+If wrapped into a function taking 2 rasterBricks as input
+
+<<eval=FALSE>>=
+# Vectorize the function
+Landsat8Compose <- function(x, y) { # x and y are 2 RasterBricks
+  c1 <- calc(x[[9]], fun=QA2cloud) 
+  c2 <- calc(y[[9]], fun=QA2cloud)
+  x <- dropLayer(x=taravao, i=9)
+  y <- dropLayer(x=taravao2, i=9)
+  
+  compose <- function(c1, c2, b1, b2){
+    if(c1 == 1 & c2 == 1) {
+      x <- NA
+    } else if (c1 == 0 & c2 == 0) {
+      x <- mean(c(b1, b2))
+    } else if (c1 == 1 & c2 == 0) {
+      x <- b2
+    } else if (c1 == 0 & c2 == 1) {
+      x <- b1
+    }
+    return(x)
+  }
+
+  composeV <- function(a, b, c, d) {
+    v <- mapply(FUN=compose, a, b, c, d)
+    return(v)  
+  }
+  
+  out <- overlay(c1, c2, x, y, fun=composeV)
+  return(out)
+}
+
+# Let's test
+data(taravao)
+taravao2 <- taravao
+
+taravaoC <- Landsat8Compose(taravao, taravao2)
 @
   
 
