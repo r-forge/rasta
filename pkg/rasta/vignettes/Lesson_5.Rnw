@@ -157,7 +157,7 @@ When looking at the documentation of most functions of the raster package, you w
   
  % Maybe that section should come at the end 
   \subsection*{Croping a raster object}
-  \code{crop()} is the raster package function that allows you to crop data to smaller spatial extents. A great advantage of the crop function is that it acceps almost all spatial object class of R as its ''extent'' input argument. But the ''extent'' argument also simply accepts objects of class ''extent''. One way of obtaining such an extent object interactively is by using the \code{drawExtent()} function. In the exemple below, we will manually draw a regular extent that we will use later to crop the gewata RasterBrick.
+  \code{crop()} is the raster package function that allows you to crop data to smaller spatial extents. A great advantage of the crop function is that it acceps almost all spatial object class of R as its ''extent'' input argument. But the ''extent'' argument also simply accepts objects of class ''extent''. One way of obtaining such an extent object interactively is by using the \code{drawExtent()} function. In the example below, we will manually draw a regular extent that we will use later to crop the gewata RasterBrick.
   
 <<eval=FALSE>>=
 # PLot the first layer of the RasterBrick
