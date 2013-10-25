@@ -32,9 +32,11 @@
 %                                              frame=single}
 %\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em,
 %                                             frame=single}
-<<echo=FALSE>>=
-options(width=60)
+
+<<preliminaries, echo=FALSE, results=hide>>=
+options(width = 70, prompt = ">", continue = "+ ")
 @
+
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
@@ -307,7 +309,8 @@ Now that we have created some random points, we will extract the x coordinates (
 
 <<converttocoordinatestextfile>>=
 #--------------------------CONVERT RANDOM POINTS TO DATA.FRAME------------------
-dp <- as.data.frame(dran1) #This creates a simple data frame with 2 colunms, x and y
+dp <- as.data.frame(dran1) 
+#This creates a simple data frame with 2 colunms, x and y
 head(dp)
 #Now we will add some values that will be aggregated in the next exercise
 dp$values<-rnorm(100,5,10) 
@@ -321,10 +324,12 @@ In the last exercise we generated some random points along with some random valu
 
 <<converttospatialpoints>>=
 #--------------------------CONVERT RANDOM POINTS TO SPATIAL POINTS DATAFRAME----
-dsp <- SpatialPointsDataFrame(coords = dp[,c('x','y')], data = data.frame('values' = dp$values))
+dsp <- SpatialPointsDataFrame(coords = dp[,c('x','y')], 
+	data = data.frame('values' = dp$values))
 summary(dsp)
 
-#---Since the Data was Generated from a source with same projection as our Kenya data, we will go ahead and define the projection"
+#---Since the Data was Generated from a source with same projection as our Kenya data, 
+#---we will go ahead and define the projection"
 dsp@proj4string <- kenya@proj4string
 @
 Now that we have created some points and defined their projection, we are ready to do a point in polygon spatial join. We will use the \verb+over()+ command (short for overlay()).
@@ -340,11 +345,13 @@ See ?over() for more information.
 dsdat <- over(kenya, dsp, fn = mean) #do the join
 head(dsdat) #look at the data
 
-inds <- row.names(dsdat) #get the row names of dsdat so that we can put the data back into ds
+inds <- row.names(dsdat) 
+#get the row names of dsdat so that we can put the data back into ds
 head(inds)
 
 str(kenya@data)
-kenya@data[inds, 'pntvals'] <- dsdat #use the row names from dsdata to add the aggregated point values to ds@data
+kenya@data[inds, 'pntvals'] <- dsdat 
+#use the row names from dsdata to add the aggregated point values to ds@data
 head(kenya@data)
 @
 
@@ -390,7 +397,8 @@ In the last step we read in a raster file, cropped it to the extent of the Kenya
 kenya@data$precip <- extract(gc, kenya, fun = mean, weights=FALSE) 
 @
 Weighted (more accurate, but slower) weights aggregation by the amount of the grid cell that falls within the district boundary:
-<<eval=FALSE>>=
+
+<<eval=FALSE, echo =FALSE>>=
 kenya@data$precip_wght <- extract(gc, kenya, fun = mean, weights = TRUE) 
 #If you want to see the actual values and the weights associated with them do this:
 rastweight <- extract(gc, kenya, weights = TRUE)
@@ -407,7 +415,7 @@ The `gg' in the ggplot2 is short for \emph{The Grammar of Graphics} which refere
 The ggplot2() package separates spatial data into 2 elements: (1) the data.frame and 2) the spatial coordinates. If you want to make a map from a shapefile you first have to use the fortify() command which converts the shapefile to a format readable by ggplot2:
 
 <<fortify>>=
-#------------------------PREP SPATIAL DATA FOR GGPLOT WITH FORTIFY()------------
+#------------------PREP SPATIAL DATA FOR GGPLOT WITH FORTIFY()------------
 pds <- fortify(kenya, region='ip89DId') #convert to form readable by ggplot2
 pds$ip89DId <- as.integer(pds$id)
 head(pds)
@@ -421,7 +429,8 @@ In the code below we will first create the basic layer using the ggplot command,
 #--------------------------MAKE A BASIC MAP------------------------------
 p1 <- ggplot(d)
 p1 <- p1 + geom_map(aes(fill = PopChg, map_id = ip89DId), map = pds) 
-p1 <- p1 + expand_limits(x = pds$long, y = pds$lat) #this is sometimes necessary to keep from throwin an error
+p1 <- p1 + expand_limits(x = pds$long, y = pds$lat) 
+#this is sometimes necessary to keep from throwin an error
 p1 <- p1 + coord_equal() #this keeps the map from having that 'squished' look 
 p1
 @
@@ -435,7 +444,7 @@ p1
 Now we have a basic map, let's make some tweaks to it.
 
 <<gg2, fig=TRUE, include=FALSE>>=
-#--------------------------CHANGE THE COLOR SCHEME, TWEAK THE LEGEND------------
+#---------------------CHANGE THE COLOR SCHEME, TWEAK THE LEGEND------------
 #---Change the Colour Scheme-----
 p1 <- p1 + scale_fill_gradient(name='Population \nChange', 
               low ='wheat', high = 'steelblue') 
@@ -452,13 +461,14 @@ p1
 
 Now we will get rid of all the unnecessary information in the background.
 <<gg3,fig=TRUE,include=FALSE>>=
-#--------------------------EDIT THE BACKGROUND------------------------------
+#-----------------------EDIT THE BACKGROUND------------------------------
 #-----Get Rid of the Background-----
 #Blank Grid, Background,Axis,and Tic Marks
 bGrid<-theme(panel.grid = element_blank())
 bBack<-theme(panel.background = element_blank())
 bAxis<-theme(axis.title.y = element_blank())
-bTics<-theme(axis.text = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank())
+bTics<-theme(axis.text = element_blank(), axis.text.y = element_blank(), 
+	axis.ticks = element_blank())
 p1<-p1 + bAxis + bTics + bGrid + bBack + xlab('')
 p1
 @
@@ -516,7 +526,8 @@ pd <- melt(pd, id.vars='ip89DId') # convert the data to 'long' form
 head(pd) # take a look at the data
 
 pmap <- ggplot(pd)
-p2 <- pmap + geom_map(aes(fill = value,map_id = ip89DId), map=pds) + facet_wrap(~variable)
+p2 <- pmap + geom_map(aes(fill = value,map_id = ip89DId), map=pds) + 
+		facet_wrap(~variable)
 p2 <- p2 + expand_limits(x = pds$lon, y = pds$lat) + coord_equal()
 p2 + labs(title='Basic Panel Map')
 @
@@ -540,9 +551,11 @@ Finally we can use the same options we used above to make our final map.
 <<fgg3, fig=TRUE, include=FALSE>>=
 #--------------------------MORE PANEL MAP TWEAKS------------------------------
 #--We can add all the other tweaks as before
-p2 <- p2 + scale_fill_gradient(name='Population',low ='wheat',high = 'steelblue') #to set break points, enter in
+p2 <- p2 + scale_fill_gradient(name='Population',low ='wheat',high = 'steelblue') 
+#to set break points, enter in
 p2 <- p2 + bAxis+bGrid+bTics+bBack
-p2 <- p2 + theme(panel.border=element_rect(fill=NA)) #this removes the background but keeps aborder around the panels
+p2 <- p2 + theme(panel.border=element_rect(fill=NA)) 
+#this removes the background but keeps aborder around the panels
 #--We can also adjust the format, theme, et cetera of the panel lables with 'strip.text.x'
 p2 <- p2 + theme(strip.background=element_blank(),strip.text.x=element_text(size=12))
 p2
