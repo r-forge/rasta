@@ -173,7 +173,7 @@ Digitize a path (e.g. a bicycle route) between the two points of interest you se
 myroute <- readOGR("data/route.kml", "route.kml")
 # put both in single data frame
 myroute@proj4string <- prj_string_WGS
-# names(myroute)
+names(myroute)
 myroute$Description <- NULL
 mylinesdf <- rbind(mylinesdf, myroute)
 @
@@ -205,7 +205,7 @@ Now that the geometries are projected to a planar coordinate system the length c
 library(rgeos)
 mylinesdf$length <- gLength(mylinesRD, byid=T)
 @
-Feel free to export the updated lines to Google Earth or to inspect the contents of the \texttt{data} slot of the object \texttt{mylinesdf} (i.e. type \texttt{mylines@data}).
+Feel free to export the updated lines to Google Earth or to inspect the contents of the \texttt{data} slot of the object \texttt{mylinesdf} (i.e. type \texttt{mylinesdf@data}).
 
 \subsection*{Polygons}
 We now continue with \texttt{sp} classes for polygon objects. The idea is to illustrate the classes; the data are meaningless. Let us create overlapping circles around the points you defined earlier.
@@ -396,16 +396,15 @@ cln_lines_df <- SpatialLinesDataFrame(tmp_lines, sp_lines_df@data)
 Create a documented script with code for the following tasks:
 \begin{enumerate}
   \item buffering the cleaned lines to create harvest blocks;
-  \item fill small holes between blocks by swelling and shrinking;
+  \item fill small holes within blocks by swelling and shrinking;
   \item compute for each block the yield per hectare and add it to the spatial polygons data frame;
   \item plot the results of the previous step in a map;
-  \item export the spatial polygons data frame for display in Google Earth using either \texttt{writeOGR} or \texttt{kml} from the package \texttt{plotKML}.
+  \item export the spatial polygons data frame for display in Google Earth using either \texttt{writeOGR} or functions from the package \texttt{plotKML}.
 \end{enumerate}
 
 Mail your R code along with your response to \textbf{task 1} above to Sytze de Bruin.
 
 <<Answers, eval=FALSE, echo=FALSE>>=
-# test test test
 # Q1 -- Buffer lines to make swaths
 sp_polys2 <- gBuffer(cln_lines_df,byid=T,id=as.character(cln_lines_df$ID), 
                     width=0.5*cln_lines_df$width, capStyle="FLAT")
@@ -425,7 +424,7 @@ spplot(sp_polys_df2["ton_ha"], col="transparent", col.regions=bpy.colors(100),
 
 # Q 5 Google Earth output
 # (1) Export to Google Earth using writeOGR
-sp_polys_WGS <- spTransform(sp_polys_df2, CRS("+proj=longlat +datum=WGS84"))
+sp_polys_wgs <- spTransform(sp_polys_df2, CRS("+proj=longlat +datum=WGS84"))
 writeOGR(sp_polys_WGS, "data/testkml.kml", "testkml", driver="KML", overwrite_layer=T)
 
 # (2) Idem, using package "plotKML" Tomislav Hengl
