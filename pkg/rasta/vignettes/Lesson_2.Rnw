@@ -209,7 +209,6 @@ Here are some examples using are data.frame 'd':
 \item d[1,1] item in the first row and first column
 \item d[,1:5] columns 1 through 5 (also works with rows)
 \item d[,c(1,4,5)] columns 1,4 and 5 (also works with rows)
-\item d[,'variable'] column names 'variable'
 \item d\verb+$+variable same as above, but returns the column as a vector
 \item d[d\verb+$+variable>10,] rows from all columns that correspond where the values in 'variable' are greater than 10
 \end{itemize}
@@ -323,13 +322,13 @@ head(dp)
 In the last exercise we generated some random points along with some random values. Now we will read that data in, convert it to a shapefile (or a SpatialPointsDataFrame object) and then do a point in polygon spatial join. The command for converting coordinates to spatial points is \emph{SpatialPointsDataFrame()}
 
 <<converttospatialpoints>>=
-#--------------------------CONVERT RANDOM POINTS TO SPATIAL POINTS DATAFRAME----
+#--------------------CONVERT RANDOM POINTS TO SPATIAL POINTS DATAFRAME---
 dsp <- SpatialPointsDataFrame(coords = dp[,c('x','y')], 
 	data = data.frame('values' = dp$values))
 summary(dsp)
 
-#---Since the Data was Generated from a source with same projection as our Kenya data, 
-#---we will go ahead and define the projection"
+#Since the Data was Generated from a source with same projection as 
+#the Kenya data, we will go ahead and define the projection"
 dsp@proj4string <- kenya@proj4string
 @
 Now that we have created some points and defined their projection, we are ready to do a point in polygon spatial join. We will use the \verb+over()+ command (short for overlay()).
@@ -484,7 +483,8 @@ Now let's label the polygon names and data values.
 #--------------------------ADD SOME LABELS--------------------------------------
 #--------Add Some Polygon labels------
 #-Polygon Labels
-cens <- as.data.frame(coordinates(kenya)) #extract the coordinates for centroid of each polygon
+cens <- as.data.frame(coordinates(kenya)) 
+#extract the coordinates for centroid of each polygon
 cens$Region <- kenya$ip89DName
 cens$ip89DId <- kenya$ip89DId
 head(cens)  #we will use this file to label the polygons
@@ -568,12 +568,15 @@ p2
 \caption{Basic Panel Map}
 \end{figure}
 
-\subsection{Plot a Shapefile on Top of a Raster in ggplot}
-\emph{Excercise Lesson 2: Not ready yet -- any suggestions?}
+\clearpage
+\section{Excercise Lesson 2: Under construction}
 
-Random sample the raster, extract temperature data for the point in a buffer of xxxx meters around them and then visualise the temperature data in a 3-D scatterplot. Please provide a clean and documented R script.
+Provide a script where 
+(1) the raster (temperature) is sampled (in a random sample per pixel), 
+(2) and the random points are then visualised on top of the raster (try in ggplot)
+(3) derive the standard deviation and range of all the temperature values of the sampled points
 
-<<ex, eval=FALSE>>=
+<<ex, eval=FALSE, echo=TRUE>>=
 #---Set up the data for ggplot
 df <- rasterToPoints(gc) #convert the raster to a points object
 df <- data.frame(df) #and then to a data.frame
@@ -585,12 +588,7 @@ p<-p+coord_equal()
 p<-p+scale_fill_gradient(low='wheat',high='blue') #adjust the colors
 p<-p+labs(x='Longitude',y='Latidude')
 p
-
 @
-
-\clearpage
-
-\section{Excercise}
 
 \section{Special thanks and more info}
 Special acknowledgments go to \href{mailto:davenpor@geog.ucsb.edu}{Frank Davenport} 
