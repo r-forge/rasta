@@ -101,7 +101,7 @@ options(width = 70, prompt = ">", continue = "+ ")
   \item{A scripting language or script language is a programming language that supports the writing of scripts, 
   programs written for a special runtime environment that can interpret and automate the execution of 
   tasks which could alternatively be executed one-by-one by a human operator}
-  \item{Different from compiled languages like C/C++/Fortran.}
+  \item{Different from like C/C++/Fortran since these are languages that need to be compiled first.}
   \item{A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture}
 \end{itemize}
 \end{frame}
@@ -180,7 +180,7 @@ a <- 1
 a
 @
 The first line you passed to the console created a new object named  $a$ in memory. 
-The symbol '<-' is somewhat equivalent to an equal sign. 
+The symbol '<-' is somewhat equivalent to an equal sign but recommended as it is used internally. 
 In the second line you printed $a$ to the console by simply typing it's name. 
 \medskip
 
@@ -214,7 +214,7 @@ add()  #automatically evaluates x = 5
 add(6) #but you can still change the defaults
 @
 
-That's about all there is too it. The function will generally return the result of the 
+That's about all there is to it. The function will generally return the result of the 
 last line that was evaluated. However you can also use \verb+return()+ to specify exactly what the function will return.
 \end{frame}
 
@@ -223,7 +223,8 @@ Now, let's declares a new object, a new function, \textbf{newfunc} (this is just
 
 <<echo=TRUE>>=
 newfunc <- function(x, y) {
-  2*x + y
+  z <- 2*x + y
+  return(c(z,x,y))
 } 
 
 a2b <- newfunc(2, 4)
@@ -293,7 +294,6 @@ Type ?read.table in your console for some other examples.
 
 <<readcsvexample>>=
 f <- system.file("extdata/kenpop89to99.csv", package ="rasta")
-print(f)
 mydat<-read.csv(f)
 @
 We can explore the data using the  names(), summary(), head(), and tail() commands (we will use these frequently through out the exercise)
@@ -362,7 +362,7 @@ datdir <- file.path("data") ## path
 
 \begin{frame}[fragile]
 
-\frametitle{Ex.Lesson 1: Write you own function to create a spatial map a country}
+\frametitle{Ex.Lesson 1: Write you own function to create a map}
 \textbf{Write a function to visualise data and plots different variables}
 \begin{itemize}
 \item Submit a clear, reproducible, and documented script containing a function to create a spatial map
@@ -402,7 +402,7 @@ adm <- getData('GADM', country='PHL', level=2, path = datdir)
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Ex.Lesson 1: Write you own function to create a spatial map a country}
+\frametitle{Ex.Lesson 1: Write you own function to create a map}
 
 <<phil, eval=TRUE, fig=TRUE, include=FALSE>>=
 mar <- adm[adm$NAME_1=="Marinduque",]
@@ -424,7 +424,7 @@ Created by: ARSsalvacion", adj=c(0,0), cex=0.7, col="grey20")
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Ex.Lesson 1: Write you own function to create a spatial map a country}
+\frametitle{Ex.Lesson 1: Write you own function to create a map}
 
 \begin{figure}[!htp]
 \centering
