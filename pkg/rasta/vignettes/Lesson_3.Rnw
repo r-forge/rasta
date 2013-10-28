@@ -594,5 +594,4 @@ p
 Special acknowledgments go to \href{mailto:davenpor@geog.ucsb.edu}{Frank Davenport} 
 (\href{http://www.frankdavenport.com/blog/2012/6/19/notes-from-a-recent-spatial-r-class-i-gave.html}{Spatial R class}) for excellent R spatial introduction on which this lesson is based.
 
-
 \end{document}
