@@ -42,7 +42,7 @@ options(width = 70, prompt = ">", continue = "+ ")
 \SweaveOpts{concordance=TRUE}
 
 \title{Lesson 2}
-\author{Jan Verbesselt, Lo\"{i}c Dutrieux, Ben De Vries, Sytze de Bruyn}
+\author{Jan Verbesselt, Frank Davenport, Ben De Vries}
 
 \maketitle
 
@@ -151,7 +151,7 @@ plot(kenya)
 \caption{Adminstrative boundaries of Kenya}
 \end{figure}
 
-Here is an example for downloading of administrative boundaries for any country. This will be useful for the exercise.
+Here is an example for downloading of administrative boundaries for any country.
 
 
 \clearpage
