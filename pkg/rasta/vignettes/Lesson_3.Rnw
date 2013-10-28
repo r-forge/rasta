@@ -1,16 +1,5 @@
 \documentclass[11pt,twoside,a4paper]{article}
 
-% TODO
-% Extend section on debugging (debug, trace, ...)
-% Add a reference section
-% Design an exercise
-% Comments warping in R code sections 
-% IMprove figure placement
-% Set a width for the table so thta it does not spill out of the page
-
-
-
-
 %% BibTeX settings
 \usepackage[authoryear,round]{natbib}
 
@@ -20,18 +9,15 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{url}
-\usepackage{float}
-
 
 % hyperref setup
 \definecolor{Red}{rgb}{0.5,0,0}
 \definecolor{Blue}{rgb}{0,0,0.5}
-\def\code#1{\texttt{#1}}
 \hypersetup{%
-  pdftitle = {Geo-Scripting course: Lesson 3},
+  pdftitle = {Example Tutorial},
   pdfsubject = {},
-  pdfkeywords = {R project management, good scripting habits},
-  pdfauthor = {Lo\"{i}c Dutrieux},
+  pdfkeywords = {MODIS, time series},
+  pdfauthor = {Jan Verbesselt},
   %% change colorlinks to false for pretty printing
   colorlinks = {true},
   linkcolor = {Blue},
@@ -42,563 +28,571 @@
 }
 
 \usepackage{Sweave} %% is essentially
+%\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=2em,
+%                                              frame=single}
+%\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em,
+%                                             frame=single}
+
+<<preliminaries, echo=FALSE, results=hide>>=
+options(width = 70, prompt = ">", continue = "+ ")
+@
+
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-\title{Carrying out your R project}
-\author{Lo\"{i}c Dutrieux, Jan Verbesselt}
+\title{Lesson 3}
+\author{Jan Verbesselt, Frank Davenport, Ben De Vries}
 
 \maketitle
 
+\begin{abstract}
+This is an introduction to the course Applied Geo-Scripting where we will explore the potential of R and libraries which enable reading, writing, analysis, and visualisation of spatial data.
+
+\end{abstract}
+
 \section{Today's learning objectives}
-At the end of the lecture, you should be able to
 
 \begin{itemize}
-  \item Find help for R related issues
-  \item Produce a reproducible example
-  \item Adopt some good scripting/programming habits
-  \item Use control flow for efficient function writing
-  \item Create a R package
-  \item Use version control to develop, maintain, and share with others your R packages
+	\item{Read, write, and visualize spatial data (vector/raster) using a script}
+	\item{Find libraries which offer spatial data handling functions}
+	\item{Learn to include functions from a library in your script}
 \end{itemize}
 
-
-\section{Introduction}
-
-During the previous lectures, you saw some general aspects of the R language, such as an introduction to the syntax, object classes, reading of external data and function writing. Today the emphasis of the lecture is mostly oriented toward carrying an R project. Therefore, some recurrent aspects of project development, such as, how to find help, or techniques to organize your code are covered in the lecture.
-Scripting means that you often go beyond easy things and therefore face challenges; as a consequence, it is likely that at one moment or another, you will have to go look for help. Part of this lesson is intended to guide you through ways of finding help, including posting to the mail list and writing a reproducible example. In addition, this lecture goes through a couple of essential ''good practices'' when working on geo-scripting projects. Not all aspects of good practices are covered, however, for those of you who are curious to know more about version control, R package building, etc, be sure to check the reference section of this document.
-
-
-\section{Finding help}
-
-There are many place where help can be found on the internet. So in case the function or package documentation is not sufficient for what you are trying to achieve, google is your best friend. Most likely by googling the right key words relating to your ''problem'', google will direct you to the archive of the R mailing list, or to some discussions on Stack Exchange (\url{http://stackexchange.com/}). These two are reliable sources of information, and it is quite likely that the problem you were trying to  figure out has already been answered before.\\However, it may also happen that you discover a ''bug'' or something that you would qualify of abnormal behavior, or that you really have a question that no-one has ever asked (corollary: has never been answered). In that case, you may submit a question to one of the R mailing list. For general R question there is a general R mailing list (\url{https://stat.ethz.ch/mailman/listinfo/r-help}), while the spatial domain has its own mailing list (\url{https://stat.ethz.ch/mailman/listinfo/r-sig-geo}). Geo related question should be posted to this latter mailing list.\\
-Warning, these mailing list have heavy mail traffic, use your mail client efficiently and set filters, otherwise it will quickly bother you.\\
-These mailing lists have a few rules, and it's important to respect them in order to ensure that:
+\section{Set Your Working Directory and Load Your Libraries}
+\subsection{Set the Working Directory}
+Let's do some basic set up first. 
 
 \begin{itemize}
-\item no-one gets offended by your question,
-\item	people who are able to answer the question are actually willing to do so,
-\item	you get the best quality answer
+	\item{Create a folder which will be your working directory e.g. \emph{Lesson2}}
+	\item{Create an R script within that folder}
+	\item{Set your working directory to the \emph{Lesson2} folder}
+	\item{Create a $data$ folder within your working directory}
 \end{itemize}
 
-So, when posting to the mail list: 
-
-\begin{itemize}
-\item	Be courteous,
-\item	Provide a brief description of the problem and why you are trying to do that.
-\item	Provide a reproducible example that illustrate the problem, reproducing the eventual error
-\item	Sign with your name and your affiliation
-\item Do not expect an immediate answer (although well presented question often get answered fairly quickly)
-\end{itemize}
-
-\section{Creating a reproducible example}
-
-Indispensable when asking a question to the online community, being able to write a reproducible example has many advantages.
-First it may ensure that when you present a problem, people are able to answer your question without guessing what you are trying to do. But reproducible examples are not only to ask questions; they may help you in your thinking, developing  or debugging process when writing your own functions. For instance, when developing a function to do a certain type of raster calculation, start by testing it on a small auto-generated rasterLayer object, and not directly on your actual data covering the entire universe \dots
-
-\subsection*{But what is a reproducible example exactly?}
-Well, one could define a reproducible example by a piece of code that can be executed by anyone who has R, independently of the data present on his machine or any preloaded variables. The computation time should not exceed a few seconds and if the code automatically downloads data, the data volume should be as small as possible.
-So basically, if you can quickly start a R session on your neighbour's computer while he is on a break, copy-paste the code without making any adjustments and see almost immediately what you want to demonstrate; congratulation, you have created a reproducible example.
-
-Let's illustrate this by an example.
-I want to perform values replacements of one raster layer, based on the values of another raster Layer.
-
-<<>>=
-# Create two rastersLayer objects of similar extent
-library(raster)
-r <- s <- raster(ncol=50, nrow=50)
-# fill the raster with values
-r[] <- 1:ncell(r)
-s[] <- 2 * (1:ncell(s))
-s[200:400] <- 150
-s[50:150] <- 151
-# perform the replacement
-r[s %in% c(150, 151)] <- NA
-# Visualize the result
-@
-
-<<raster-1, echo=TRUE, fig=TRUE, include=FALSE>>=
-plot(r)
-@
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{Lesson_3-raster-1}
-\caption{Display of the raster layer after data replacement}
-\label{raster-1}
-\end{figure}
-
-
-Useful to know when writing a reproducible example; instead of generating your own small datasets (vectors or RasterLayers, etc) as part of your reproducible example, use some of R ''built-in'' datasets. They are part of the main R packages.
-Some popular datasets are: cars, meuse.grid\_ll, Rlogo, iris, etc
-The auto completion menu of the \code{data()} function will give you an overview of the datasets available.
-
-<<>>=
-# Imports the variable cars in the working environment
-data(cars) 
-class(cars)
-# Visualizes the first six rows of the variable
-head(cars) 
-@
-
-<<cars, echo=TRUE, fig=TRUE, include=FALSE>>=
-# The plot function on this type of dataset (class = data.frame, 2 column)
-# automatically generates a scatterplot
-plot(cars)
-@
-
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{Lesson_3-cars}
-\caption{Visual representation of the cars data set}
-\label{cars}
-\end{figure}
-
-Another famous data set is the meuse data set, providing all sorts of spatial variables spread across a part of the meuse watershed.
-The following example compiled from the help pages of the sp package.
-<<>>=
-## Example using built-in dataset from the sp package
-library(sp)
-# Load required datastes
-data(meuse)
-# The meuse dataset is not by default a spatial object
-# but its x, y coordinates are part of the data.frame
-class(meuse)
-coordinates(meuse) <- c("x", "y")
-class(meuse)
-@
-Now that the object belongs to a spatial class, we can plot it using one of the vector plotting function of the sp package. See the resulting in figure~\ref{meuse1}.
-
-<<meuse1, echo=TRUE, fig=TRUE, include=FALSE>>=
-bubble(meuse, "zinc", maxsize = 2.5,
-       main = "zic concentrations (ppm)", key.entries = 2^(-1:4))
-@
-
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{Lesson_3-meuse1}
-\caption{The zinc concentration around the meuse river}
-\label{meuse1}
-\end{figure}
-
-
-The sp package help page contain multiple examples of how to explore its meuse built-in data set. Another example of multiple plots using meuse.grid is given in figure~\ref{meuse2}.
-
-
-<<meuse2, echo=TRUE, fig=TRUE, include=FALSE>>=
-# Load meuse.riv dataset
-data(meuse.riv)
-# Create an object of class spatialPolygons from meuse.riv
-meuse.sr <- SpatialPolygons(list(Polygons(list(Polygon(meuse.riv)),"meuse.riv")))
-# Load the meuse.grid dataset
-data(meuse.grid)
-# Assign coordinates to the dataset and make it a grid
-coordinates(meuse.grid) = c("x", "y")
-gridded(meuse.grid) = TRUE
-# Plot all variables of the meuse.grid dataset in a multiple window spplot
-spplot(meuse.grid, col.regions=bpy.colors(), main = "meuse.grid",
-  sp.layout=list(
-  list("sp.polygons", meuse.sr),
-	list("sp.points", meuse, pch="+", col="black")
-  )
-)
-@
-
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{Lesson_3-meuse2}
-\caption{Another example of spatial data manipulation and spatial plot using the meuse data set from sp package}
-\label{meuse2}
-\end{figure}
-
-\section{Good scripting/programming habits}
-
-Increasing your scripting/programming efficiency goes through adopting good scripting habits. Following a couple of guidelines will ensure that your work:
-
-\begin{itemize}
-  \item Can be understood and used by others
-  \item	Can be understood and reused by you in the future
-  \item	Can be debugged with minimal efforts
-  \item	Can be re-used across different projects
-  \item	Is easily accessible by others
-  
-\end{itemize}
-  
-In order to achieve these objectives, you should try to follow a few good practices. The list below is not exhaustive, but already constitutes a good basis that will help you getting more efficient now and in the future when working on R projects.
-
-\begin{itemize}
-
-\item Write short functions.
-\item	Make your functions generic and flexible, using control flow
-\item	Comment your code
-\item Follow the R style guide\footnote{The aim of having a formatted style guide is to increase readability of your code by others. In that regard, indentation, use of <- instead of = as assignment operator and placement of curly braces are of particular relevance when writing functions. Proper configuration of your script editor allows you to automatically implement some of these guidelines without having to think too much about it.} \url{http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml}
-\item	Document your functions
-\item	Build a package 
-\item Keep a TODO list
-\item	Use version control to develop/maintain your functions and packages
-
-\end{itemize}
-
-\subsection*{Function writing}
-
-The objective of this section is to provide a few advices to help you write efficiently function. That is functions that are simple, generic and flexible, so that they integrate well in a processing/analysis chain and can easily be re-used in a slightly different chain if needed.
-More flexibility in your function can be achieve thanks to some easy tricks provided by control flow. The following section develops further this concept and provides examples of how control flow can help your functions becoming more flexible.
-
-\subsection*{Control flow}
-Control flow refers to the use of conditions in your code that redirect the flow to different directions depending on variables values or classe. Make use of that in your code, as this will make your functions more flexible and generic.
-
-\subsection*{Object classes and Control flow}
-You have seen in a previous lesson already that every variable in your R working environment belongs to a class. You can take advantage of that, using control flow, to make your functions more flexible.
-
-A quick reminder on classes
-<<>>=
-# 5 different objects belonging to 5 different classes
-a <- 12
-class(a)
-
-b <- "I have a class too"
-class(b)
-
-library(raster)
-c <- raster(ncol=10, nrow=10)
-class(c)
-
-d <- stack(c, c)
-class(d)
-
-e <- brick(d)
-class(e)
-@
-
-\subsubsection*{Controlling the class of input variables of a function}
-
-One way of making function more auto-adaptive is by adding checks of the input variables. Using object class can greatly simplify this task.
-For example let's imagine that you just wrote a simple HelloWorld function.
-
-<<>>=
-HelloWorld <- function (x) {
-  hello <- sprintf('Hello %s', x)
-  return(hello)
-}
-
-# Let's test it
-HelloWorld('john')
-@
-
-Obviously, the user is expected to pass an object of character vector to x. Otherwise the function will return an error. You can make it not crash by controlling the class of the input variable.
-For example.
-
-<<>>=
-HelloWorld <- function (x) {
-  if (is.character(x)) {
-    hello <- sprintf('Hello %s', x)
-  } else {
-    hello <- warning('Object of class character expected for x')
-  }
-  return(hello)
-}
-
-HelloWorld(21)
-
-@
-
-The function does not crash anymore, but returns a warning instead.
-
-Note that most common object classes have their own logical function, that returns \code{TRUE} or \code{FALSE}.
-For example.
-
-<<>>=
-is.character('john')
-# is equivalent to 
-class('john') == 'character'
-
-is.character(32)
-is.numeric(32)
-@
-
-Also note that \code{is.character(32) == TRUE} is equivalent to \code{is.character(32)}. Therefore when checking logical arguments, you don't need to use the \code{== TRUE}. As an example, a function may have an argument (\code{plot}) that, if set to \code{TRUE} will generate a plot, and if set to \code{FALSE} does not generate a plot. It means that the function certainly contains an if statement. \code{if(plot)} in that case is equivalent to \code{if(plot == TRUE)}, it's just shorter.\\
-An example, with a function that subtracts 2 RasterLayers, with the option to plot the resulting RasterLayer, or not.
-<<>>=
-library(raster)
-# Function to substract 2 rasterLayers
-minusRaster <- function(x, y, plot=FALSE) { 
-  z <- x - y
-  if (plot) {
-    plot(z)
-  }
-  return(z)
-}
-
-# Let's generate 2 rasters 
-# that first one is the R logo raster
-# converted to the raster package file format.
-r <- raster(system.file("external/rlogo.grd", package="raster")) 
-# The second RasterLayer is calqued from the initial RasterLayer in order
-# to avoid issues of non matching extent or resolution, etc
-r2 <- r 
-# Filling the rasterLayer with new values.
-# The /10 simply makes the result more spectacular
-r2[] <- (1:ncell(r2)) / 10
-# simply performs the calculation
-r3 <- minusRaster(r, r2) 
-@
-
-
-<<minus, echo=TRUE, fig=TRUE, include=FALSE>>=
-# Now performs the claculation and plots the resulting RasterLayer
-r4 <- minusRaster(r, r2, plot=TRUE) 
-@
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.6\textwidth]{Lesson_3-minus}
-\caption{Result of the \code{minusRaster()} function with \code{plot=TRUE}}
-\label{minus}
-\end{figure}
-
-\subsubsection*{Use of \code{try} and debugging your functions}
-\noindent\textit{\textbf{Use of try for error handling}}\\
-The \code{try()} function may help you writing functions that do not crash whenever they encounter an unknown of any kind. Anything (sub-function, piece of code) that is wrapped into \code{try()} will not interrupt the bigger function that contains \code{try()}. So for instance, this is useful if you want to apply a function sequentially but independently over a large set of raster files, and you already know that some of the files are corrupted and might return an error. By wrapping your function into \code{try()} you allow the overall process to continue until its end, regardless of the success of individual layers. So \code{try()} is a perfect way to deal with heterogeneous/unpredictable input data.\\
-Also \code{try()} returns an object of different class when it fails. You can take advantage of that at a later stage of your processing chain to make your function more adaptive.
-See the example below that illustrate the use of \code{try()} for sequentially calculating frequency on a list of auto-generated RasterLayers.
-<<a, eval=TRUE, echo=TRUE>>=
-library(raster)
-
-# Create a raster layer and fill it with "randomly" generated integer values
-a <- raster(nrow=50, ncol=50)
-a[] <- floor(rnorm(n=ncell(a)))
-
-# The freq() function returns the frequency of a certain value in a RasterLayer
-# We want to know how many times the value -2 is present in the RasterLayer
-freq(a, value=-2)
-
-# Let's imagine that you want to run this function over a whole list of RasterLayer
-# but some elements of the list are impredictibly corrupted
-# so the list looks as follows
-b <- a
-c <- NA
-list <- c(a,b,c)
-# In that case, b and a are raster layers, c is ''corrupted''
-@
-<<a, eval=FALSE, echo=TRUE>>=
-# Running freq(c) would return an error and crash the whole process
-out <- list()
-for(i in 1:length(list)) {
-  out[i] <- freq(list[[i]], value=-2)
-}
-@
-
-<<eval=TRUE, echo=TRUE>>=
-# Therefore by building a function that includes a try()
-# we are able to catch the error
-# allowing the process to continue despite missing/corrupted data.
-fun <- function(x, value) {
-  tr <- try(freq(x=x, value=value), silent=TRUE)
-  if (class(tr) == 'try-error') {
-    return('This object returned an error')
-  } else {
-    return(tr)
-  }
-}
-
-# Let's try to run the loop again
-out <- list()
-for(i in 1:length(list)) {
-  out[i] <- fun(list[[i]], value=-2)
-}
-out
-
-# Note that using a function of the apply family would be a more
-# elegant/shorter way to obtain the same result
-(out <- sapply(X=list, FUN=fun, value=-2))
-
-@
-
-\noindent\textit{\textbf{Function debugging}}
-
-Debugging a single line of code is usually relatively easy; simply double checking the classes of all input arguments often gives good pointers to why the line crashes. But when writing more complicated functions where objects created within the function are reused later on in that same function or in a nested function, it is easy to lose track of what is happening, and debugging can then become a nightmare. A few tricks can be used to make that process less painful. The first thing to investigate right after an error occurs is to run the \code{traceback()} function; just like that without arguments. Carefully reading the return of that function will tell you where exactly in your function the error occurred. In addition to \code{traceback()}, R has a more elaborated debugging mode that can be activated by calling \code{debug()}. Although the use of \code{debug()} is not covered in this lesson, fell free to explore by yourself these debugging functionalities. Refer to the reference section of this document for further information on function debugging.
-
-\subsection*{Package building}
-Also part of good programming practices, building an R package is a great way to stay organized, keep track of what you are doing and be able to use it quickly and properly at any time.
-
-\subsubsection*{Why building a package?}
-\begin{itemize}
-\item Easy to share with others
-\item Dependencies are automatically imported and functions are sourced (reduces the risk of having broken dependencies)
-\item Documentation is attached to the functions and cannot be lost (or forgotten)
-\end{itemize}
-For these reasons, if you build a package, next year you will still be able to run the functions you wrote yesterday. Which is often not the case for stand alone functions that are poorly documented and may depend on many other functions ... that you cannot find anymore. So to summarize R packages are not only a way to extend the functionalities of R, they are also the standard way to archive and save R functions.
-
-\subsubsection*{Structure of a package}
-Note that R package structure and creation are not necessarily easy things to understand. As a consequence, although there are many reasons why you should always consider working with packages, and depending on your understanding of the concepts described above, you may want to consider this part of the lesson as additional/optional. This sections describes the structure of a simple package, for more information about R packages in general and details of package creation, please refer to the manual \textit{Writing R extensions} (\url{http://cran.r-project.org/doc/manuals/R-exts.html}).\\
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[height=0.6\textwidth]{figs/package_structure.png}
-  \caption {Minimal structure of an R package}
-  \label{package}
-\end{figure}
-
-The default basic structure of a package is as follows:\
-2 sub directories (R and man), NAMESPACE and DESCRIPTION files (Figure~\ref{package}). The \textbf{R directory} includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the \textbf{man directory}. These .Rd files are the functions documentation. \textbf{NAMESPACE} and \textbf{DESCRIPTION} files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalist package structure; more elaborate packages may include extra sub directories, such as data, demo or vignette.\\
-
-\subsubsection*{Useful tips for package creation}
-
-The \code{package.skeleton()} function will help you get the package structure from a list of sourced functions. (A function opened in the R Studio editor panel can be sourced by pressing the ''Source'' in the top right hand corner of the panel)
-\code{prompt()} creates a tailored documentation (.Rd) file from an existing function.
-The project functionalities of the R Studio IDE can greatly assist you in creating a package from scratch. Explore the menus and option under Project - New project.\\
-
-For example, we created earlier a function called \code{minusRaster()}. We can try to create a package containing this function, let's call that package rasterOperations. The function was ran, which is equivalent than sourcing it, therefore it should appear in the list of workspace variables in the top right pannel in R Studio.
+In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
 
 <<eval=FALSE>>=
-# Since this function will write some files to your working directory
-# you want to make sure that it is set where you want the file to be written
-# It can be changed using setwd()
-getwd()
-# Now we can create the package structure
-package.skeleton(name='rasterOperations', list=c('minusRaster'))
+setwd("yourworkingdirectory")
+#This sets the working directory (where R looks for files)
+#getwd() 
+# Double check your working directory
 @
-The structure of the package has been generated now, you can go and explore the different files and directories that have been created. If you want to go further and successfully pass the checks and build the package, some file have to be manually edited. 
 
+<<eval=TRUE>>=
+datdir <- file.path("data") ## path
+@
 
-\subsubsection*{Package building}
-\noindent\textit{\textbf{Prerequisites}}\\
-In order to be able to build package, you must have \textbf{Rtools} installed and properly setup on your system. Refer to the system setup document for more information on how to install Rtools. Once this is done R Studio offers great integration with Rtools, which makes package building really easy. Assuming you have installed and set up Rtools properly, the build panel in R Studio should be by default located in the upper right window.\\
+\subsection{Load Libraries}
+Next we will load a series of R packages that will give the functions we need to complete all the exercises in lesson 1 and 2. For this exercise all of the packages should (hopefully) be already installed on your machine (?). 
+We will load them below using the library() command. 
+I also included some comments describing how we use each of the packages in the exercises.
 
-\noindent\textit{\textbf{Check and build}}\\
-In order to be operational on your system the R package you just created has to be checked and built. This is a critical step since everything has to be perfect in order to pass the check step. Simple things like a missing line in a function documentation file may result in the package not passing the checks. Although a package that does not fully passes the check may still be built in some cases, this is not recommended, and it is therefore preferable to deal with the errors returned in the check console before building.\\
-Another option for building package is to do so directly from a remote git repository using the devtools package. This aspect of package building, together with general consideration on version control systems is presented in the next section.
+<<loadlibraries, message=FALSE>>=
+#----Packages for Reading/Writing/Manipulating Spatial Data---
+library(rgdal) # reading shapefiles and raster data
+library(rgeos)
+library(maptools)
+library(spdep)   # useful spatial stat functions
+library(spatstat) # functions for generating random points
+library(raster) 
+#---Packages for Data Visualization and Manipulation---
+library(ggplot2)
+library(reshape2)
+library(scales)
+@
+\clearpage
 
+\section{Read, plot, and explore spatial data}
+\subsection{Read in a Shapefile}
+The most flexible way to read in a shapefile is by using the \verb+readOGR+ command. This is the only option that will also read in the .prj file associated with the shapefile. NCEAS has a useful summary of the various ways to read in a shapefile: \url{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}
+I recommend always using \verb+readOGR()+.
 
-\subsection*{Version control}
-In this lecture, we won't go into the details of version control, however, we will review some general aspects that make version control a valuable tool for scientists and geo-programmers.
-
-\subsubsection*{What is version control?}
-
-Version control, also called revision control or source control, refers to the management of changes to documents, files or set of files. The version control management can be performed locally or directly on a remote online repository, and the code is usually stored on an online repository, available from anywhere. Version control is very well suited to large software development projects and for that reason it is an indispensable part of such projects. Although we are not software developers, version control systems present a set of advantages from which we, and the scientists who use scripting in  general, can benefit. 
-Among others, some arguments in favour of using version control are that:
-
+Read OGR can be used for almost any vector data format. To read in a shapefile, you enter two arguments:
 \begin{itemize}
-\item It facilitates collaboration with others
-\item Allows you to keep your code archived in a safe place (the cloud)
-\item Allows you to go back to previous version of your code
-\item Allows you to have experimental branches without breaking your code
-\item Keep different versions of your code without having to worry about file names and archiving organization
+\item dsn: the directory containing the shapefile (even if this is already your working directory)
+\item layer: the name of the shapefile, without the file extension
 \end{itemize}
-	
-\subsubsection*{What systems exist for version control?}
-The three main revision control software are Git, Subversion (abbreviated as svn), and mercurial (abbreviated as hg). Since we are not full time software developers we are only interested in a limited set of functionalities provided by these systems, most differences between them may appear futile to us. However, a few points of consideration remain, particularly regarding the integration with R Studio and R in general.\\
-Since the R Studio IDE provides integration for git and svn, we will only focus on these two system from here on. Table~\ref{gitsvn} provides an overview of most online repositories options for svn and git, and level of integration with R package building. Please note that online repositories are not the only options for hosting of the remote repository. It is common practice in companies to have an internally hosted central repository.
 
+% to illustrate how a file can be downloaded and read-in
+<<eval=FALSE>>=
+download.file('http://rasta.r-forge.r-project.org/kenyashape.zip',  
+      file.path(datdir, 'kenyashape.zip'))
+unzip(file.path(datdir, 'kenyashape.zip'), exdir = datdir)
+kenya <- readOGR(dsn = datdir, layer = 'kenya')
+@
 
-\begin{table}[H]
-  \caption {Git and svn for R projects}
-  \centering
-  \begin{tabular}{| l | p{6cm} | p{6cm} |}
-    \hline
-    \textbf{Systems} & \textbf{Online repositories available} & \textbf{Integration with R} \\ \hline
-    \textbf{Git} & Bitbucket, GitHub, SourceForge & Via devtools package \\ \hline
-    \textbf{Svn} & R Forge, SourceForge& Via R Forge building tools and \code{install.package()} function \\ \hline
-  \end{tabular}
-  \label{gitsvn}
-    
-\end{table}
+% % internal option
+% <<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
+% library(rasta)
+% datdir <- system.file("extdata/", package="rasta")
+% kenya <- readOGR(dsn = datdir, layer = 'kenya')
+% plot(kenya)
+% @
 
-\subsubsection*{Semantics of version control}
-\textbf{Commits}: Consists of adding the latest changes to the repository. This is done locally with Git and directly on a remote repository with svn. Commits can be seen as a milestones in the versioning of a file or set of files. It is always possible to return to previous commits.\\
-\textbf{Push} (git only): Add previous changes committed to the local repository, to the remote repository.\\
-\textbf{Clone} (git)/\textbf{Checkout} (svn): Copy the content of the remote repository locally.\\
-\textbf{Branch} (git): Create a branch (a parallel version of the code in the repository)\\
-\textbf{Merge}: Merges two versions (branches) into one.
+\clearpage
+\subsection{Plotting the Data}
+Plotting is easy, use the \verb+plot()+ command:
+<<eval=FALSE>>=
+plot(kenya)
+@
 
-\subsubsection*{How to start an R package using R Studio projects and version control}
-To be able to perform the following tutorial, you must have git installed on your machine. Please refer to the system setup vignette to know how to install and setup git and allow it to be embedded into R Studio.\\
-Note that although this tutorial illustrates the case of an R package maintained on GitHub, the package creation step is optional. 
-Also version control offers many benefits that are not tied to packages. The same type of R projects, symbolized by a ''projectName.Rproj'' file can be used to maintain simple scripts and stand alone functions.
+Obviously there are more options to dress up your plot and make a proper map/graphic. A common method is to use \verb+spplot()+ from the sp package. However I prefer to use the functions available in the ggplot2 package as I think they are more flexible and intuitive. We will address maps and graphics later in the in the class. For now, let us move onto reading in some tabular data and merging that data to our shapefile (similar to the join operation in ArcGIS).
 
-\begin{enumerate}
-  \item Create a GitHub account (only if you don't have one already)
-  \item From GitHub, create a new repository and name it after the name of the package you want to start
-  \item Choose for the option to ''Initialize this repository with a README''
-  \item Copy the clone URL of the repository (Figure~\ref{github})
-  \item From R Studio, go to project - Create project - Version Control - Git. In the repository URL field, enter the clone URL that you just copied from GitHub. Project directory name should appear automatically. Choose a location for your project.
+<<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
+library(rasta)
+data("kenya")
+plot(kenya)
+@
 
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[height=0.5\textwidth]{figs/github_screenCapture.png}
-  \caption {GitHub clone URL}
-  \label{github}
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-kenya}
+\caption{Adminstrative boundaries of Kenya}
 \end{figure}
 
-  
-  \item Copy the content of a package (created using the \code{package.skeleton} function) to this newly created directory.
-  \item In the git panel of R Studio (by default on the upper right), add all the objects added to the package by checking them - press commit - write a commit message - commit - push. You should be prompted for your GitHub username and password, once this is done, your package is added to your GitHub remote repository.
+Here is an example for downloading of administrative boundaries for any country.
+
+
+\clearpage
+\subsection{Exploring the Data within the vector file}
+
+We can explore some basic aspects of the data using \verb+summary()+ and \verb+str()+. Summary works on almost all R objects but returns different results depending on the type of object. For example if the object is the result of a linear regression then summary will give you the coefficient estimates, standard errors, t-stats, $R^2$, et cetera.
+
+<<exploredata>>=
+summary(kenya)
+str(kenya,2)
+@
+
+As mentioned above, the \verb+summary()+ command works on virtually all R objects. In this case it gives some basic information about the projection, coordinates, and data contained in our shapefile
+
+The \verb+str()+ or structure command tells us how R is actually storing and organizing our shapefile. This is a useful way to explore complex objects in R. When we use \verb+str()+ on a spatial polygon object, it tells us the object has five 'slots':
+\begin{enumerate}
+\item \emph{data}: This holds the data.frame
+\item \emph{polygons}: This holds the coordinates of the polygons
+\item \emph{plotOrder}: The order that the coordinates should be drawn
+\item \emph{bbox}: The coordinates of the bounding box (edges of the shape file)
+\item \emph{proj4string}: A character string describing the projection system
 \end{enumerate}
 
-Note that such packages, that are maintained on git repositories can be installed and compiled directly on the fly using the devtools package. See function \code{install\_github()} and \code{install\_bitbucket()} functions for further details.
-If you are concerned about always having a ''compile-able'' version of your code, use different branches. Create a ''dev'' branch on which you develop your new functions or do any kind of experiments, and keep the stable version of your package on the ''master'' branch. Once the ''dev'' branch becomes stable, merge it with the ''master'' branch.
+The only one we want to worry about is data, because this is where the data.frame() associated with our spatial object is stored. 
+We access slots using the @ sign.
 
-\section{Exercise}
-\subsection*{Exercise description}
-Write a function that calculate whether a given year is a leap year or not. If you put the function in a package, that will give you additional points. The function should behave as follows:\\*
+%\textbf{Note} Mention S3 vs S4 classes?
 
-<<echo=FALSE>>=
-is.leap <- function(x) {
-  if (!class(x) == 'numeric') {
-    stop('argument of class numeric expected')
-  }
-  if (x > 1582) {
-    if (x %% 400 == 0) {
-      a <- TRUE
-    } else if (x %% 100 == 0) {
-      a <- FALSE
-    } else if (x %% 4 == 0) {
-      a <- TRUE
-    } else {
-      a <- FALSE
-    }
-  } else {
-    a <- sprintf('%d is out of the valid range', x)
-  }
-  return(a)
-}
+<<accessdata>>=
+#--------------------------ACCESS THE SHAPEFILE DATA------------------------------
+dsdat <- as(kenya, "data.frame")  # extract the data into a regular data.frame
+head(dsdat)
+kenya$new <- 1:nrow(dsdat) # add a new colunm, just like adding data to a data.frame
+head(kenya@data)
 @
 
-<<>>=
-is.leap(2000)
-is.leap(1581)
-is.leap(2002)
+\section{Read in a .csv File and Join it to the Shapefile}
+\subsection{Read in a .csv file}
+First lets read in a \emph{.csv} file using \verb+read.csv()+
 
-#is.leap('john') should return an error 
-#error: argument of class numeric expected
+<<readcsv>>=
+#--------------------------READ AND EXPLORE A CSV------------------------------
+filepath <- system.file("extdata/kenpop89to99.csv", package ="rasta")
+d <- read.csv(filepath)
 @
 
+Before we merge the csv file to our shapefile, let's do some basic cleaning. 
+The csv file has some excess columns and rows. Let's get rid of them. 
+We access rows and columns by using square brackets [,]. 
 
+Here are some examples using are data.frame 'd':
+\begin{itemize}
+\item d[1,] first row, all columns
+\item d[,1] first column all rows
+\item d[1,1] item in the first row and first column
+\item d[,1:5] columns 1 through 5 (also works with rows)
+\item d[,c(1,4,5)] columns 1,4 and 5 (also works with rows)
+\item d\verb+$+variable same as above, but returns the column as a vector
+\item d[d\verb+$+variable>10,] rows from all columns that correspond where the values in 'variable' are greater than 10
+\end{itemize}
 
-\subsection*{Useful references}
-\url{https://www.google.com}\\
-\url{http://en.wikipedia.org/wiki/Leap_year}\\
-\url{http://stat.ethz.ch/R-manual/R-devel/library/base/html/Arithmetic.html}\\
+Hopefully you get the idea. See the R cheat sheet: \url{http://cran.r-project.org/doc/contrib/Short-refcard.pdf} for more information.
+Now we extract only the columns we we want and then use the unique() command to get rid of duplicate rows.
 
-\subsection*{Assessment}
-Assessment will consider the completeness of the function (or package) and whether it works as intended, but also its readability. Therefore, try as much as possible to use all good practices mentioned in this course.
+<<csvclean>>=
+#--------------------------EXTRACT COLUMNS FROM CSV------------------------------
+d <- d[,c('ip89DId','PopChg','BrateChg','Y89Pop','Y99Pop')] 
+#Grab only the colunms we want
+names(d)
+#str(d)
+nrow(d)
+d <- unique(d)  #get rid of duplicate rows
+nrow(d) #note we now have less rows
+@
 
-\subsection*{How to submit?}
-In order to submit, add the function (or package) to a repository on your own GitHub account and send the clone url to me by e-mail.
+\subsection{Join the csv file to our Shapefile}
+In R there a variety of options available for joining data sets. 
+The most simple and intuitive is the \verb+merge()+ command (see ?merge for details).
+Merge takes two data.frames and matches them based on common attributes in columns. 
+If the user does not specify the name(s) of the columns  then merge will just look for common column names and perform the join on those. 
+However with spatial objects the process is a little more tricky. 
+Unfortunately merge automatically re-orders the new merged data.frame based on the common columns. This will not work for a spatial object as the associated shapes (points, lines, or polygons) would have to be reordered as well. There are a variety of ways around this and I will show a simple one below. 
 
-\section{References}
-Reference document for creating R packages: \href{http://cran.r-project.org/doc/manuals/R-exts.html}{Writing R extensions}\\*
-A set of good practices when creating packages: \href{http://mages.github.io/R_package_development/#1}{R package development}\\*
-R Studio documentation on version control: \href{http://www.rstudio.com/ide/docs/version_control/overview}{Using Version Control with RStudio}\\*
-Video tutorial to use revision control with R Studio and GitHUb/BitBucket \href{http://www.youtube.com/watch?v=jGeCCxdZsDQ&noredirect=1}{Youtube link}\\*
-Reference manual for function debugging in R: \href{http://www.stats.uwo.ca/faculty/murdoch/software/debuggingR/}{Manual}.
+First I will demonstrate the basic merge() function. Then I will show one method for merging tabular to spatial data. 
+<<tablejoin>>=
+#----------------EXPLORE MERGE AND DO A TABLE JOIN------------------------------
+#--------------------First a basic Merge Just to Demonstrate-------------
+d2 <- kenya@data
+d3 <- merge(d,d2) 
+#They have common colunm names so we don't have to specify what to join on
+head(d3)
+d4 <- merge(d,kenya) #This will produce the same result.
+head(d4)
+#--------------Now lets do the Table Join: Join csv data to our Shapefile-----
+#--We can do the join in one line by using the match() function
+ds1 <- kenya #make a copy so we can demonstrate 2 ways of doing the join
 
-\bibliographystyle{model5-names}
-\bibliography{refs}
+kenya@data <- data.frame(as(kenya,'data.frame'),
+                    d[match(kenya@data[,'ip89DId'], d[,'ip89DId']),])
+@
+
+<<eval=FALSE>>=
+#---Alternativley we can do this :
+#This is the preferred method but will only work if kenya and d have 
+# the same number of rows, and the row names are identical and in the same order
+row.names(d) <- d$ip89DId
+row.names(ds1) <- as.character(ds1$ip89DId)
+d <- d[order(d$ip89DId),]
+ds1 <- spCbind(ds1,d)
+
+head(kenya@data)
+@
+
+Note that the values from our csv are not in the data attributes of the shapefile. Note also that we have duplicated the join field `ip89DId'. 
+We can delete it afterwards but it's a nice way to double check and make sure our join worked correctly. 
+I will go over the details of this approach in class and you can also see an explanation here: 
+\url{http://stackoverflow.com/questions/3650636/how-to-attach-a-simple-data-frame-to-a-spatialpolygondataframe-in-r}
+
+\section{Create Random Points and Extract as a Text File}
+
+We are going to do a point in polygon spatial join. However before we do that we are going to generate some random points. We will use the function \verb+runifpoint()+ from the spatstat package. This function creates N points drawn from a spatial uniform distribution (complete spatial randomness) within a given bounding box. The bounding box can be in a variety of forms but the most straightforward is simply a four element vector with \emph{xmin} (the minimum x coordinate), \emph{xmax}, \emph{ymin}, and \emph{ymax}. In the code below we will extract this box from our Kenya data set, convert it to a vector, generate the points, and then plot the points on top of the Kenya map. 
+
+<<ranpoints>>=
+#--------------------------GENERATE RANDOM POINTS------------------------------
+win <- bbox(kenya) #the bounding box around the Kenya dataset
+win
+win <- t(win) #transpose the bounding box matrix
+win
+win <- as.vector(win) #convert to a vector for input into runifpoint()
+win
+dran1 <- runifpoint(100, win = as.vector(t(bbox(kenya)))) #create 100 random points
+@
+
+<<alternative>>=
+win <- extent(kenya)
+dran2 <- runifpoint(n = 100, win = as.vector(win))
+@
+
+<<rndp_kenya, echo=TRUE, fig=TRUE, include=FALSE>>=
+plot(kenya)
+plot(dran1, add = TRUE, col = "red")
+plot(dran2, add = TRUE, col = "blue", pch = 19, cex = 0.5)
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-rndp_kenya}
+\caption{Random points within the Kenya shape file}
+\end{figure}
+
+Now that we have created some random points, we will extract the x coordinates (longitude), y coordinates (latitude), and then simulate some values to go with them. 
+
+%The purpose of doing this is to create a text file with x,y, and some values. We will then write those values out as a .csv file, read them back in, convert them to a shapefile, and then do a point in polygon spatial join.
+
+<<converttocoordinatestextfile>>=
+#--------------------------CONVERT RANDOM POINTS TO DATA.FRAME------------------
+dp <- as.data.frame(dran1) 
+#This creates a simple data frame with 2 colunms, x and y
+head(dp)
+#Now we will add some values that will be aggregated in the next exercise
+dp$values<-rnorm(100,5,10) 
+#generates 100 values from a Normal distribution with mean 5, and sd-10
+head(dp)
+@
+
+\section{Do a Point in Polygon Spatial Join}
+
+In the last exercise we generated some random points along with some random values. Now we will read that data in, convert it to a shapefile (or a SpatialPointsDataFrame object) and then do a point in polygon spatial join. The command for converting coordinates to spatial points is \emph{SpatialPointsDataFrame()}
+
+<<converttospatialpoints>>=
+#--------------------CONVERT RANDOM POINTS TO SPATIAL POINTS DATAFRAME---
+dsp <- SpatialPointsDataFrame(coords = dp[,c('x','y')], 
+	data = data.frame('values' = dp$values))
+summary(dsp)
+
+#Since the Data was Generated from a source with same projection as 
+#the Kenya data, we will go ahead and define the projection"
+dsp@proj4string <- kenya@proj4string
+@
+Now that we have created some points and defined their projection, we are ready to do a point in polygon spatial join. We will use the \verb+over()+ command (short for overlay()).
+
+In the over() command we feed it a spatial polygon object (ds), a spatial points object (dsp), and tell it what function we want to use to aggregate the spatial point up. In this case we will use the mean (but we could use any function or write our own). The result will give us a data.frame, and we will then put the resulting aggregated values back into the data.frame() associated with ds (ds@data).
+
+See ?over() for more information.
+
+<<overlay>>=
+#--------------------------POINT IN POLY JOIN------------------------------
+
+#--The data frame tells us for each point the index of the polygon it falls into
+dsdat <- over(kenya, dsp, fn = mean) #do the join
+head(dsdat) #look at the data
+
+inds <- row.names(dsdat) 
+#get the row names of dsdat so that we can put the data back into ds
+head(inds)
+
+str(kenya@data)
+kenya@data[inds, 'pntvals'] <- dsdat 
+#use the row names from dsdata to add the aggregated point values to ds@data
+head(kenya@data)
+@
+
+\section{Do a Pixel in Polygon Spatial Join}
+
+In this section we will explore another common spatial join operation. In this case you you have raster data that you want to aggregate up to the level of the polygons. A common example is that you have a surface of observed or interpolated temperature measurements and you want to find out what the average (or sum, max, min, et cetera) temperature is for each polygon (which could represent states, counties, et cetera). 
+
+<<raster,eval=TRUE, fig=TRUE, include=FALSE>>=
+#--------------------------READ AND CROP A RASTER--
+library(rasta)
+filepath <- system.file("extdata", "anom.2000.03.tiff", package ="rasta")
+g <- raster(filepath)
+# plot
+plot(g)
+plot(kenya, add = TRUE) #plot kenay on top to get some sense of the extent
+@
+
+<<crop,eval=TRUE, fig=TRUE, include=FALSE>>=
+#------Crop the Raster Dataset to the Extent of the Kenya Shapefile
+gc <- crop(g, kenya) #clip the raster to the extent of the shapefile
+#Then test again to make sure they line up
+plot(gc)
+plot(kenya, add = TRUE)
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-raster}
+\caption{Temperature anomaly for Africa (for March 2003)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-crop}
+\caption{Kenian temperature anomaly for March 2003}
+\end{figure}
+
+In the last step we read in a raster file, cropped it to the extent of the Kenya data (just to cut down on the file size and demonstrate that function). Now we will aggregate the pixel values up the polygon values using the \verb+extract()+ function. 
+
+<<rasterextract, eval=FALSE>>=
+#--------------------------PIXEL IN POLY SPATIAL JOIN------------------------------
+#Unweighted- only assigns grid to district if centroid is in that district
+kenya@data$precip <- extract(gc, kenya, fun = mean, weights=FALSE) 
+@
+Weighted (more accurate, but slower) weights aggregation by the amount of the grid cell that falls within the district boundary:
+
+<<eval=FALSE, echo =FALSE>>=
+kenya@data$precip_wght <- extract(gc, kenya, fun = mean, weights = TRUE) 
+#If you want to see the actual values and the weights associated with them do this:
+rastweight <- extract(gc, kenya, weights = TRUE)
+@
+Now that we've added all this data to our shapefile, we'll write it out as a new shapefile and then load it in to make some maps in the next exercise.
+
+\section{Make Maps with ggplot2()}
+If you have not already done so, load ggplot2 and some related packages.
+For more info on the ggplot2 and the grammar of graphics see the resources at \url{http://had.co.nz/ggplot2/}.
+The `gg' in the ggplot2 is short for \emph{The Grammar of Graphics} which references a famous book by the same name. The idea behind the book and the software is to try and decompose any graphic into a set of fundamental elements. We can then use these elements to construct any type of graphic we want (the elements are the grammar), rather than having a different command for every type of graphic out there. We do not have time to do a full overview of ggplot2 but if you click on the link above and scroll down there is a good visual overview of how ggplot2 works. If you have time take a minute to visit the website. 
+
+\subsection{Setting up the Data with fortify()}
+
+The ggplot2() package separates spatial data into 2 elements: (1) the data.frame and 2) the spatial coordinates. If you want to make a map from a shapefile you first have to use the fortify() command which converts the shapefile to a format readable by ggplot2:
+
+<<fortify>>=
+#------------------PREP SPATIAL DATA FOR GGPLOT WITH FORTIFY()------------
+pds <- fortify(kenya, region='ip89DId') #convert to form readable by ggplot2
+pds$ip89DId <- as.integer(pds$id)
+head(pds)
+@
+
+Now, we will build the map step by step using ggplot2. 
+We could do it all in one line, but it's easier to do it one step at a time so you can see how the different elements combine to make the final graphic. 
+In the code below we will first create the basic layer using the ggplot command, and then we customize to it.
+
+<<gg1, fig=TRUE, include=FALSE>>=
+#--------------------------MAKE A BASIC MAP------------------------------
+p1 <- ggplot(d)
+p1 <- p1 + geom_map(aes(fill = PopChg, map_id = ip89DId), map = pds) 
+p1 <- p1 + expand_limits(x = pds$long, y = pds$lat) 
+#this is sometimes necessary to keep from throwin an error
+p1 <- p1 + coord_equal() #this keeps the map from having that 'squished' look 
+p1
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-gg1}
+\caption{Basic Map with Default Elements}
+\end{figure}
+
+Now we have a basic map, let's make some tweaks to it.
+
+<<gg2, fig=TRUE, include=FALSE>>=
+#---------------------CHANGE THE COLOR SCHEME, TWEAK THE LEGEND------------
+#---Change the Colour Scheme-----
+p1 <- p1 + scale_fill_gradient(name='Population \nChange', 
+              low ='wheat', high = 'steelblue') 
+#to set break points, enter in breaks=c(...,..)
+#The \n in Population \nChange' indicates a carriage return
+p1
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{Lesson_3-gg2}
+\caption{ We Changed the Color Scale and Gave the Legend a Proper Name}
+\end{figure}
+
+Now we will get rid of all the unnecessary information in the background.
+<<gg3,fig=TRUE,include=FALSE>>=
+#-----------------------EDIT THE BACKGROUND------------------------------
+#-----Get Rid of the Background-----
+#Blank Grid, Background,Axis,and Tic Marks
+bGrid<-theme(panel.grid = element_blank())
+bBack<-theme(panel.background = element_blank())
+bAxis<-theme(axis.title.y = element_blank())
+bTics<-theme(axis.text = element_blank(), axis.text.y = element_blank(), 
+	axis.ticks = element_blank())
+p1<-p1 + bAxis + bTics + bGrid + bBack + xlab('')
+p1
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.5\textwidth]{Lesson_3-gg3}
+\caption{We got rid of all the unneccessary background material}
+\end{figure}
+
+Now let's label the polygon names and data values.
+<<gg4,fig=TRUE, include=FALSE>>=
+#--------------------------ADD SOME LABELS--------------------------------------
+#--------Add Some Polygon labels------
+#-Polygon Labels
+cens <- as.data.frame(coordinates(kenya)) 
+#extract the coordinates for centroid of each polygon
+cens$Region <- kenya$ip89DName
+cens$ip89DId <- kenya$ip89DId
+head(cens)  #we will use this file to label the polygons
+p1 <- p1 + geom_text(data = cens, aes(V1,V2,label = Region), size = 2.5, vjust=1) +
+  labs(title='Population Change in Kenya \n (1989-1999)')
+p1 
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.5\textwidth]{Lesson_3-gg4}
+\caption{We added text labels and a title}
+\end{figure}
+
+<<gg5,fig=TRUE, include=FALSE>>=
+#-----Add Some value Labels------------
+pdlab <- merge(cens,d) #Merge the centroids without data
+head(pdlab) #We will use this to label the polygons with their data values
+p1 <- p1 + geom_text(data = pdlab, 
+  aes(V1, V2, label = paste("(",PopChg,")",sep="")),
+                     colour = "black" ,size = 2,vjust = 3.7)
+p1
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.5\textwidth]{Lesson_3-gg5}
+\caption{Now we added the actual value labels for the data}
+\end{figure}
+
+\subsection{Plotting Panel Maps}
+So now we have made a basic map with a legend, location labels, and value labels.
+One of the advantages of ggplot is the ease with which you can create panel graphics, or to use the ggplot terminology `faceting'. Imagine for example that you have a spatial panel data set- multiple observations of the same spatial feature over several years. Ggplot gives you several options for displaying this data using either the \verb+facet_wrap()+ or \verb+facet_grid()+ commands. In the example below we will make panel maps for the population data in the Kenya data set. 
+
+<<fgg1,fig=TRUE,include=FALSE>>=
+#--------------------------RESHAPE THE DATA AND MAKE A PANEL MAP----------------
+pd <- d[,c('ip89DId','Y89Pop','Y99Pop')] #select out certain colunms
+pd <- melt(pd, id.vars='ip89DId') # convert the data to 'long' form
+head(pd) # take a look at the data
+
+pmap <- ggplot(pd)
+p2 <- pmap + geom_map(aes(fill = value,map_id = ip89DId), map=pds) + 
+		facet_wrap(~variable)
+p2 <- p2 + expand_limits(x = pds$lon, y = pds$lat) + coord_equal()
+p2 + labs(title='Basic Panel Map')
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.5\textwidth]{Lesson_3-fgg1}
+\caption{Basic Panel Map}
+\end{figure}
+
+We can use the \verb+`ncols'+ (number of columns) argument in \verb+facet_wrap()+ to make the panels stack vertically instead of horizontally.
+
+<<fgg2,fig=FALSE>>=
+#--------------------------TWEAK THE PANEL MAP----------------------------------
+#If we want to stack the panels vertically we change the options in facet_wrap()
+p2 <- p2 + facet_wrap(~variable, ncol=1) #have only 1 colunm of panels
+@
+
+Finally we can use the same options we used above to make our final map.
+
+<<fgg3, fig=TRUE, include=FALSE>>=
+#--------------------------MORE PANEL MAP TWEAKS------------------------------
+#--We can add all the other tweaks as before
+p2 <- p2 + scale_fill_gradient(name='Population',low ='wheat',high = 'steelblue') 
+#to set break points, enter in
+p2 <- p2 + bAxis+bGrid+bTics+bBack
+p2 <- p2 + theme(panel.border=element_rect(fill=NA)) 
+#this removes the background but keeps aborder around the panels
+#--We can also adjust the format, theme, et cetera of the panel lables with 'strip.text.x'
+p2 <- p2 + theme(strip.background=element_blank(),strip.text.x=element_text(size=12))
+p2
+#===============================================================================
+@
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.5\textwidth]{Lesson_3-fgg3}
+\caption{Basic Panel Map}
+\end{figure}
+
+\clearpage
+\section{Excercise Lesson 2: Under construction}
+
+Provide a script where 
+(1) the raster (temperature) is sampled (in a random sample per pixel), 
+(2) and the random points are then visualised on top of the raster (try in ggplot)
+(3) derive the standard deviation and range of all the temperature values of the sampled points
+
+<<ex, eval=FALSE, echo=TRUE>>=
+#---Set up the data for ggplot
+df <- rasterToPoints(gc) #convert the raster to a points object
+df <- data.frame(df) #and then to a data.frame
+pds <- fortify(kenya,region='ip89DId')
+str(df)
+p<-ggplot(pds)+geom_raster(data=df,aes(x=x,y=y,fill=anom.2000.03))+theme_bw() #use geom_raster 
+p<-p+geom_map(map=pds,aes(map_id=id,x=long,y=lat),fill=NA,colour='black') #then plot a map, with fill=NA so we can see the raster values
+p<-p+coord_equal()
+p<-p+scale_fill_gradient(low='wheat',high='blue') #adjust the colors
+p<-p+labs(x='Longitude',y='Latidude')
+p
+@
+
+\section{Special thanks and more info}
+Special acknowledgments go to \href{mailto:davenpor@geog.ucsb.edu}{Frank Davenport} 
+(\href{http://www.frankdavenport.com/blog/2012/6/19/notes-from-a-recent-spatial-r-class-i-gave.html}{Spatial R class}) for excellent R spatial introduction on which this lesson is based.
+
 
 \end{document}
