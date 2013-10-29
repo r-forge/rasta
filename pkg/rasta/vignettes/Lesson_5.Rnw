@@ -110,7 +110,7 @@ class(r)
 r
 @
 From the metadata displayed above, we can see that the RasterLayer object contains all the properties that geo-data should have; that is to say a projection, an extent and a pixel resolution.\\
-RasterBrick and RasterStack objects can also fairly easily be generated directly in to R, as shown in the example below. Being able to generate such objects without reading them from files is particularly important for the generation of ''reproducible examples'' which was covered in general terms in Lesson 3.
+RasterBrick and RasterStack objects can also fairly easily be generated directly in to R, as shown in the example below. Being able to generate such objects without reading them from files is particularly important for the generation of ''reproducible examples'' which was covered in general terms in Lesson 2.
 
 <<>>=
 # Using the previously generated RasterLAyer object
@@ -397,9 +397,14 @@ r <- raster(sds$SDS4gdal[1])
 The newly released \href{https://r-forge.r-project.org/projects/gdalutils/}{gdalUtils} package should provide interesting wrappers facilitating the use of gdal functions from within R.
 
 \section{Exercise}
+\subsection*{Context}
 Idea of exercise, using a second image of taravao, that I will provide, taken at a different date, also cloudy, write a compositing function.
+Taravao2 is a Landsat 8 image covering the same area than taravao, but acquired at a different date. We saw earlier that taravao has residual clouds; the same is true for taravao2. However, since the clouds are not at the same location on the two images, it should be possible to create a composite image, maximizing the number of observations.
 
-Some pointers
+\subsection*{Expected output}
+Using the two taravao Landsat 8 images as example datasets (taravao2 can be loaded using the \code{data()} command), write a mean value compositing function. The function should accepts 2 typical Landsat 8 \code{RasterBrick} or \code{RasterStack} objects - containing 9 bands and band 9 being the QA layer - and return an 8 layers \code{RasterStack} or \code{RasterBrick} object. In case of cloud occurence at both dates, pixel value should be NA, if both dates are cloud free, the mean value will be returned.
+
+Some pointers (??)
 \begin{itemize}
 \item Prepare the datasets (generate the two cloud masks, get rid of QA layer)
 \item Write a simple function that works for 4 input numeric arguments
@@ -407,6 +412,8 @@ Some pointers
 \item Use overlay to run the vectorized function, with 4 arguments
 \end{itemize}
 
+The first chunk below is how I got to the solution. The second chunk is the solution (a function that takes 2 rasterBricks as input and that returns one rasterStack/brick).
+Another solution (probably easier actually) is to first apply the cloud mask to the bricks and average them controling well the na.rm argument.
 <<eval=FALSE>>=
 # Download and unpack
 

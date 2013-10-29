@@ -25,7 +25,7 @@
 \definecolor{Blue}{rgb}{0,0,0.5}
 \def\code#1{\texttt{#1}}
 \hypersetup{%
-  pdftitle = {Geo-Scripting course: Lesson 3},
+  pdftitle = {Geo-Scripting course: Lesson 2},
   pdfsubject = {},
   pdfkeywords = {R project management, good scripting habits},
   pdfauthor = {Lo\"{i}c Dutrieux},
