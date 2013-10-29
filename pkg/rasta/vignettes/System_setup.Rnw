@@ -78,10 +78,10 @@ The two latter option should be prefered over FWTools since they contain the mos
 Note that if you want to call some gdal utilities (i.e.: \code{gdalwarp}, \texttt{gdal\_translate}, \texttt{gdal\_merge.py}, etc) via \texttt{system()} command from R, you will need to append the bin directory containing gdal utilities to your user or system path.
 
 \subsection*{Version control software}
-Installing these software is not an absolute necessity, however it might come handy if you plan to implement some of the good practices discussed in Lesson 3. Refer to Lesson 3 for more details.
+Installing these software is not an absolute necessity, however it might come handy if you plan to implement some of the good practices discussed in Lesson 2. Refer to Lesson 2 for more details.
 
 \subsubsection*{Git and SlickSVN}
-Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system. Only git is required if you plan to follow the full tutorial of Lesson 3.\\* These software are very straightforward to install, simply download the executables and follow the instructions from the installer. \href{http://git-scm.com/downloads}{Git} download page, and \href{http://www.sliksvn.com/en/download}{slickSVN} download page.
+Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system. Only git is required if you plan to follow the full tutorial of Lesson 2.\\* These software are very straightforward to install, simply download the executables and follow the instructions from the installer. \href{http://git-scm.com/downloads}{Git} download page, and \href{http://www.sliksvn.com/en/download}{slickSVN} download page.
 
 
 \subsubsection*{Integration with the R Studio IDE}
