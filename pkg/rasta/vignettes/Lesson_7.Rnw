@@ -111,8 +111,10 @@ sceneinfo$year <- factor(substr(sceneinfo$date, 1, 4), levels = c(1984:2013))
 ggplot(data = sceneinfo, aes(x = year, fill = sensor)) + 
   geom_bar() + 
   labs(y = "number of scenes") + 
+  scale_y_continuous(limits=c(0, 20)) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x=element_text(angle = 45),
+        legend.position=c(0.9, 0.85))
 @
 
 \begin{center}
@@ -122,8 +124,10 @@ ggplot(data = sceneinfo, aes(x = year, fill = sensor)) +
 ggplot(data = sceneinfo, aes(x = year, fill = sensor)) + 
   geom_bar() + 
   labs(y = "number of scenes") + 
+  scale_y_continuous(limits=c(0, 20)) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x=element_text(angle = 45),
+        legend.position=c(0.9, 0.85))
 @
 \caption{Number of scenes available per year in the time series.}
 \label{landsatScenes}
@@ -187,7 +191,7 @@ levelplot(tura[[1:8]], names.attr = sceneinfo$date[1:8], par.settings = rtheme)
 
 This plot gives us a common scale which allows us to compare values (and perhaps detect trends) from layer to layer. In the above plot, the layer titles do not look very nice -- we will solve that problem a bit later.
 
-The rasterVis package has integrated plot types from other packages with the raster package to allow for enhanced analysis of raster data.
+The rasterVis package has integrated plot types from other packages with the raster package to allow for enhanced visualization of raster data.
 <<results=hide, fig=FALSE>>=
 # histograms of the first 6 layers
 histogram(tura[[1:6]])
@@ -204,28 +208,26 @@ In this RasterBrick, the layers have all been individually preprocessed from the
 # try for one layer first
 y <- freq(tura[[1]]) # this is a matrix
 y <- as.data.frame(y)
+print(y)
 # how many NA's are there in this table?
 y$count[is.na(y$value)]
 # alternatively, using the with() function:
 with(y, count[is.na(value)])
 # as a %
 with(y, count[is.na(value)]) / ncell(tura[[1]]) * 100
-# apply this over all layers in the RasterBrick
-# first, prepare a numeric vector to be 'filled' in
-nas <- vector(mode = 'numeric', length = nlayers(tura))
-for(i in 1:nlayers(tura)){
-  y <- as.data.frame(freq(tura[[i]]))
-  # if there are no NAs, then simply assign a zero
-  # otherwise, grab the # of NAs from the frequency table
-  if(!TRUE %in% is.na(y$value)){
-    nas[i] <- 0
-  } else {
-    nas[i] <- with(y, count[is.na(value)]) / ncell(tura[[i]]) * 100
-  }
-}
+
+# We can compute this more efficiently
+# by using the 'value' argument in freq()
+y <- freq(tura[[1]], value=NA)
+print(y)
+# apply over all layers of the rasterBrick
+y <- freq(tura, value=NA)
+print(y)
+# convert this to % pixels per scene
+y <- freq(tura, value=NA) / ncell(tura) * 100
 # add this vector as a column in the sceneinfo data.frame
 #(rounded to 2 decimal places)
-sceneinfo$nodata <- round(nas, 2)
+sceneinfo$nodata <- round(y, 2)
 
 # plot these values
 ggplot(data = sceneinfo, aes(x = date, y = nodata, shape = sensor)) +
@@ -270,14 +272,21 @@ In some cases, there may be parts of the study area with more significant data l
 <<label=NAplot, include=FALSE, fig=FALSE>>=
 # calc() will apply a function over each pixel
 # in this case, each pixel represents a time series of NDVI values
-# e.g. all values of the 53rd pixel in the raster grid:
+# e.g. extract all values of the 53rd pixel in the raster grid
 y <- as.numeric(tura[53])
+print(y) # integer vector from time series values
 # how many of these values have been masked (NA)?
 length(y[is.na(y)])
 # as a %
 length(y[is.na(y)]) / length(y) * 100
 # now wrap this in a calc() to apply over all pixels of the RasterBrick
 nodata <- calc(tura, fun = function(x) length(x[is.na(x)]) / length(x) * 100)
+# sometimes it's more readable to define the function first
+percNA <- function(x){
+  y <- length(x[is.na(x)]) / length(x) * 100
+  return(y)
+}
+nodata <- calc(tura, fun=function(x) percNA(x))
 @
 
 There is an easy way to interactively extract data from a single pixel using the raster package. First, a raster plot should be made from which to identify the pixel of interest. Then, the click() function allows for extraction of the data contained within that pixel. Simply calling click() with no further arguments will only return the (x, y) coordinates of that point as a 1-row matrix.
@@ -293,7 +302,14 @@ We can extract more meaningful information by passing the name of the object (in
 
 <<eval=FALSE>>=
 plot(tura, 101)
-click(tura, n = 1)
+x <- click(tura, n=1)
+# returns a matrix
+class(x)
+# convert it to an integer vector
+x <- x[1,]
+# or....
+x <- as.numeric(x)
+# note that the 2nd method removes the names of the vector!
 @
 
 In this case, all data from that pixel are extracted. These time series could then easily be coerced (or inserted) into a data.frame to plot the data and further analyze them. Let's take a look at a the time series of a few different pixels. Instead of using the interactive click() function to extract these data, suppose that we know the (x, y) coordinates of a land cover type (or other points of interest, from a field campaign or ground truth dataset, for example).
