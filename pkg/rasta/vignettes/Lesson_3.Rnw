@@ -27,14 +27,10 @@
   linktocpage = {true},
 }
 
-\usepackage{Sweave} %% is essentially
-%\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=2em,
-%                                              frame=single}
-%\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em,
-%                                             frame=single}
+\usepackage{Sweave}
 
 <<preliminaries, echo=FALSE, results=hide>>=
-options(width = 70, prompt = ">", continue = "+ ")
+options(width = 80, prompt = ">", continue = "+ ")
 @
 
 
@@ -59,8 +55,8 @@ This is an introduction to the course Applied Geo-Scripting where we will explor
 	\item{Learn to include functions from a library in your script}
 \end{itemize}
 
-\section{Set Your Working Directory and Load Your Libraries}
-\subsection{Set the Working Directory}
+\section{Set your working directory and load your libraries}
+\subsection{Set the working directory}
 Let's do some basic set up first. 
 
 \begin{itemize}
@@ -83,7 +79,7 @@ setwd("yourworkingdirectory")
 datdir <- file.path("data") ## path
 @
 
-\subsection{Load Libraries}
+\subsection{Load libraries}
 Next we will load a series of R packages that will give the functions we need to complete all the exercises in lesson 1 and 2. For this exercise all of the packages should (hopefully) be already installed on your machine (?). 
 We will load them below using the library() command. 
 I also included some comments describing how we use each of the packages in the exercises.
@@ -104,7 +100,8 @@ library(scales)
 \clearpage
 
 \section{Read, plot, and explore spatial data}
-\subsection{Read in a Shapefile}
+
+\subsection{Read in a shapefile}
 The most flexible way to read in a shapefile is by using the \verb+readOGR+ command. This is the only option that will also read in the .prj file associated with the shapefile. NCEAS has a useful summary of the various ways to read in a shapefile: \url{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}
 I recommend always using \verb+readOGR()+.
 
@@ -114,7 +111,6 @@ Read OGR can be used for almost any vector data format. To read in a shapefile, 
 \item layer: the name of the shapefile, without the file extension
 \end{itemize}
 
-% to illustrate how a file can be downloaded and read-in
 <<eval=FALSE>>=
 download.file('http://rasta.r-forge.r-project.org/kenyashape.zip',  
       file.path(datdir, 'kenyashape.zip'))
@@ -122,16 +118,8 @@ unzip(file.path(datdir, 'kenyashape.zip'), exdir = datdir)
 kenya <- readOGR(dsn = datdir, layer = 'kenya')
 @
 
-% % internal option
-% <<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
-% library(rasta)
-% datdir <- system.file("extdata/", package="rasta")
-% kenya <- readOGR(dsn = datdir, layer = 'kenya')
-% plot(kenya)
-% @
-
 \clearpage
-\subsection{Plotting the Data}
+\subsection{Plotting the data}
 Plotting is easy, use the \verb+plot()+ command:
 <<eval=FALSE>>=
 plot(kenya)
@@ -153,9 +141,8 @@ plot(kenya)
 
 Here is an example for downloading of administrative boundaries for any country.
 
-
 \clearpage
-\subsection{Exploring the Data within the vector file}
+\subsection{Exploring the data within the vector file}
 
 We can explore some basic aspects of the data using \verb+summary()+ and \verb+str()+. Summary works on almost all R objects but returns different results depending on the type of object. For example if the object is the result of a linear regression then summary will give you the coefficient estimates, standard errors, t-stats, $R^2$, et cetera.
 
@@ -178,8 +165,6 @@ The \verb+str()+ or structure command tells us how R is actually storing and org
 The only one we want to worry about is data, because this is where the data.frame() associated with our spatial object is stored. 
 We access slots using the @ sign.
 
-%\textbf{Note} Mention S3 vs S4 classes?
-
 <<accessdata>>=
 #--------------------------ACCESS THE SHAPEFILE DATA------------------------------
 dsdat <- as(kenya, "data.frame")  # extract the data into a regular data.frame
@@ -188,7 +173,7 @@ kenya$new <- 1:nrow(dsdat) # add a new colunm, just like adding data to a data.f
 head(kenya@data)
 @
 
-\section{Read in a .csv File and Join it to the Shapefile}
+\section{Read in a .csv file and join it to the shapefile}
 \subsection{Read in a .csv file}
 First lets read in a \emph{.csv} file using \verb+read.csv()+
 
@@ -270,7 +255,7 @@ We can delete it afterwards but it's a nice way to double check and make sure ou
 I will go over the details of this approach in class and you can also see an explanation here: 
 \url{http://stackoverflow.com/questions/3650636/how-to-attach-a-simple-data-frame-to-a-spatialpolygondataframe-in-r}
 
-\section{Create Random Points and Extract as a Text File}
+\section{Create random points and extract as a text file}
 
 We are going to do a point in polygon spatial join. However before we do that we are going to generate some random points. We will use the function \verb+runifpoint()+ from the spatstat package. This function creates N points drawn from a spatial uniform distribution (complete spatial randomness) within a given bounding box. The bounding box can be in a variety of forms but the most straightforward is simply a four element vector with \emph{xmin} (the minimum x coordinate), \emph{xmax}, \emph{ymin}, and \emph{ymax}. In the code below we will extract this box from our Kenya data set, convert it to a vector, generate the points, and then plot the points on top of the Kenya map. 
 
@@ -304,8 +289,6 @@ plot(dran2, add = TRUE, col = "blue", pch = 19, cex = 0.5)
 
 Now that we have created some random points, we will extract the x coordinates (longitude), y coordinates (latitude), and then simulate some values to go with them. 
 
-%The purpose of doing this is to create a text file with x,y, and some values. We will then write those values out as a .csv file, read them back in, convert them to a shapefile, and then do a point in polygon spatial join.
-
 <<converttocoordinatestextfile>>=
 #--------------------------CONVERT RANDOM POINTS TO DATA.FRAME------------------
 dp <- as.data.frame(dran1) 
@@ -317,7 +300,7 @@ dp$values<-rnorm(100,5,10)
 head(dp)
 @
 
-\section{Do a Point in Polygon Spatial Join}
+\section{Do a point in polygon spatial join}
 
 In the last exercise we generated some random points along with some random values. Now we will read that data in, convert it to a shapefile (or a SpatialPointsDataFrame object) and then do a point in polygon spatial join. The command for converting coordinates to spatial points is \emph{SpatialPointsDataFrame()}
 
@@ -354,7 +337,7 @@ kenya@data[inds, 'pntvals'] <- dsdat
 head(kenya@data)
 @
 
-\section{Do a Pixel in Polygon Spatial Join}
+\section{Do a pixel in polygon spatial join}
 
 In this section we will explore another common spatial join operation. In this case you you have raster data that you want to aggregate up to the level of the polygons. A common example is that you have a surface of observed or interpolated temperature measurements and you want to find out what the average (or sum, max, min, et cetera) temperature is for each polygon (which could represent states, counties, et cetera). 
 
@@ -365,7 +348,7 @@ filepath <- system.file("extdata", "anom.2000.03.tiff", package ="rasta")
 g <- raster(filepath)
 # plot
 plot(g)
-plot(kenya, add = TRUE) #plot kenay on top to get some sense of the extent
+plot(kenya, add = TRUE) # plot kenay on top to get some sense of the extent
 @
 
 <<crop,eval=TRUE, fig=TRUE, include=FALSE>>=
@@ -400,16 +383,16 @@ Weighted (more accurate, but slower) weights aggregation by the amount of the gr
 <<eval=FALSE, echo =FALSE>>=
 kenya@data$precip_wght <- extract(gc, kenya, fun = mean, weights = TRUE) 
 #If you want to see the actual values and the weights associated with them do this:
-rastweight <- extract(gc, kenya, weights = TRUE)
+#rastweight <- extract(gc, kenya, weights = TRUE)
 @
 Now that we've added all this data to our shapefile, we'll write it out as a new shapefile and then load it in to make some maps in the next exercise.
 
-\section{Make Maps with ggplot2()}
+\section{Make maps with ggplot2()}
 If you have not already done so, load ggplot2 and some related packages.
 For more info on the ggplot2 and the grammar of graphics see the resources at \url{http://had.co.nz/ggplot2/}.
 The `gg' in the ggplot2 is short for \emph{The Grammar of Graphics} which references a famous book by the same name. The idea behind the book and the software is to try and decompose any graphic into a set of fundamental elements. We can then use these elements to construct any type of graphic we want (the elements are the grammar), rather than having a different command for every type of graphic out there. We do not have time to do a full overview of ggplot2 but if you click on the link above and scroll down there is a good visual overview of how ggplot2 works. If you have time take a minute to visit the website. 
 
-\subsection{Setting up the Data with fortify()}
+\subsection{Setting up the data with fortify()}
 
 The ggplot2() package separates spatial data into 2 elements: (1) the data.frame and 2) the spatial coordinates. If you want to make a map from a shapefile you first have to use the fortify() command which converts the shapefile to a format readable by ggplot2:
 
@@ -463,12 +446,12 @@ Now we will get rid of all the unnecessary information in the background.
 #-----------------------EDIT THE BACKGROUND------------------------------
 #-----Get Rid of the Background-----
 #Blank Grid, Background,Axis,and Tic Marks
-bGrid<-theme(panel.grid = element_blank())
-bBack<-theme(panel.background = element_blank())
-bAxis<-theme(axis.title.y = element_blank())
-bTics<-theme(axis.text = element_blank(), axis.text.y = element_blank(), 
+bGrid <- theme(panel.grid = element_blank())
+bBack <- theme(panel.background = element_blank())
+bAxis <- theme(axis.title.y = element_blank())
+bTics <- theme(axis.text = element_blank(), axis.text.y = element_blank(), 
 	axis.ticks = element_blank())
-p1<-p1 + bAxis + bTics + bGrid + bBack + xlab('')
+p1 <- p1 + bAxis + bTics + bGrid + bBack + xlab('')
 p1
 @
 
@@ -529,13 +512,13 @@ pmap <- ggplot(pd)
 p2 <- pmap + geom_map(aes(fill = value,map_id = ip89DId), map=pds) + 
 		facet_wrap(~variable)
 p2 <- p2 + expand_limits(x = pds$lon, y = pds$lat) + coord_equal()
-p2 + labs(title='Basic Panel Map')
+p2 + labs(title='Basic panel map')
 @
 
 \begin{figure}[!htp]
 \centering
-\includegraphics[width=0.5\textwidth]{Lesson_3-fgg1}
-\caption{Basic Panel Map}
+\includegraphics[width=0.7\textwidth]{Lesson_3-fgg1}
+\caption{Basic panel map}
 \end{figure}
 
 We can use the \verb+`ncols'+ (number of columns) argument in \verb+facet_wrap()+ to make the panels stack vertically instead of horizontally.
@@ -550,43 +533,61 @@ Finally we can use the same options we used above to make our final map.
 
 <<fgg3, fig=TRUE, include=FALSE>>=
 #--------------------------MORE PANEL MAP TWEAKS------------------------------
-#--We can add all the other tweaks as before
-p2 <- p2 + scale_fill_gradient(name='Population',low ='wheat',high = 'steelblue') 
+# We can add all the other tweaks as before
+p2 <- p2 + scale_fill_gradient(name='Population', low ='wheat', high = 'steelblue') 
 #to set break points, enter in
-p2 <- p2 + bAxis+bGrid+bTics+bBack
+p2 <- p2 + bAxis + bGrid + bTics + bBack
 p2 <- p2 + theme(panel.border=element_rect(fill=NA)) 
-#this removes the background but keeps aborder around the panels
-#--We can also adjust the format, theme, et cetera of the panel lables with 'strip.text.x'
-p2 <- p2 + theme(strip.background=element_blank(),strip.text.x=element_text(size=12))
+# this removes the background but keeps aborder around the panels
+# We can also adjust the format, theme, et cetera of the panel lables 
+# with 'strip.text.x'
+p2 <- p2 + theme(strip.background=element_blank(), strip.text.x = element_text(size=12))
 p2
 #===============================================================================
 @
 
 \begin{figure}[!htp]
 \centering
-\includegraphics[width=0.5\textwidth]{Lesson_3-fgg3}
-\caption{Basic Panel Map}
+\includegraphics[width=0.7\textwidth]{Lesson_3-fgg3}
+\caption{Basic panel map}
 \end{figure}
 
 \clearpage
-\section{Excercise Lesson 2: Under construction}
+\section{Excercise lesson 2}
 
-Provide a script where 
-(1) the raster (temperature) is sampled (in a random sample per pixel), 
-(2) and the random points are then visualised on top of the raster (try in ggplot)
-(3) derive the standard deviation and range of all the temperature values of the sampled points
+Provide a clear, reproducible, and documented script:
 
-<<ex, eval=FALSE, echo=TRUE>>=
+\begin{itemize}
+\item the raster (temperature anomaly) is sampled (in a random sample of 30 pixels), 
+\item the random points are then visualised on top of the raster (try in ggplot)
+\item derive the median or standard deviation of all the temperature values of the sampled points
+\item add the derived e.g. median to the plot as a text label
+\item upload the code (reproducible!) to your github account and send the link to me.
+\end{itemize}
+
+<<ex, eval=FALSE, echo=FALSE>>=
 #---Set up the data for ggplot
+plot(kenya)
+plot(gc)
+plot(kenya, add = TRUE)
+
+## sample Random
+randoms <- sampleRandom(gc, size = 30, cells = TRUE, sp = TRUE)
+str(randoms)
+plot(gc)
+plot(randoms, add = TRUE)
+median(randoms@data$anom.2000.03)
+sd(randoms@data$anom.2000.03)
+##
 df <- rasterToPoints(gc) #convert the raster to a points object
 df <- data.frame(df) #and then to a data.frame
 pds <- fortify(kenya,region='ip89DId')
 str(df)
-p<-ggplot(pds)+geom_raster(data=df,aes(x=x,y=y,fill=anom.2000.03))+theme_bw() #use geom_raster 
-p<-p+geom_map(map=pds,aes(map_id=id,x=long,y=lat),fill=NA,colour='black') #then plot a map, with fill=NA so we can see the raster values
-p<-p+coord_equal()
-p<-p+scale_fill_gradient(low='wheat',high='blue') #adjust the colors
-p<-p+labs(x='Longitude',y='Latidude')
+p <- ggplot(pds)+geom_raster(data=df, aes(x=x, y=y, fill=anom.2000.03)) + theme_bw() 
+p <- p + geom_map(map=pds,aes(map_id=id,x=long,y=lat),fill=NA,colour='black') #then plot a map, with fill=NA so we can see the raster values
+p <- p + coord_equal()
+p <- p + scale_fill_gradient(low='wheat', high='blue') #adjust the colors
+p <- p + labs(x='Longitude', y='Latidude')
 p
 @
 
