@@ -33,22 +33,14 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Raster Analysis}
-\author{Ben DeVries, Jan Verbesselt, Lo\"{i}c Dutrieux, Sytze de Bruin}
+\author{Ben DeVries, Jan Verbesselt, Lo\"{i}c Dutrieux}
 
 \maketitle
 
 \begin{abstract}
 
-In this tutorial, we will explore the raster package and other related packages used for typical raster analyses. We will first look at analysis of RasterLayer objects, exploring functions having to do with raster algebra, focal and zonal statistics and other operations. We will then explore spatio-temporal analysis of raster data using RasterBrick objects. Here, we will extract time series data from a RasterBrick object and derive temporal statistics from these data. Since data from the Landsat archive is becoming increasingly important for environmental research and monitoring, this tutorial will focus on the use of these data.
-\begin{enumerate}
-  \item perform raster algebra to calculate indices
-  \item classify a raster layer
-  \item perform focal operations to sieve a raster
-  \item parse Landsat scene information from time series data
-  \item explore a raster brick by plotting layers and layers statistics
-  \item perform raster brick operations to derive statistics (e.g. \%no-data in the time series)
-  \item extract pixel time series and derive various time series statistics
-\end{enumerate}
+In this tutorial, we will explore the raster package and other related packages used for typical raster analyses. We will first look at analysis of RasterLayer objects, exploring functions having to do with raster visualization and raster algebra. We will explore supervised and unsupervised classification in R using the Random Forest and k-means methods. Lastly, we will also make use of a spatially-dependent function, focal(), to implement a raster 'sieve' for post-processing. Since data from the Landsat archive is becoming increasingly important for environmental research and monitoring, this tutorial will focus on the use of these data.
+
 \end{abstract}
 
 \section{Raster and related packages}
@@ -64,6 +56,7 @@ library(raster)
 library(rgdal)
 library(sp)
 library(ggplot2)
+library(rasterVis)
 @
 
 \section{The Landsat archive}
@@ -74,7 +67,7 @@ Since being released to the public, the Landsat data archive has become an inval
 
 \subsection*{Exploring a Landsat scene}
 
-Landsat scenes are delivered via the USGS as a number of image layers representing the different bands captured by the sensors. In the case of the Landsat 7 Enhanced Thematic Mapper (ETM+) sensor, the bands are shown in figure xxx. Using different combination of these bands can be useful in describing land features and change processes.
+Landsat scenes are delivered via the USGS as a number of image layers representing the different bands captured by the sensors. In the case of the Landsat 7 Enhanced Thematic Mapper (ETM+) sensor, the bands are shown in Figure \ref{landsatBands}. Using different combination of these bands can be useful in describing land features and change processes.
 
 \begin{center}
 \begin{figure}[t]
@@ -85,7 +78,7 @@ Landsat scenes are delivered via the USGS as a number of image layers representi
 \end{figure}
 \end{center}
 
-Part of a landsat scene, including bands 2-4 are included as part of the rasta package. These data have been processed using the LEDAPS framework (TODO: insert link), so the values contained in this dataset represent surface reflectance, scaled by 10000 (ie. divide by 10000 to get a reflectance value between 0 and 1).
+Part of a landsat scene, including bands 2-4 are included as part of the rasta package. These data have been processed using the LEDAPS framework\footnote{http://ledaps.nascom.nasa.gov/}, so the values contained in this dataset represent surface reflectance, scaled by 10000 (ie. divide by 10000 to get a reflectance value between 0 and 1).
 
 We will begin exploring these data simply by visualizing them (more methods for data exploration will be covered in Lesson 7).
 
@@ -461,7 +454,7 @@ plot(classes, col=c("dark green", "orange", "light blue"))
 \begin{center}
 \begin{figure}[t]
 \centering
-<<>>=
+<<fig=TRUE>>=
 plot(classes, col=c("dark green", "orange", "light blue"))
 @
 \caption{Unsupervised land cover classification resulting from k-means method.}
@@ -520,7 +513,7 @@ par(mfrow=c(1, 1)) # reset plotting window
 \begin{center}
 \begin{figure}[t]
 \centering
-<<echo=FALSE>>=
+<<echo=FALSE, fig=TRUE>>=
 par(mfrow=c(1, 2)) # allow 2 plots side-by-side
 plot(formask, ext=e, col="dark green", legend=FALSE)
 plot(formaskSieve, ext=e, col="dark green", legend=FALSE)
@@ -549,7 +542,7 @@ sievemask[!is.na(formask)] <- 1
 sievemask <- focal(sievemask, w = w, fun = sum, na.rm = TRUE)
 @
 
-%% TODO(Ben): make a diagram explainig the concept below
+%% TODO(Ben): make a diagram explaining the concept below
 
 When we define the matrix manually, the weights are not normalized (sum to 1) as they did when we set 'w = 3'. In this case, 'island' pixels would have a value of 1 (no other neighbours), and should be removed according to the sieve. Applying the new sieve as above should give the following results.
 
@@ -580,7 +573,6 @@ The focal() function can be used for a variety of purposes, including other data
 
 In some cases, the values of a raster may be categorical, meaning they relate to a thematic class (e.g. 'forest' or 'wetland') rather than a quantitative value (e.g. NDVI or \% Tree Cover). The raster dataset 'lulcGewata' is a raster with integer values representing LULC classes from a 2011 classification (using SPOT5 and ASTER source data).
 
-%% alternatively, use the LC map generated in the previous section
 <<>>=
 data(lulcGewata)
 # check out the distribution of the values
@@ -609,12 +601,100 @@ levels(lulc) <- LUTGewata
 lulc
 @
 
-\section{Exercise}
-\begin{itemize}
-\item to be doable in 3 hours....
-\item combine concepts from previous lessons as well
+In some cases it might be more useulf to visualize only one class at a time. The layerize() function in the raster package does this by producing a rasterBrick object with each layer representing the class membership of each class as a boolean.
 
-\end{itemize}
+<<fig=FALSE, results=hide>>=
+classes <- layerize(lulc)
+plot(classes)
+# layer names follow the order of classes in the LUT
+names(classes) <- LUTGewata$Class
+plot(classes)
+@
+
+Now each class is represented by a separate layer representing class membership of each pixel with 0's and 1's. If we want to construct a forest mask as we did above, this is easily done by extracting the fifth layer of this rasterBrick and replacing 0's with NA's.
+
+<<results=hide>>=
+forest <- raster(classes, 5)
+# is equivalent to:
+forest <- classes[[5]]
+# or (since the layers are named):
+forest <- classes$forest
+# replace 0's (non-forest) with NA's
+forest[forest==0] <- NA
+plot(forest, col="dark green", legend=FALSE)
+@
+
+\section{Exercise}
+
+Perform another Random Forest classification with 6 classes (found in the lulcGewata raster dataset) using all (or some) of the bands used in this tutorial (b2, b3, b4, ndvi and vcf). This time, derive your own training data from the lulcGewata image provided with this package as follows:
+
+%% suggestion: include only comments (with some code) to give some hints to students? Or circulate that as a separate document in class? Or show these hints as separate slides without including in the online vignette?
+<<eval=FALSE, echo=FALSE>>=
+# load in the training dataset and LUT
+
+
+# separate classes into layers and name the layers
+
+
+# extract individual layers
+cropland <- classes$cropland
+# repeat for other classes...
+
+
+# replace 0's with NA's in each layer so they don't get sampled
+cropland[cropland==0] <- NA
+# repeat for other classes...
+
+
+# select random pixels for each class
+# NOTE: output as a raster or sp object for overlay purposes!
+croplandSamp <- sampleRandom(x=cropland, size=200, asRaster=TRUE)
+# check: there should be 200 pixels with value=1, the rest with value=NA
+
+
+# do the same for the other 5 classes
+# you should have a total of 6 'Samp' rasters
+# collect all samples into one raster layer
+classesSamp <- raster(classes) # empty raster
+classesSamp[!is.na(croplandSamp)] <- 1
+classesSamp[!is.na(bambooSamp)] <- 2
+classesSamp[!is.na(baresoilSamp)] <- 3
+# ....continue for all sampled classes
+# check number of samples per class (should be equal!)
+freq(classSamp)
+# or
+hist(classSamp)
+
+
+# load in the image data and make a brick as done with the RandomForest classification
+
+
+
+# include only pixels sampled
+trainBrick <- mask(gewata, classSamp)
+
+# add the layer with classes to the training brick
+trainBrick <- addLayer(trainBrick, classSamp)
+
+
+# construct a value table
+valuetable <- getValues(trainBrick)
+valuetable <- as.data.frame(trainBrick)
+
+
+# continue with RandomForest classification
+
+
+
+@
+
+Report on the results by (a) producing a thematic map; (b) giving the output OOB confusion matrix with accuracy statistics; (c) giving your own confusion matrix derived from an overlay of the original LULC raster with your own LULC raster. In this exercise, also address the following questions:
+
+\begin{enumerate}
+\item Which classes have the highest accuracy? Lowest? (hint: explore the RandomForest output model object).
+\item Is the importance ranking of the input bands different in this case to the 3-class classification we did earlier? If so, how, and what has changed in this case?
+\item Can you say something about class separability? Hint: see ?zonal() and try to derive mean and standard deviation of several of the input bands for each class. How do these values compare with each other? Are there any classes which show high overlap? Is this consistent with the confusion matrices you derived earlier?
+\end{enumerate}
 
 % \bibliographystyle{model5-names}
 % \bibliography{refs}
