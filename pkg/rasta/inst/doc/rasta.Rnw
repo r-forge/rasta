@@ -1,24 +1,36 @@
 \documentclass[nojss]{jss}
 
-%% need no \usepackage{Sweave}
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide,graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{float}
 \usepackage{thumbpdf}
+\usepackage{Sweave}
 
 %% new commands
 \newcommand{\class}[1]{``\code{#1}''}
 \newcommand{\fct}[1]{\code{#1()}}
 
 \SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
+
 <<options, echo=FALSE>>=
 options(prompt = "R> ", digits = 4, show.signif.stars = FALSE)
 @
-%%\VignetteIndexEntry{Applied Econometrics with R: Package Vignette and Errata}
+
+%%\VignetteIndexEntry{Applied Geo-scripting}
 %%\VignettePackage{rasta}
 %%\VignetteDepends{rasta}
-%%\VignetteKeywords{spatial, temporal analysis, statistical software, R}
+%%\VignetteKeywords{Spatial, temporal analysis, scripting, R}
 
 \author{Jan Verbesselt\\Wageningen University
-   \And Lo\"{i}c Dutrieux\\Wageningen University}
-\Plainauthor{Jan Verbesselt, Lo\"{i}c Dutrieux, Ben de vries}
+   \And Lo\"{i}c Dutrieux\\Wageningen University
+      \And Ben de Vries\\Wageningen University
+      \And Sytze de Bruyn\\Wageningen University
+}
+\Plainauthor{Jan Verbesselt, Lo\"{i}c Dutrieux, Ben de Vries, Sytze de Bruyn}
 \title{}
 \Plaintitle{Reproducible and Applied Spatial and Temporal Analysis (RASTA)}
 \Shorttitle{\pkg{RASTA}: Contains Lessons, data, and demo for the course @ WUR}
@@ -38,7 +50,7 @@ options(prompt = "R> ", digits = 4, show.signif.stars = FALSE)
 
 \subsection[R code from the book]{\proglang{R} code from the book}
 
-The full \proglang{R} code from the book is provided in the demos for the package \pkg{AER}.
+The full \proglang{R} code from the book is provided in the demos for the package \pkg{rasta}.
 The source scripts can be found in the \code{demo}
 directory of the package and executed interactively by calling
 \fct{demo}, as in
@@ -46,7 +58,7 @@ directory of the package and executed interactively by calling
 <<demo, eval=FALSE>>=
 demo("Lesson_1_demo", package = "RASTA")
 @
-%
+
 One demo per chapter is provided:
 \begin{itemize}
   \item \code{Ch-Intro} (Chapter~1: Introduction),
@@ -125,6 +137,6 @@ or complementing methods previously available in \proglang{R}:
 
 Please report any further errors you find to us.
 
-\bibliography{rasta}
+%\bibliography{rasta}
 
 \end{document}

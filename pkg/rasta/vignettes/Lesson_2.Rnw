@@ -38,7 +38,7 @@
   linktocpage = {true},
 }
 
-\usepackage{Sweave} %% is essentially
+\usepackage{Sweave}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
