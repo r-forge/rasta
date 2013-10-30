@@ -416,11 +416,11 @@ The first chunk below is how I got to the solution. The second chunk is the solu
 Another solution (probably easier actually) is to first apply the cloud mask to the bricks and average them controling well the na.rm argument.
 <<eval=FALSE>>=
 # Download and unpack
-
+library(rasta)
 # Read data taravao
 data(taravao)
-# taravao2 <- taravao
-taravao2 <- brick('filename2.tif') # that does not exists yet, use line above for tests
+taravao2 <- taravao
+# taravao2 <- brick('filename2.tif') # that does not exists yet, use line above for tests
 taravao2 <- crop(x=taravao2, y=taravao)
 cloud <- calc(taravao[[9]], fun=QA2cloud) 
 cloud2 <- calc(taravao2[[9]], fun=QA2cloud)
@@ -440,11 +440,39 @@ compose <- function(c1, c2, b1, b2){
   return(x)
 }
 
+## this function can also be written as
+
+# Write function for single values
+compose <- function(c1, c2, b1, b2){
+  if(c1 == 1 & c2 == 1) {
+    x <- NA
+  } else {
+    x <- mean(c(b1, b2), na.rm = TRUE)
+  }
+  return(x)
+}
+
+Vcompose <- function(c1, c2, b1, b2){
+  new <- (c1 == 1 & c2 == 1)
+  i <- which(!new)
+  out <- rep(NA, length(c1))
+  out[i] <- mapply(mean, b1[i], b2[i], na.rm = TRUE)
+  return(out)
+}
+
+# c1 <- getValues(cloud)
+# c2 <- getValues(cloud2)
+# b1 <- getValues(raster(taravao,1))
+# b2 <- getValues(raster(taravao2,1))
+
 composeV <- function(c1, c2, b1, b2) {
   v <- mapply(FUN=compose, c1, c2, b1, b2)
   return(v)  
 }
-  
+
+test <- overlay(cloud, cloud2, taravao, taravao2, fun=Vcompose)
+plot(test)
+
 taravaoComposit <- overlay(cloud, cloud2, taravao, taravao2, fun=composeV)
 @
 
