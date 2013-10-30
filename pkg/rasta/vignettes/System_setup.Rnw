@@ -92,6 +92,9 @@ Restart RStudio.
 \subsection*{Specific R packages}
 Not all packages are hosted on the CRAN package repository, this is the case for instance of the MODIS package that is maintained on R Forge, and requires an extra argument in the \code{install.packages()} function to be installed. The install line, to be copy pasted in the R shell is often given on the package R forge home page.
 
+\subsection{Installing the rasta package in Windows}
+We maintain a windows binaries version of the rasta package under \url{http://rasta.r-forge.r-project.org/rasta.zip}. Simply download it and install it on your system by pointing to the file you just downloaded in the package installation menu of R Studio. 
+
 \section{Linux}
 \subsection*{R and R Studio}
 Information on how to install R and RStudio on linux systems can be found \href{http://cran.r-project.org/bin/linux/ubuntu/README}{here} and \href{http://www.rstudio.com/ide/download/desktop}{here}.
