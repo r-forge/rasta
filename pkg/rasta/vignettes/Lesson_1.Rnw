@@ -118,6 +118,8 @@ The main scripting languages for GIS and Remote sensing currently are:
     \end{itemize}
   \item GRASS (grass function are included in QGIS)
   \item Javascript for geoweb scripting
+  \item Matlab
+  \item IDL (ENVI)
 \end{itemize}
 \end{frame}
 
@@ -371,6 +373,7 @@ datdir <- file.path("data") ## path
   \item demonstrate the function
   \item make sure the script is tested by somebody else
   \end{itemize}
+\item The function should accept \emph{country} and \emph{level} as input arguments
 \item{Filename: \emph{lastnamefirstname.R}}
 \item{the next slide contains an example script which you can use as a template for creating your function}
 \end{itemize}
@@ -378,6 +381,12 @@ datdir <- file.path("data") ## path
 \medskip
 This will be a test to see if your R scripting levels are ok to continue the course in the coming months.
 
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Ex.Lesson 1: Write you own function to create a map}
+
+Here is an example of how you can create a map in R. Try it out and use this as a template for creating a function.
 <<>>=
 ## Load required packages
 library(raster)
