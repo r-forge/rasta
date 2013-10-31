@@ -19,7 +19,6 @@
 \usepackage{url}
 \usepackage{float}
 
-
 % hyperref setup
 \definecolor{Red}{rgb}{0.5,0,0}
 \definecolor{Blue}{rgb}{0,0,0.5}
@@ -29,7 +28,6 @@
   pdfsubject = {},
   pdfkeywords = {R project management, good scripting habits},
   pdfauthor = {Lo\"{i}c Dutrieux},
-  %% change colorlinks to false for pretty printing
   colorlinks = {true},
   linkcolor = {Blue},
   citecolor = {Blue},
@@ -39,6 +37,7 @@
 }
 
 \usepackage{Sweave}
+%%\VignetteIndexEntry{Lesson 2: xxx}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
