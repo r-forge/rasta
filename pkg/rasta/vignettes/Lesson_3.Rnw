@@ -18,7 +18,6 @@
   pdfsubject = {},
   pdfkeywords = {MODIS, time series},
   pdfauthor = {Jan Verbesselt},
-  %% change colorlinks to false for pretty printing
   colorlinks = {true},
   linkcolor = {Blue},
   citecolor = {Blue},
@@ -27,6 +26,7 @@
   linktocpage = {true},
 }
 
+%%\VignetteIndexEntry{Lesson 3:  applied geo-scripting potential}
 \usepackage{Sweave}
 
 <<preliminaries, echo=FALSE, results=hide>>=
