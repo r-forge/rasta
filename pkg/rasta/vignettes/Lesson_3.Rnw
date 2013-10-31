@@ -112,10 +112,10 @@ Read OGR can be used for almost any vector data format. To read in a shapefile, 
 \end{itemize}
 
 <<eval=FALSE>>=
-download.file('http://rasta.r-forge.r-project.org/kenyashape.zip',  
-      file.path(datdir, 'kenyashape.zip'))
-unzip(file.path(datdir, 'kenyashape.zip'), exdir = datdir)
-kenya <- readOGR(dsn = datdir, layer = 'kenya')
+download.file("http://rasta.r-forge.r-project.org/kenyashape.zip",  
+      file.path(datdir, "kenyashape.zip"))
+unzip(file.path(datdir, "kenyashape.zip"), exdir = datdir)
+kenya <- readOGR(dsn = datdir, layer = "kenya")
 @
 
 \clearpage
@@ -125,7 +125,7 @@ Plotting is easy, use the \verb+plot()+ command:
 plot(kenya)
 @
 
-Obviously there are more options to dress up your plot and make a proper map/graphic. A common method is to use \verb+spplot()+ from the sp package. However I prefer to use the functions available in the ggplot2 package as I think they are more flexible and intuitive. We will address maps and graphics later in the in the class. For now, let us move onto reading in some tabular data and merging that data to our shapefile (similar to the join operation in ArcGIS).
+Obviously there are more options to dress up your plot and make a proper map/graphic. A common method is to use \verb+spplot()+ from the sp package. However I prefer to use the functions available in the ggplot2 package as I think they are more flexible and intuitive. We will address maps and graphics later in the class. For now, let us move onto reading in some tabular data and merging that data to our shapefile (similar to the join operation in ArcGIS).
 
 <<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
 library(rasta)
@@ -148,7 +148,7 @@ We can explore some basic aspects of the data using \verb+summary()+ and \verb+s
 
 <<exploredata>>=
 summary(kenya)
-str(kenya,2)
+str(kenya, 2) ## 2 is the max. level shown of the kenya object
 @
 
 As mentioned above, the \verb+summary()+ command works on virtually all R objects. In this case it gives some basic information about the projection, coordinates, and data contained in our shapefile
@@ -203,7 +203,7 @@ Now we extract only the columns we we want and then use the unique() command to 
 
 <<csvclean>>=
 #--------------------------EXTRACT COLUMNS FROM CSV------------------------------
-d <- d[,c('ip89DId','PopChg','BrateChg','Y89Pop','Y99Pop')] 
+d <- d[,c("ip89DId","PopChg","BrateChg","Y89Pop","Y99Pop")] 
 #Grab only the colunms we want
 names(d)
 #str(d)
@@ -234,8 +234,8 @@ head(d4)
 #--We can do the join in one line by using the match() function
 ds1 <- kenya #make a copy so we can demonstrate 2 ways of doing the join
 
-kenya@data <- data.frame(as(kenya,'data.frame'),
-                    d[match(kenya@data[,'ip89DId'], d[,'ip89DId']),])
+kenya@data <- data.frame(as(kenya,"data.frame"),
+                    d[match(kenya@data[,"ip89DId"], d[,"ip89DId"]),])
 @
 
 <<eval=FALSE>>=
@@ -301,13 +301,12 @@ head(dp)
 @
 
 \section{Do a point in polygon spatial join}
-
 In the last exercise we generated some random points along with some random values. Now we will read that data in, convert it to a shapefile (or a SpatialPointsDataFrame object) and then do a point in polygon spatial join. The command for converting coordinates to spatial points is \emph{SpatialPointsDataFrame()}
 
-<<converttospatialpoints>>=
+<<>>=
 #--------------------CONVERT RANDOM POINTS TO SPATIAL POINTS DATAFRAME---
-dsp <- SpatialPointsDataFrame(coords = dp[,c('x','y')], 
-	data = data.frame('values' = dp$values))
+dsp <- SpatialPointsDataFrame(coords = dp[, c("x","y")], 
+	data = data.frame("values" = dp$values))
 summary(dsp)
 
 #Since the Data was Generated from a source with same projection as 
@@ -320,35 +319,37 @@ In the over() command we feed it a spatial polygon object (ds), a spatial points
 
 See ?over() for more information.
 
-<<overlay>>=
+<<>>=
 #--------------------------POINT IN POLY JOIN------------------------------
-
-#--The data frame tells us for each point the index of the polygon it falls into
-dsdat <- over(kenya, dsp, fn = mean) #do the join
-head(dsdat) #look at the data
+#The data frame tells us for each point the index of the polygon it falls into
+dsdat <- over(kenya, dsp, fn = mean)
+head(dsdat) 
 
 inds <- row.names(dsdat) 
 #get the row names of dsdat so that we can put the data back into ds
 head(inds)
 
 str(kenya@data)
-kenya@data[inds, 'pntvals'] <- dsdat 
+kenya@data[inds, "pntvals"] <- dsdat 
 #use the row names from dsdata to add the aggregated point values to ds@data
 head(kenya@data)
 @
 
 \section{Do a pixel in polygon spatial join}
 
-In this section we will explore another common spatial join operation. In this case you you have raster data that you want to aggregate up to the level of the polygons. A common example is that you have a surface of observed or interpolated temperature measurements and you want to find out what the average (or sum, max, min, et cetera) temperature is for each polygon (which could represent states, counties, et cetera). 
+\emph{This is an optional section and we will provide other pixel in polygon spatial join in lesson 7}
+
+In this section we will explore another common spatial join operation. In this case you have raster data that you want to aggregate up to the level of the polygons. A common example is that you have a surface of observed or interpolated temperature measurements and you want to find out what the average (or sum, max, min, et cetera) temperature is for each polygon (which could represent states, counties, et cetera). 
+
+\emph{Note: It is highly recommended to look at the resolution of the pixel compared to the polygon size. The weighting is very important when pixels are large compared to the polygon.} % (or ask them how they would deal with large pixels before introducing the weighted average option)
 
 <<raster,eval=TRUE, fig=TRUE, include=FALSE>>=
 #--------------------------READ AND CROP A RASTER--
 library(rasta)
 filepath <- system.file("extdata", "anom.2000.03.tiff", package ="rasta")
 g <- raster(filepath)
-# plot
 plot(g)
-plot(kenya, add = TRUE) # plot kenay on top to get some sense of the extent
+plot(kenya, add = TRUE) # plot kenya on top to get some sense of the extent
 @
 
 <<crop,eval=TRUE, fig=TRUE, include=FALSE>>=
@@ -398,7 +399,7 @@ The ggplot2() package separates spatial data into 2 elements: (1) the data.frame
 
 <<fortify>>=
 #------------------PREP SPATIAL DATA FOR GGPLOT WITH FORTIFY()------------
-pds <- fortify(kenya, region='ip89DId') #convert to form readable by ggplot2
+pds <- fortify(kenya, region="ip89DId") #convert to form readable by ggplot2
 pds$ip89DId <- as.integer(pds$id)
 head(pds)
 @
@@ -428,8 +429,8 @@ Now we have a basic map, let's make some tweaks to it.
 <<gg2, fig=TRUE, include=FALSE>>=
 #---------------------CHANGE THE COLOR SCHEME, TWEAK THE LEGEND------------
 #---Change the Colour Scheme-----
-p1 <- p1 + scale_fill_gradient(name='Population \nChange', 
-              low ='wheat', high = 'steelblue') 
+p1 <- p1 + scale_fill_gradient(name="Population \nChange", 
+              low ="wheat", high = "steelblue") 
 #to set break points, enter in breaks=c(...,..)
 #The \n in Population \nChange' indicates a carriage return
 p1
@@ -451,7 +452,7 @@ bBack <- theme(panel.background = element_blank())
 bAxis <- theme(axis.title.y = element_blank())
 bTics <- theme(axis.text = element_blank(), axis.text.y = element_blank(), 
 	axis.ticks = element_blank())
-p1 <- p1 + bAxis + bTics + bGrid + bBack + xlab('')
+p1 <- p1 + bAxis + bTics + bGrid + bBack + xlab("")
 p1
 @
 
@@ -472,7 +473,7 @@ cens$Region <- kenya$ip89DName
 cens$ip89DId <- kenya$ip89DId
 head(cens)  #we will use this file to label the polygons
 p1 <- p1 + geom_text(data = cens, aes(V1,V2,label = Region), size = 2.5, vjust=1) +
-  labs(title='Population Change in Kenya \n (1989-1999)')
+  labs(title="Population Change in Kenya \n (1989-1999)")
 p1 
 @
 
@@ -504,15 +505,15 @@ One of the advantages of ggplot is the ease with which you can create panel grap
 
 <<fgg1,fig=TRUE,include=FALSE>>=
 #--------------------------RESHAPE THE DATA AND MAKE A PANEL MAP----------------
-pd <- d[,c('ip89DId','Y89Pop','Y99Pop')] #select out certain colunms
-pd <- melt(pd, id.vars='ip89DId') # convert the data to 'long' form
+pd <- d[,c("ip89DId","Y89Pop","Y99Pop")] #select out certain colunms
+pd <- melt(pd, id.vars="ip89DId") # convert the data to 'long' form
 head(pd) # take a look at the data
 
 pmap <- ggplot(pd)
 p2 <- pmap + geom_map(aes(fill = value,map_id = ip89DId), map=pds) + 
 		facet_wrap(~variable)
 p2 <- p2 + expand_limits(x = pds$lon, y = pds$lat) + coord_equal()
-p2 + labs(title='Basic panel map')
+p2 + labs(title="Basic panel map")
 @
 
 \begin{figure}[!htp]
@@ -534,13 +535,13 @@ Finally we can use the same options we used above to make our final map.
 <<fgg3, fig=TRUE, include=FALSE>>=
 #--------------------------MORE PANEL MAP TWEAKS------------------------------
 # We can add all the other tweaks as before
-p2 <- p2 + scale_fill_gradient(name='Population', low ='wheat', high = 'steelblue') 
+p2 <- p2 + scale_fill_gradient(name="Population", low ="wheat", high = "steelblue") 
 #to set break points, enter in
 p2 <- p2 + bAxis + bGrid + bTics + bBack
 p2 <- p2 + theme(panel.border=element_rect(fill=NA)) 
 # this removes the background but keeps aborder around the panels
 # We can also adjust the format, theme, et cetera of the panel lables 
-# with 'strip.text.x'
+# with "strip.text.x"
 p2 <- p2 + theme(strip.background=element_blank(), strip.text.x = element_text(size=12))
 p2
 #===============================================================================
@@ -581,13 +582,13 @@ sd(randoms@data$anom.2000.03)
 ##
 df <- rasterToPoints(gc) #convert the raster to a points object
 df <- data.frame(df) #and then to a data.frame
-pds <- fortify(kenya,region='ip89DId')
+pds <- fortify(kenya,region="ip89DId")
 str(df)
 p <- ggplot(pds)+geom_raster(data=df, aes(x=x, y=y, fill=anom.2000.03)) + theme_bw() 
-p <- p + geom_map(map=pds,aes(map_id=id,x=long,y=lat),fill=NA,colour='black') #then plot a map, with fill=NA so we can see the raster values
+p <- p + geom_map(map=pds,aes(map_id=id,x=long,y=lat),fill=NA,colour="black") #then plot a map, with fill=NA so we can see the raster values
 p <- p + coord_equal()
-p <- p + scale_fill_gradient(low='wheat', high='blue') #adjust the colors
-p <- p + labs(x='Longitude', y='Latidude')
+p <- p + scale_fill_gradient(low="wheat", high="blue") #adjust the colors
+p <- p + labs(x="Longitude", y="Latidude")
 p
 @
 
