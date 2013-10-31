@@ -34,6 +34,7 @@
 }
 
 \usepackage{Sweave} %% is essentially
+%%\VignetteIndexEntry{Lesson 5: Introduction to raster based analysis in R}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
