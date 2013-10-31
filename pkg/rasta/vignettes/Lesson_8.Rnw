@@ -1,0 +1,83 @@
+\documentclass[11pt,twoside,a4paper]{article}
+
+%% BibTeX settings
+\usepackage[authoryear,round]{natbib}
+
+%% additional packages
+\usepackage[latin1]{inputenc}
+\usepackage{a4wide,graphicx,color,thumbpdf}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+
+% hyperref setup
+\definecolor{Red}{rgb}{0.5,0,0}
+\definecolor{Blue}{rgb}{0,0,0.5}
+\hypersetup{
+  pdftitle = {Lesson 8},
+  pdfsubject = {},
+  pdfkeywords = {Applied geo-scripting},
+  pdfauthor = {Jan Verbesselt},
+  colorlinks = {true},
+  linkcolor = {Blue},
+  citecolor = {Blue},
+  urlcolor = {Red},
+  hyperindex = {true},
+  linktocpage = {true},
+}
+
+%%\VignetteIndexEntry{Lesson 8:  The assignment}
+\usepackage{Sweave}
+
+<<preliminaries, echo=FALSE, results=hide>>=
+options(width = 80, prompt = ">", continue = "+ ")
+@
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{Lesson 8: The assignment}
+\author{Jan Verbesselt, Ben De Vries, Loic Dutriex}
+
+\maketitle
+
+\begin{abstract}
+A description of the assignment required for the applied geo-scripting course.
+\end{abstract}
+
+\section{Learning objectives}
+
+\begin{itemize}
+	\item{Apply the learned knowledge to solve a real-world problem}
+	\item{Use libraries which offer spatial data handling functions}
+	\item{Develop new functions if needed that can help you}
+  \item{Download, import, and prepare your own data set}
+\end{itemize}
+
+\section{The assigment}
+
+Below, the different steps for the assignment are described:
+\begin{itemize}
+  \item{Identify an interesting question which you could answer using applied geo-scripting skills. You are welcome to use the data sets that have been using during this course but we recommend you to also look at other publicly avaiable data sets listed below.}
+	\item{Describe your project in a good paragraph where you explain your question (why?), methodology (how?) and data set your are planning to use}. Before starting with your project, the describtion needs to be approved by one of the lectures of the geo-scripting course.
+  \item{See \url{http://goo.gl/HTtND8} for details about the planning and availability of PC rooms}
+  \item{The deadline is 6/12/2013}
+\end{itemize}
+
+\section{Publicly available data sets}
+
+\begin{itemize}
+  \item
+  \item
+  
+\end{itemize}
+
+\section{Reporting}
+
+\begin{itemize}
+  \item{Provide a reproducible script via your GitHub account to us via e-mail. The reproducible script should be well documented, and should be able to (a) download the data, (b) import the data in R, (c) process and analyse to solve your question, (d) visualise the results}
+  \item{Provide a report: a short word document containing your project description, your results, and visualised output (max. 5 pages). Focus on the main results. The most important aspect of the report is that you illustrate that you have applied the knowledge learned in previous lessons to solve an real life problem.}
+\end{itemize}
+
+
+\end{document}
