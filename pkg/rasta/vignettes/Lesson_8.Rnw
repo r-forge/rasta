@@ -58,8 +58,8 @@ A description of the assignment required for the applied geo-scripting course.
 
 Below, the different steps for the assignment are described:
 \begin{itemize}
-  \item{Identify an interesting question which you could answer using applied geo-scripting skills. You are welcome to use the data sets that have been using during this course but we recommend you to also look at other publicly avaiable data sets listed below.}
-	\item{Describe your project in a good paragraph where you explain your question (why?), methodology (how?) and data set your are planning to use}. Before starting with your project, the describtion needs to be approved by one of the lectures of the geo-scripting course.
+  \item{Identify an interesting question which you could answer using applied geo-scripting skills. You are welcome to use the data sets that we have used during this course but we recommend you to also look at other publicly available data sets listed below.}
+	\item{Describe your project in a paragraph where you explain your question (why?), methodology (how?) and data set your are planning to use (1 page max.). Before starting with your project, the description needs to be approved by one of the lectures of the geo-scripting course.}
   \item{See \url{http://goo.gl/HTtND8} for details about the planning and availability of PC rooms}
   \item{The deadline is 6/12/2013}
 \end{itemize}
@@ -67,17 +67,29 @@ Below, the different steps for the assignment are described:
 \section{Publicly available data sets}
 
 \begin{itemize}
-  \item
-  \item
+  \item Landsat VCF data (Loic can you add here)
+  \item Rainfall data: \href{http://disc.sci.gsfc.nasa.gov/precipitation/documentation/TRMM_README/TRMM_3B43_readme.shtml}{TRMM Rainfall data}
+  \item MAP library: \url{http://www.maplibrary.org}
+  \item Global adminstrative areas: \url{http://www.gadm.org/}
+  \item See the MODIS package to download MODIS data. See a very \href{http://stevemosher.wordpress.com/modis-tutorial/}{good tutorial}. If you can demonstrate that you have used the MODIS package to address as clear challenge then that would be a good example project.
+  \item MODIS data for different locations around the world can also be downloaded via the following \href{http://daac.ornl.gov/cgi-bin/MODIS/GR_col5_1/mod_viz.html}{MODIS Land Subset tool}
   
 \end{itemize}
+
+\section{Example projects}
+
+For example:
+\begin{itemize}
+  \item If you illustrate that you are able to download MODIS data via the  \href{http://stevemosher.wordpress.com/modis-tutorial/}{MODIS package} and for example are able to detect change between to image, for a specific country and describe what the change means then that would be a nice project.
+  \item ... to be added
+\end{itemize}
+
 
 \section{Reporting}
 
 \begin{itemize}
   \item{Provide a reproducible script via your GitHub account to us via e-mail. The reproducible script should be well documented, and should be able to (a) download the data, (b) import the data in R, (c) process and analyse to solve your question, (d) visualise the results}
-  \item{Provide a report: a short word document containing your project description, your results, and visualised output (max. 5 pages). Focus on the main results. The most important aspect of the report is that you illustrate that you have applied the knowledge learned in previous lessons to solve an real life problem.}
+  \item{Provide a clear scientific report, e.g. as a short word document containing your project description, results (maps, plots, tables) and a conclusion (max. 5 pages). Focus on the main results. Key is that you illustrate that you have applied the knowledge learned during the course to solve an real life problem.}
 \end{itemize}
-
 
 \end{document}
