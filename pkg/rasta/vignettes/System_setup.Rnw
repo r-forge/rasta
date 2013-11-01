@@ -25,7 +25,6 @@
   pdfsubject = {},
   pdfkeywords = {raster},
   pdfauthor = {Lo\"{i}c Dutrieux},
-  %% change colorlinks to false for pretty printing
   colorlinks = {true},
   linkcolor = {Blue},
   citecolor = {Blue},
@@ -40,7 +39,7 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Setting up your system for Geo-scripting with R}
-\author{Lo\"{i}c Dutrieux}
+\author{Lo\"{i}c Dutrieux, Jan Verbesselt}
 
 \maketitle
 
@@ -122,13 +121,43 @@ Your system should be ready to install rgdal and rgeos R packages.
 
 \section{Mac}
 
+\subsection{R and R Studio}
+
+Download and install the latest R version available from: \url{http://cran.r-project.org/bin/macosx/}. Download and install the latest Rstudio Desktop from the \href{http://www.rstudio.com/ide/download/}{R Studio download page}.
 
 
+\subsection{GDAL/OGR/PROJ4 libraries}
+Installing these libraries on Mac is not required for the Geo-scripting course as the \emph{rgdal} and \emph{rgeos} R package contain the GDAL C++ library. However, they will come in handy if reprojecting data represent a large part of your work or if you plan on doing a lot of file format conversions. They are an absolute necessity if you have to work with hdf4 format data.\\
+
+The best option for install RGDAL on mac is via the Kynchaos website: \url{http://www.kyngchaos.com/software/frameworks}. At the time of writing this description install the \textbf{GDAL 1.10 Complete} set if you the GDAL library (not required for the coarse).  Check out a \href{http://spatial.ly/2010/11/installing-rgdal-on-mac-os-x/}{tutorial} if you need more info.
+
+\subsection{Version control software}
+Installing these software is not an absolute necessity, however it might come handy if you plan to implement some of the good practices discussed in Lesson 2. Refer to Lesson 2 for more details.
+
+Most likely you need one OR the other, depending on whether your repository is hosted on a git or Subversion version control system. Only git is required if you plan to follow the full tutorial of Lesson 2. If you want to install SVN and Git on Mac you need to install XCode for Mac. See here for more info: \url{http://superuser.com/questions/455214/where-is-svn-on-os-x-mountain-lion}. Git should be available to via Xcode. Let me know if not. Maybe \href{http://apple.stackexchange.com/questions/18470/why-is-git-not-found-after-installing-os-x-lion}{this question} helps.
+
+See here for an excellent and clear description for how \href{http://www.rstudio.com/ide/docs/version_control/overview}{to install SVN and Git on Mac so that you can use it within RStudio}.RStudio IDE should automatically be able to find SVN and Git.
+
+\subsection*{Specific R packages}
+Not all packages are hosted on the CRAN package repository, this is the case for instance of the MODIS package that is maintained on R Forge, and requires an extra argument in the \code{install.packages()} function to be installed. The install line, to be copy pasted in the R shell is often given on the package R forge home page.
+
+\subsection{Installing the rasta package on Mac}
+
+<<eval=FALSE>>=
+install.packages("rasta", repos="http://R-Forge.R-project.org", 
+                 type = "source")
+@
+
+\subsection{Extra help}
+
+Other links where you can find help:
+
+\begin{itemize}
+\item \href{http://stackoverflow.com/questions/12994351/git-installation-issue-in-mountain-lion-os-x-10-8}{Problem when install in Git on Mac Lion os x 10.8}
+\end{itemize}
 
 
-
-
-\bibliographystyle{model5-names}
-\bibliography{refs}
+% \bibliographystyle{model5-names}
+% \bibliography{refs}
 
 \end{document}
