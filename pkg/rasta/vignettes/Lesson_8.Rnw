@@ -37,7 +37,7 @@ options(width = 80, prompt = ">", continue = "+ ")
 \SweaveOpts{concordance=TRUE}
 
 \title{Lesson 8: The assignment}
-\author{Jan Verbesselt, Ben De Vries, Loic Dutriex}
+\author{Jan Verbesselt, Ben De Vries, Lo\"{i}c Dutrieux}
 
 \maketitle
 
@@ -59,7 +59,7 @@ A description of the assignment required for the applied geo-scripting course.
 Below, the different steps for the assignment are described:
 \begin{itemize}
   \item{Identify an interesting question which you could answer using applied geo-scripting skills. You are welcome to use the data sets that we have used during this course but we recommend you to also look at other publicly available data sets listed below.}
-	\item{Describe your project in a paragraph where you explain your question (why?), methodology (how?) and data set your are planning to use (1 page max.). Before starting with your project, the description needs to be approved by one of the lectures of the geo-scripting course.}
+	\item{Describe your project in a paragraph where you explain your question (why?), methodology (how?) and data set your are planning to use (1 page max.). Before starting with your project, the description needs to be approved by one of the lecturers of the geo-scripting course.}
   \item{See \url{http://goo.gl/HTtND8} for details about the planning and availability of PC rooms}
   \item{The deadline is 6/12/2013}
 \end{itemize}
@@ -67,7 +67,12 @@ Below, the different steps for the assignment are described:
 \section{Publicly available data sets}
 
 \begin{itemize}
-  \item Landsat VCF data (Loic can you add here)
+  \item {Landsat VCF data. \citep{Sexton:2013ux} recently developped a landsat tree cover product, also refered to as Landsat VCF (Vegetation Continuous Fields of land cover). This VCF product provides estimates of the percentage of horizontal ground in each 30-m pixel covered by woody vegetation greater than 5 meters in height. For further details and access to the product, refer to the \href{http://glcf.umd.edu/data/landsatTreecover/}{glcf website}. Use the VCF R package for automatic download, pre-processing and easy handling of the VCF data. The VCF R package is not on CRAN, therefore you will not be able to find it in the standart list of packages. Instead it can be installed thanks to the devtools package, using the following commands.
+<<eval=FALSE>>=
+library(devtools)
+install_bitbucket(repo='vcf', username='dutri001')
+@
+  }
   \item Rainfall data: \href{http://disc.sci.gsfc.nasa.gov/precipitation/documentation/TRMM_README/TRMM_3B43_readme.shtml}{TRMM Rainfall data}
   \item MAP library: \url{http://www.maplibrary.org}
   \item Global adminstrative areas: \url{http://www.gadm.org/}
@@ -81,6 +86,7 @@ Below, the different steps for the assignment are described:
 For example:
 \begin{itemize}
   \item If you illustrate that you are able to download MODIS data via the  \href{http://stevemosher.wordpress.com/modis-tutorial/}{MODIS package} and for example are able to detect change between to image, for a specific country and describe what the change means then that would be a nice project.
+  \item The Landsat VCF product seems well suited for a variety of landscape ecology topics. For instance one could investigate wildlife corridors in the Netherlands or forest/habitat fragmentation at the municipality level using Landsat VCF data as the initial data source. Such results, if you are able to produce them could be related, at least visually, to many other variables that might be available on the internet (population density, regional investments in nature conservation programs, etc).
   \item ... to be added
 \end{itemize}
 
@@ -91,5 +97,10 @@ For example:
   \item{Provide a reproducible script via your GitHub account to us via e-mail. The reproducible script should be well documented, and should be able to (a) download the data, (b) import the data in R, (c) process and analyse to solve your question, (d) visualise the results}
   \item{Provide a clear scientific report, e.g. as a short word document containing your project description, results (maps, plots, tables) and a conclusion (max. 5 pages). Focus on the main results. Key is that you illustrate that you have applied the knowledge learned during the course to solve an real life problem.}
 \end{itemize}
+
+
+\bibliographystyle{model5-names}
+\bibliography{refs}
+
 
 \end{document}
