@@ -52,6 +52,7 @@ echo $contents; } ?>
 
 <p> Contact: Jan.Verbesselt'@'wur.nl. To install the most recent version directly within R type: <strong> install.packages("rasta", repos="http://R-Forge.R-project.org") </strong> </p>
 <p> Course developped at Wageningen University </p>
+<img src="http://bfast.r-forge.r-project.org/Logo_Wageningen_University.jpg" align=LEFT alt="">
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 
 </div><!-- close container -->
