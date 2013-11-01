@@ -39,7 +39,7 @@ options(prompt = "R> ", digits = 4, show.signif.stars = FALSE)
 \Plainkeywords{geo-scripting, statistical software, R}
 
 \Abstract{
-  Functions, data sets, examples, demos, and vignettes for the Geo-scripting course at Wageningen University
+  ``Functions", data sets, examples, demos, and vignettes for the Geo-scripting course at Wageningen University
   This vignette provides an overview of the package contents.
 }
 
