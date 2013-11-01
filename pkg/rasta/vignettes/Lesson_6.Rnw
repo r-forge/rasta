@@ -151,7 +151,7 @@ Using raster algebra (above) is relatively easy and intuitive. However, with par
 ndvi <- overlay(GewataB4, GewataB3, fun=function(x,y){(x-y)/(x+y)})
 @
 
-One advantage of this function is the fact that the result can be written immediately to file by including the argument 'filename="..."', thus saving memory (especially important when working with large datasets).
+One advantage of this function is the fact that the result can be written immediately to file by including the argument \emph{filename="..."}, thus saving memory (especially important when working with large datasets).
 
 Plotting our new raster, we can immediately see how useful the NDVI metric is for identifying land features. Use the interactive 'drawExtent()' function to zoom into some of the features to inspect them more closely.
 
@@ -234,6 +234,12 @@ reclass <- function(x){
 # apply this over the trainingPoly data slot
 trainingPoly@data$Code <- sapply(trainingPoly@data$Class, 
                                  FUN = function(x) reclass(x))
+if (FALSE) {
+  # check this Ben
+  trainingPoly@data$Test <- sapply(trainingPoly@data$Class, 
+                                 FUN = reclass)
+  str(trainingPoly@data)
+}
 @
 
 To train the raster data, we need to convert our training data to the same type using the rasterize() function. This function takes a spatial object (in this case a polygon object) and transfers the values to raster cells defined by a raster object. Here, we will define a new raster containing those values.
@@ -275,6 +281,7 @@ In inspecting this training data.frame, you will notice that a significant numbe
 valuetable <- valuetable[!is.na(valuetable$class),]
 head(valuetable)
 tail(valuetable)
+
 # convert values in the class column to factors
 valuetable$class <- factor(valuetable$class, levels = c(1:3))
 @
@@ -284,13 +291,13 @@ Now we have a convenient reference table which contains, for each of the three d
 <<fig=FALSE>>=
 # 1. NDVI
 ggplot(data = valuetable, aes(x = NDVI)) + 
-  geom_histogram() + 
+  geom_histogram(binwidth = 300) + 
   facet_wrap(~ class) +
   theme_bw()
 
 # 2. VCF
 ggplot(data = valuetable, aes(x = vcf2000Gewata)) +
-  geom_histogram() +
+  geom_histogram(binwidth = 5) +
   labs(x = "% Tree Cover") +
   facet_wrap(~ class) +
   theme_bw()
@@ -450,6 +457,11 @@ classes <- raster(covs)
 # assign values from the 'class' column of valuetable
 classes <- setValues(classes, valuetable$class)
 plot(classes, col=c("dark green", "orange", "light blue"))
+if(FALSE) {
+  cols <- c("dark green", "orange", "light blue")
+  plot(classes, legend = FALSE, col = cols)
+  legend("topright", legend = c("forest", "cropland", "wetland"), fill = cols)
+}
 @
 \begin{center}
 \begin{figure}[t]
@@ -567,7 +579,7 @@ par(mfrow = c(1, 1))
 
 In this case, not only pixels with absolutely no neighbours have been removed, but also those pixels with only diagonal neighbours as well. The second case could be considered as a more 'conservative' sieve.
 
-The focal() function can be used for a variety of purposes, including other data filters such as median, Laplacian, Sobel, etc. More complex weight matrices can also be computed, such as a Gaussian using the focalWeight() function. These methods will not be covered in this tutorial. Check out the documentation at ?focal() for more information.
+The \emph{focal()} function can be used for a variety of purposes, including other data filters such as median, Laplacian, Sobel, etc. More complex weight matrices can also be computed, such as a Gaussian using the \emph{focalWeight()} function. These methods will not be covered in this tutorial. Check out the documentation at \emph{?focal()} for more information.
 
 \subsection*{Working with thematic rasters}
 
