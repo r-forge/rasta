@@ -27,6 +27,7 @@
   linktocpage = {true},
 }
 
+%%\VignetteIndexEntry{Lesson 4:  Handling spatial vector data in R}
 \usepackage{Sweave} %% is essential
 
 \begin{document}
@@ -165,7 +166,7 @@ writeOGR(mylinesdf, file.path("data","mylinesGE.kml"),
          "mylinesGE", driver="KML", overwrite_layer=TRUE)
 @
 
-Check whether the attribute data were written to the kml output.\\
+Check (in Google Earth) whether the attribute data were written to the kml output.\\
 
 The function \texttt{readOGR} allows reading OGR compatible data into a suitable Spatial vector object. Similar to \texttt{writeOGR}, the function requires entries for the arguments \texttt{dsn} (data source name) and \texttt{layer} (layer name). The interpretation of these enties vary by driver. Please study details in the help file.\\
 Digitize a path (e.g. a bicycle route) between the two points of interest you selected earlier in Google Earth. This can be achieved using the \texttt{Add Path} functionality of Google Earth. Save the path in the data folder within the working directory under the name \texttt{route.kml}. We will read this file into a spatial lines object and add it to the already existing \texttt{SpatialLinesDataFrame} object.
@@ -187,14 +188,14 @@ if (!file.exists(file.path("data","route.rda"))) {
 # put both in single data frame
 myroute@proj4string <- prj_string_WGS
 names(myroute)
-myroute$Description <- NULL
+myroute$Description <- NULL # delete Description
 mylinesdf <- rbind(mylinesdf, myroute)
 @
  
 Try to understand the above code and results. Feel free to display the data and export to Google Earth.
 
 \subsection*{Transformation of coordinate system}
-Transformations between coordinate systems are crucial to many GIS applications. The Keyhole Markup Language (kml) used by Google Earth uses latitude and longitude in a polar WGS84 coordinate system. However, in some of the examples below we will use metric distances.  One way to deal with this is by transforming the data to a planar coordinate system (). In R this can be achieved via bindings to the PROJ.4 - Cartographic Projections Library (\url{http://trac.osgeo.org/proj/}), which are available in \texttt{rgdal}. We will transform our spatial data to the Dutch grid (Rijksdriehoekstelsel), often referred to as RD. 
+Transformations between coordinate systems are crucial to many GIS applications. The Keyhole Markup Language (kml) used by Google Earth uses latitude and longitude in a polar WGS84 coordinate system. However, in some of the examples below we will use metric distances.  One way to deal with this is by transforming the data to a planar coordinate system. In R this can be achieved via bindings to the PROJ.4 - Cartographic Projections Library (\url{http://trac.osgeo.org/proj/}), which are available in \texttt{rgdal}. We will transform our spatial data to the Dutch grid (Rijksdriehoekstelsel), often referred to as RD. 
 Please note that: 
 \begin{itemize}
   \item some widely spread definitions of the Dutch grid (EPSG: 28992) are incomplete;
@@ -338,6 +339,10 @@ The trajectory of the harvester can be represented by a series of continuous tra
 all_rd <- as.data.frame(all_rd)
 # make sure points are temporally ordered
 all_rd <- all_rd[order(all_rd$datetime),]
+@
+
+<<>>=
+# load rasta library
 library(rasta)
 @
 
@@ -368,8 +373,8 @@ spplot(sp_lines_df, zcol="ID", lwd=1.5, col.regions =
 \caption{Tracks of the harvester identified by date and load number. Notice the occurrence of overlapping tracks.}
 \end{figure}
 
-\textbf{Task 1}:\\
-Inspect the help and code of of the function \texttt{CreateHarvestTracks} (for the latter, type the name of the function on the R prompt) and explain what it does and how it works.
+\textbf{Assignment 1}:\\
+Inspect the help and code of of the function \texttt{CreateHarvestTracks} (for the latter, type the name of the function on the R prompt) and find out what it does and how it works. Describe the function briefly in your own words.
 \\
 
 The code below uses buffering to create swaths and to fill narrow spaces between adjacent swaths. Next, the functions difftime and gDifference are used to delete line segments that overlap swaths that were already harvested.
@@ -406,67 +411,18 @@ cln_lines_df <- SpatialLinesDataFrame(tmp_lines, sp_lines_df@data)
 @
 
 \section{Now do it yourself}
-Create a documented script with code for the following tasks:
+Create a \emph{documented} script with code for the following tasks:
 \begin{enumerate}
-  \item buffering the cleaned lines to create harvest blocks;
-  \item fill small holes within blocks by swelling and shrinking;
-  \item compute for each block the yield per hectare and add it to the spatial polygons data frame;
-  \item plot the results of the previous step in a map;
-  \item export the spatial polygons data frame for display in Google Earth using either \texttt{writeOGR} or functions from the package \texttt{plotKML}.
+  \item buffer the cleaned lines to create harvest blocks, i.e. blocks where a particular load came from;
+  \item fill small holes \emph{within} these blocks by swelling and shrinking;
+  \item compute for each block the yield per hectare and add this attribute to the spatial polygons data frame;
+  \item make a map showing the the yield per hectare of each block, using spplot;
+  \item export the spatial polygons data frame to display polygon boundaries in Google Earth using \texttt{writeOGR};
+  \item only if time permits: use functions from the package \texttt{plotKML} to display a map of the spatial polygons data frame in Google Earth.
 \end{enumerate}
 
-Mail your R code along with your response to \textbf{task 1} above to Sytze de Bruin.
+Mail your R code for tasks 1-5 along with your response to assignment 1 to Sytze de Bruin.
 
-<<Answers, eval=FALSE, echo=FALSE>>=
-# Q1 -- Buffer lines to make swaths
-sp_polys2 <- gBuffer(cln_lines_df,byid=T,id=as.character(cln_lines_df$ID), 
-                    width=0.5*cln_lines_df$width, capStyle="FLAT")
-# Q2 fill small holes by swelling and shrinking
-sp_polys2 <- gBuffer(sp_polys2, byid=T,id=rownames(sp_polys2), width = 2.0)
-sp_polys2 <- gBuffer(sp_polys2, byid=T,id=rownames(sp_polys2), width = -2.0)
-
-sp_polys_df2 <- SpatialPolygonsDataFrame(sp_polys2, cln_lines_df@data)
-
-# Q3 compute area and ton/ha
-sp_polys_df2$area <- gArea(sp_polys_df2, byid=T)
-sp_polys_df2$ton_ha <- 10000 * sp_polys_df2$loads / sp_polys_df2$area
-names(sp_polys_df2)
-# Q4 plot
-spplot(sp_polys_df2["ton_ha"], col="transparent", col.regions=bpy.colors(100), 
-       main="Potato yield (ton/ha)")
-
-# Q 5 Google Earth output
-# (1) Export to Google Earth using writeOGR
-sp_polys_wgs <- spTransform(sp_polys_df2, CRS("+proj=longlat +datum=WGS84"))
-writeOGR(sp_polys_WGS, "data/testkml.kml", "testkml", driver="KML", overwrite_layer=T)
-
-# (2) Idem, using package "plotKML" Tomislav Hengl
-library(plotKML)
-kml(sp_polys_wgs, colour = ton_ha, colour_scale=bpy.colors(), outline=F)
-
-# (3) Add a legend as a screen overlay
-kml_legend.bar(sp_polys_wgs$ton_ha, legend.file="leg.png", pointsize = 10, 
-               legend.pal=bpy.colors())
-
-kml_open("sp_polys_wgs2.kml")
-kml_layer(sp_polys_wgs, colour = ton_ha, colour_scale=bpy.colors(), outline=F)
-kml_screen("leg.png", position = "UL")
-kml_close("sp_polys_wgs2.kml")
-
-# Extra: Animation data acquisition with time
-borne_data = read.table(in_file, sep = ",", header = T)
-# make spatial
-coordinates(borne_data) <- c("lon.degr.","lat.degr.")
-TimeStamp <- paste(paste(borne_data$year, sprintf("%02d", borne_data$month), 
-                sprintf("%02d", borne_data$day), sep="-"),
-                paste(sprintf("%02d", borne_data$hr),  sprintf("%02d", 
-                borne_data$min), sprintf("%02d", borne_data$sec), sep=":"),sep="T")
-borne_data@proj4string <- CRS("+proj=longlat +datum=WGS84")
-max_t <- tail(TimeStamp,1)
-kml(borne_data, colour = loadnr, colour_scale=bpy.colors(), labels = "", 
-    TimeSpan.begin = TimeStamp, TimeSpan.end=max_t)
-
-@
 
 \bibliographystyle{model5-names}
 \bibliography{refs}
