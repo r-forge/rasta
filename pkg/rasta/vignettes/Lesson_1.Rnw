@@ -30,13 +30,9 @@
 %%\VignetteIndexEntry{Lesson 1: Introduction to basic concepts of R}
 
 \usepackage{Sweave} 
-% \DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=0em,
-%                                              frame=single}
-% \DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=0em,
-%                                             frame=single}
 
 <<preliminaries, echo=FALSE, results=hide>>=
-options(width = 70, prompt = ">", continue = "+ ")
+options(width = 80, prompt = "> ", continue = "+ ")
 @
 
 \begin{document}
@@ -107,17 +103,21 @@ options(width = 70, prompt = ">", continue = "+ ")
 
 \begin{frame}
 \frametitle{Today's topics}
+
+Introduction to the applied geo-scripting:
 \begin{itemize}
-	\item{Intro to basic concepts of applied scripting for spatial data}
 	\item{Why geo-scripting?}
-  	\item{Getting up to speed with R and loading the 'RASTA' package}
+  \item{Getting up to speed with R and loading the 'RASTA' package}
+  \item{Creating a simple function}
+  \item{Make a spatial map using a script}
 \end{itemize}
 \medskip
 
 %\centering
-\textbf{RASTA: Reproducible and Applied Spatial and Temporal Analaysis}
+\textbf{RASTA: Reproducible and Applied Spatial and Temporal Analaysis} \\
 \url{http://rasta.r-forge.r-project.org}. \\
-\emph{we will install this package and use the data and scripts during this course}
+
+\emph{We will install this package and use the data and scripts during this course}
 
 \end{frame}
 
@@ -290,7 +290,7 @@ add(6)
 
 That's about all there is to it. The function will generally return the result of the last line that was evaluated. 
 
-\textbf{How do you write your function if you want to return x and z?}
+\textbf{How do you write a function that returns x and z?}
 
 \end{frame}
 
@@ -323,14 +323,11 @@ Next, a new object $a2b$ is created which contains the result of applying \textb
 \begin{frame}
 \frametitle{Data Structures}
 There are several ways that data are stored in R. Here are the main ones:
+
 \begin{itemize}
-
-\item \textbf{Vectors} The most generic data structure. In R, any variable of an atomic data type (numeric, integer, logical, character) is a vector. This will be examplified below.
-
-\item \textbf{Data Frames} The most common format. Similar to a spread sheet. A data.frame() is indexed by rows and columns and store numeric and character data. The data.frame is typically what we use when we read in csv files, do regressions, et cetera.
-
+\item \textbf{Vectors}: is the most generic data structure. In R, any variable of an atomic data type (numeric, integer, logical, character) is a vector. See examples below.
+\item \textbf{Data Frames}: is the most common format and similar to a spread sheet. A data.frame() is indexed by rows and columns and store numeric and character data. The data.frame is typically what is used when reading in csv files, do regressions, etc.
 \item \textbf{Matrices and Arrays} Similar to data.frames but slightly faster computation wise while sacrificing some of the flexibility in terms of what information can be stored. In R a matrix object is a special case of an array that only has 2 dimensions. i.e., an array is n-dimensional matrix while a matrix only has rows and columns (2 dimensions)
-
 \item \textbf{Lists} The most common and flexible type of R object. A list is simply a collection of other objects. For example a regression object is a list of: 1) Coefficient estimates 2) Standard Errors and other results.
 \end{itemize}
 
@@ -348,7 +345,7 @@ Now install and load the rasta package:
 install.packages("rasta", repos="http://R-Forge.R-project.org")
 @
 
-<<>>=
+<<results=hide>>=
 library(rasta) ## load the rasta library
 @
 
@@ -362,28 +359,33 @@ mysummary
 
 \begin{frame}[fragile]
 \frametitle{Reading Data in and Out}
-The most common way to read in data is with the \verb+read.csv()+ command. 
-% However you can read in virtually any type of text file. 
-Type ?read.table in your console for some other examples.
+The most common way to read in spread sheet tables is with the $read.csv()$ command. 
+However you can read in virtually any type of text file. Type ?read.table in your console for some other examples.
 
 %% make the font small of these explanation sections.
 % If you have really large binary data sets sometimes the \verb+scan()+ function is more efficient. 
 % Finally using the \textbf{foreign} package you can read in SPSS, STATA, Matlab, SAS, and a host of other data formats from other stat and math software.
 % Let's read in a basic csv file. 
 
-<<readcsvexample>>=
-f <- system.file("extdata/kenpop89to99.csv", package ="rasta")
-mydat<-read.csv(f)
+<<>>=
+f <- system.file(file.path("extdata", "kenpop89to99.csv"), package ="rasta")
+mydat <- read.csv(f)
 @
+
 We can explore the data using the  names(), summary(), head(), and tail() commands (we will use these frequently through out the exercise)
 
-<<explore>>=
-names(mydat)[1:3] #colunm names
+<<results=hide>>=
+names(mydat)[1:3]
 summary(mydat$Y89Pop)[1:3]
 head(mydat$Y89Births)[1:2]
 @
-What is the class of the $mydat$?
-We will go over ways to index and subscript data.frames later. Lets do a basic regression so you can see an example of a list.
+
+\begin{itemize}
+\item What is the class of the $mydat$? 
+\item How can we write out the data.frame to a csv file in our working directory?
+\end{itemize}
+
+Lets do a basic regression so you can see an example of a list.
 \end{frame}
 
 
@@ -405,95 +407,108 @@ A regression object is an example of a list. We can use the \verb+names()+ comma
 <<>>=
 names(myreg)[1:3]
 myregsum <- summary(myreg)
-names(myregsum)[1:2]
-myregsum[['adj.r.squared']] #extract the adjusted r squared
+myregsum[["adj.r.squared"]] #extract the adjusted r squared
 myregsum$adj.r.squared # does the same thing
 @
 
 \textbf{why is $myregsum$ a list object? What is the advantage of a list?}
-That concludes our basic introduction to data.frames and lists. There is alot more material out on the web if you are interested. Later in the exercise we will look at data.frames in more detail.
+That concludes our basic introduction to data.frames and lists. There is alot more material out on the web if you are interested.
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Create a spatial map using a script}
+Here is an example of how you can create a map in R:
 
-\frametitle{Ex.Lesson 1: Write you own function to create a map}
-\textbf{Write a function to visualise data and plots different variables}
-\begin{itemize}
-\item Submit a clear, reproducible, and documented script containing a function to create a spatial map
-  \begin{itemize}
-  \item define a function
-  \item demonstrate the function
-  \item make sure the script is tested by somebody else
-  \end{itemize}
-\item The function should accept \emph{country} and \emph{level} as input arguments
-\item{Filename: \emph{lastnamefirstname.R}}
-\item{the next slide contains an example script which you can use as a template for creating your function}
-\end{itemize}
-
-\medskip
-\emph{This will be a test to see if your R scripting levels are ok to continue the course in the coming months.}
-
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Ex.Lesson 1: Write you own function to create a map}
-
-Here is an example of how you can create a map in R. Try it out and use this as a template for creating a function.
 <<>>=
 ## Load required packages
-library(raster)
+library(rasta)
 @
 
+Download data from the Global Adminstrative Areas Data base 
+(\href{http://www.gadm.org}{GADM}).
+
 <<echo=FALSE, eval=TRUE>>=
-## Download data from gadm.org 
 require(raster)
 if (!file.exists(datdir)) { dir.create(datdir)}
 if (!file.exists(file.path(datdir, "PHL_adm2.RData"))) {
-  adm <- getData('GADM', country = 'PHL', level=2, path = 'data/')
+  adm <- raster::getData("GADM", country = "PHL", level=2, path = "data/")
 } else {
   load(file.path(datdir, "PHL_adm2.RData"))
   adm <- gadm
 }
 @
 
-<<echo=TRUE, eval=FALSE>>=
-## Download data from gadm.org 
-adm <- getData('GADM', country='PHL', level=2, path = datdir)
+There is a function do get $public$ data from anywhere in the world. See help of the getData funciton in the \textbf{raster} package.
+<<eval=FALSE>>=
+?getData
+?raster::getData
+@
+
+Read the help to find out how we can find the country codes? \\
+\textbf{What is the country code of Belgium?}
+
+<<eval=FALSE, echo=FALSE>>=
+raster::getData("ISO3")
+@
+
+Now we will download the administrative boundaries of the Philippines:
+
+<<echo=TRUE, eval=FALSE, fig=FALSE>>=
+adm <- raster::getData("GADM", country = "PHL", 
+                       level = 2, path = datdir)
+plot(adm)
 @
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Ex.Lesson 1: Write you own function to create a map}
+\frametitle{Create a spatial map using a script}
+
+Try to understand the code below, and let me know if you have questions. Feel free to use this code as an example and use this for the excercise below.
 
 <<phil, eval=TRUE, fig=TRUE, include=FALSE>>=
-mar <- adm[adm$NAME_1=="Marinduque",]
-plot(mar, bg="dodgerblue", axes=T)
-plot(mar, lwd=10, border="skyblue", add=T)
-plot(mar, col="green4", add=T)
+mar <- adm[adm$NAME_1 == "Marinduque",]
+plot(mar, bg = "dodgerblue", axes=T)
+plot(mar, lwd = 10, border = "skyblue", add=T)
+plot(mar, col = "green4", add = T)
 grid()
 box()
 invisible(text(getSpPPolygonsLabptSlots(mar), 
-labels=as.character(mar$NAME_2), cex=1.1, col="white", font=2))
-mtext(side=3, line=1, "Provincial Map of Marinduque", cex=2)
-mtext(side=1, "Longitude", line=2.5, cex=1.1)
-mtext(side=2, "Latitude", line=2.5, cex=1.1) 
-text(122.08,13.22, "Projection: Geographic\n
+labels = as.character(mar$NAME_2), cex = 1.1, col = "white", font = 2))
+mtext(side = 3, line = 1, "Provincial Map of Marinduque", cex = 2)
+mtext(side = 1, "Longitude", line = 2.5, cex=1.1)
+mtext(side = 2, "Latitude", line = 2.5, cex=1.1) 
+text(122.08, 13.22, "Projection: Geographic\n
 Coordinate System: WGS 1984\n
-Data Source: GADM.org\n
-Created by: ARSsalvacion", adj=c(0,0), cex=0.7, col="grey20")
+Data Source: GADM.org", adj = c(0, 0), cex = 0.7, col = "grey20")
 @
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Ex.Lesson 1: Write you own function to create a map}
-
+\frametitle{Create a spatial map using a script}
 \begin{figure}[!htp]
 \centering
 \includegraphics[width=0.6\textwidth]{Lesson_1-phil}
 \caption{Adminstrative boundaries of Marinduque}
 \end{figure}
-
 \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Ex.Lesson 1: Write you own function to create a map}
+
+\begin{itemize}
+\item Submit a clear, reproducible, and documented script containing a function to create a spatial map
+  \begin{itemize}
+  \item define a function
+  \item demonstrate the function
+  \item make sure the script is tested by somebody else
+  \item keep it simple (!) e.g. just plot the adminstrative boundaries
+  \end{itemize}
+\item The function should accept \emph{country} and \emph{level} as input arguments
+\item{Filename: \emph{lastnamefirstname.R}}
+
+\end{itemize}
+\end{frame}
+
 
 \begin{frame}
 \frametitle{More information}
@@ -520,12 +535,12 @@ shp.df <- fortify(shp.spdf)
 shp.centroids.df <- data.frame(long = coordinates(shp.spdf)[,1], 
                                lat = coordinates(shp.spdf)[,2])
 # Get names and id numbers corresponding to administrative areas
-shp.centroids.df[, 'ID_1'] <- shp.spdf@data[,'ID_1']
-shp.centroids.df[, 'NAME_2'] <- shp.spdf@data[,'NAME_2']
+shp.centroids.df[, "ID_1"] <- shp.spdf@data[,"ID_1"]
+shp.centroids.df[, "NAME_2"] <- shp.spdf@data[,"NAME_2"]
 q <- qmap(location = "Marinduque", zoom = 10, maptype = "satellite")
 q = q +  geom_polygon(aes(x = long, y = lat, group = group), 
     data = shp.df, 
-    colour = 'white', fill = 'black', alpha = .4, size = .3) 
+    colour = "white", fill = "black", alpha = .4, size = .3) 
 
 q = q + geom_text(data = shp.centroids.df, 
     aes(label = NAME_2, x = long, y = lat, group = NAME_2), 
