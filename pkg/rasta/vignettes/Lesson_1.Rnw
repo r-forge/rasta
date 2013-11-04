@@ -45,23 +45,63 @@ options(width = 70, prompt = ">", continue = "+ ")
 
 \title{Applied Geo-Scripting: Lesson 1}
 
-\author{Jan Verbesselt, Sytze de Bruyn, Lo\"{i}c Dutrieux, Ben De Vries, Aldo Bergsma}
+\author{Jan Verbesselt, Lo\"{i}c Dutrieux, Ben De Vries, Sytze de Bruyn, Aldo Bergsma}
 
 \Logo{figs/forest_small.jpg}
-
+% add wur logo
 \maketitle
+
+\begin{frame}
+\frametitle{Intro of the intro!}
+
+\begin{itemize}
+  	\item{The course is freshly developed based on needs from people how deal with spatial data}
+	\item{It is a new course, there is a certain flexibility to adjust the content}
+	\item{A team of R experts, Loic, Ben, Eliakim, Sytze, who use Geo-scripting languages every day helped to develop this course}
+	\item{Feedback is welcome and we are there to help you during this \emph{Geo-scripting} learning experience}
+	\item Avoid copy paste, and make sure you understand basically all steps 
+	
+	\begin{itemize}
+  		\item{We will show you how to find help}
+		\item{Try to solve the problem as independent as possible}
+		\item{Work together with fellow students but make sure you complete everything yourself}
+	\end{itemize}
+	\item \textbf{You need to speak a language in order to learn it!}
+
+\end{itemize}	
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Intro of the intro!}
+
+\begin{itemize}
+  	\item{How many student have a laptop?}
+	\item{Student ID's}
+	\item{At end of the week - there will be Go/No Go moment to see if want and can continue with the course based on your motivation and basic scripting language knowledge}
+	\item{\href{http://goo.gl/HTtND8}{Course planning and practical issues}}
+	\item The afternoon (14-17u)
+	\begin{itemize}
+  		\item{2 hours course}
+		\item{1 hour excercise}
+		\item{Hand in the exercise the next day 9am.}
+	\end{itemize}
+
+\end{itemize}
+\end{frame}
+
 
 \begin{frame}
 \frametitle{Geo-scripting learning objectives}
 
 \begin{itemize}
-  \item{Handle spatial data using a scripting language}
-	\item{Read, write, and visualize spatial data (vector/raster) using a script}
+  	\item{Understand basic concepts of applied scripting for spatial data}
+	\item{Use functions from a library while writing your script}
+	\item{Find libraries which offer spatial data handling functions}
 	\item{Know how to find help (on spatial data handling functions)}
 	\item{Solve scripting problems (debug, reproducible example, writing functions)}
-	\item{Find libraries which offer spatial data handling functions}
-	\item{Learn to include functions from a library in your script}
-	\item{Apply learned concepts in a case study: learning how to address a spatial/ecological/applied case (e.g. detect forest changes, ocean floor depth analysis, bear movement, etc.) with a raster and vector dataset.}
+	\item{Read, write, and visualise spatial data (vector/raster) using a script}
+	\item{Apply learned concepts in a case study with geo-data by solving a spatial/ecological/applied question (e.g. detect forest changes, flood mapping, ocean floor depth analysis, bear movement, etc.) with a raster and vector dataset.}
 \end{itemize}
 \end{frame}
 
@@ -69,39 +109,46 @@ options(width = 70, prompt = ">", continue = "+ ")
 \frametitle{Today's topics}
 \begin{itemize}
 	\item{Intro to basic concepts of applied scripting for spatial data}
-  \item{Why geo-scripting?}
-  \item{Course planning and practical issues}
-  \item{Getting up to speed with R and loading 'rasta' package}
+	\item{Why geo-scripting?}
+  	\item{Getting up to speed with R and loading the 'RASTA' package}
 \end{itemize}
-
 \medskip
+
+%\centering
 \textbf{RASTA: Reproducible and Applied Spatial and Temporal Analaysis}
-\url{http://rasta.r-forge.r-project.org}
+\url{http://rasta.r-forge.r-project.org}. \\
+\emph{we will install this package and use the data and scripts during this course}
 
 \end{frame}
 
-
 \begin{frame}
 \frametitle{Why geo-scripting?}
-
 \begin{itemize}
 	\item{Reproducible: avoid clicking and you keep track of what you have done}
 	\item{Efficient: you can write a script to do something for you e.g. multiple times e.g. automatically downloading data}
 	\item{Build your own tools and functions (e.g. raster filters, MODIS download tool, BFAST package)}
 	\item{Enable collaboration: sharing scripts, functions, and packages}
 	\item{Good for finding errors i.e. debugging}
-	e.g. this course is fully writting with scripting languages (i.e. R and Latex).
 \end{itemize}
+\medskip
+This course is fully written with scripting languages (i.e. R and Latex). What are the advantages?
+% the course is reproducible - any body in the world can follow it
+% we have build our own functions and tools to share it with others - as such the can be further improved. We do not want to re-invent the wheel
 \end{frame}
 
 \begin{frame}
 \frametitle{What  is a scripting language?}
 \begin{itemize}
-  \item{A scripting language or script language is a programming language that supports the writing of scripts, 
-  programs written for a special runtime environment that can interpret and automate the execution of 
+  \item{A scripting language (e.g. R and Python) can interpret and automate the execution of 
   tasks which could alternatively be executed one-by-one by a human operator}
-  \item{Different from like C/C++/Fortran since these are languages that need to be compiled first.}
+  \item{Different from like C/C++/Fortran since these are languages that need to be compiled first. \\ }
+  
+  \item{Compiling? To transform a program written in a high-level programming language from source code into object code. Programmers write programs in a form called source code. Source code must go through several steps before it becomes an executable program. The first step is to pass the source code through a compiler, which translates the high-level language instructions into object code.
+  }
   \item{A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture}
+  
+  % insert compile figure
+  
 \end{itemize}
 \end{frame}
 
@@ -145,20 +192,20 @@ The main scripting languages for GIS and Remote sensing currently are:
 \end{frame}
 
 \begin{frame}
-\frametitle{Course set-up}
+\frametitle{System set-up and overview}
 
 \begin{figure}[htp!]
-\centering
-    \includegraphics[height=0.4\textwidth]{figs/system_overview.png}
-  \caption{Course set-up}
-  \label{fig:systemoverview}
+  \centering
+  \fbox{\includegraphics[width=0.6\textwidth]{figs/system_overview_2.png}}
+  \caption {System set-up}
+  \label{systemoverview}
 \end{figure}
 
 \begin{itemize}
-  \item{SVN (SubVersioN): Version control system for scrits and docs}
-  \item{R libraries: rgeos, rgdal}
-  \item{GDAL: Geospatial Data Abstraction Library \url{http://www.gdal.org/}}
-  \item{GEOS:  Geometry Engine, Open Source \url{http://trac.osgeo.org/geos/}}
+  \item Version control system (e.g. for scripts): SVN (SubVersioN) and Git
+  \item \href{http://en.wikipedia.org/wiki/GDAL}{GDAL/OGR}: \href{http://www.gdal.org/}{Geospatial Data Abstraction Library}
+  \item GEOS:  \href{http://trac.osgeo.org/geos/}{Geometry Engine} and \href{http://trac.osgeo.org/proj/}{PROJ.4}
+   \item R libraries: rgeos, rgdal
 \end{itemize}
 \end{frame}
 
@@ -171,7 +218,7 @@ For this course we will use Rstudio as an IDE to write and run scripts. Open Rst
 Now type the following script in the R console:
 
 <<>>=
-rm(list=ls())  # Clear the workspace!
+rm(list = ls())  # Clear the workspace!
 ls() ## no objects left in the workspace
 @ 
 A good way to start most R scripts
@@ -197,48 +244,80 @@ You now have requested the \textbf{class} attribute of $a$ and the console has r
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Set Your Working Directory}
+Let's do some basic set up first. 
+
+\begin{itemize}
+  \item{Create a folder which will be your working directory e.g. \emph{Lesson1}}
+  \item{Create an R script within that folder}
+	\item{Set your working directory to the \emph{Lesson1} folder}
+	\item{Create a $data$ folder within your working directory}
+\end{itemize}
+
+In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
+
+<<eval=FALSE>>=
+setwd("yourworkingdirectory")
+# This sets the working directory (where R looks for files)
+getwd() # Double check your working directory
+@
+
+<<>>=
+datdir <- file.path("data") ## path
+@
+\end{frame}
+
+\begin{frame}[fragile]
 \frametitle{Custom Functions}
 It is hard to unleash the full potential of R without writing your own functions. Luckily it's very easy to do. Here are some trivial examples:
 
-<<>>=
+<<echo=TRUE, results=hide>>=
 add <- function(x){ 
 #put the function arguments in () and the evaluation in {}
   x + 1
 }
 add(4) 
-
-# Set the default values for your function--
-add <- function(x = 5){
-  x + 1
+@
+Set the default values for your function
+<<echo = TRUE, results=hide>>=
+add <- function(x = 5) {
+  z <- x + 1
+  return(z)
 }
-add()  #automatically evaluates x = 5
-add(6) #but you can still change the defaults
+add() 
+add(6)
 @
 
-That's about all there is to it. The function will generally return the result of the 
-last line that was evaluated. However you can also use \verb+return()+ to specify exactly what the function will return.
+That's about all there is to it. The function will generally return the result of the last line that was evaluated. 
+
+\textbf{How do you write your function if you want to return x and z?}
+
 \end{frame}
 
 \begin{frame}[fragile]
 Now, let's declares a new object, a new function, \textbf{newfunc} (this is just a name and if you like you can give this function another name). Appearing in the first set of brackets is an argument list that specifies (in this case) two names. The value of the function appears within the second set of brackets where the process applied to the named objects from the argument list is defined. 
 
-<<echo=TRUE>>=
+<<echo=TRUE, results=hide>>=
 newfunc <- function(x, y) {
   z <- 2*x + y
   return(c(z,x,y))
 } 
-
 a2b <- newfunc(2, 4)
 a2b
 rm(a, newfunc, a2b)
 @
-\end{frame}
 
-% Next, a new object $a2b$ is created which contains the result of applying \textbf{newfunc} to the two objects you have defined earlier. The second last R command prints this new object to the console. Finally, you can now remove the objects you have created to make room for the next exercise by selecting and running the last line of the code.
+Next, a new object $a2b$ is created which contains the result of applying \textbf{newfunc} to the two objects you have defined earlier. The second last R command prints this new object to the console. Finally, you can now remove the objects you have created to make room for the next exercise by selecting and running the last line of the code.
+
+\end{frame}
 
 \begin{frame}
 \frametitle{Help?!}
-\textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console. Try it and see what happens.
+\textbf{R} is supported by a very comprehensive help system. Help on any function can be accessed by entering the name of the function into the console preceded with a $?$. The easiest way to access the system is to open a web-browser. This help system can be started by entering \textbf{help.start()} in the R console.
+
+
+\textbf{How do you find help about the \emph{remove} function?}
+
  \end{frame}
 
 \begin{frame}
@@ -252,7 +331,7 @@ There are several ways that data are stored in R. Here are the main ones:
 
 \item \textbf{Matrices and Arrays} Similar to data.frames but slightly faster computation wise while sacrificing some of the flexibility in terms of what information can be stored. In R a matrix object is a special case of an array that only has 2 dimensions. i.e., an array is n-dimensional matrix while a matrix only has rows and columns (2 dimensions)
 
-\item \textbf{Lists} The most common and flexible type of R object. A list is simply a collection of other objects. For example a regression object is a list of: 1)Coefficient estimates 2) Standard Errors 3) The Variance/Covariance matrix ...
+\item \textbf{Lists} The most common and flexible type of R object. A list is simply a collection of other objects. For example a regression object is a list of: 1) Coefficient estimates 2) Standard Errors and other results.
 \end{itemize}
 
 We will look at examples of these objects in the next sectionl
@@ -268,19 +347,18 @@ Now install and load the rasta package:
 <<echo=TRUE, eval=FALSE>>=
 install.packages("rasta", repos="http://R-Forge.R-project.org")
 @
+
 <<>>=
 library(rasta) ## load the rasta library
 @
 
 <<eval=FALSE>>=
-# ?mysummary
+?mysummary
 mysummary
 @
 
 \emph{What does the function do?}
-
 \end{frame}
-
 
 \begin{frame}[fragile]
 \frametitle{Reading Data in and Out}
@@ -337,31 +415,6 @@ That concludes our basic introduction to data.frames and lists. There is alot mo
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Set Your Working Directory}
-
-Let's do some basic set up first. 
-
-\begin{itemize}
-  \item{Create a folder which will be your working directory e.g. \emph{Lesson1}}
-	\item{Create an R script within that folder}
-	\item{Set your working directory to the \emph{Lesson2} folder}
-	\item{Create a $data$ folder within your working directory}
-\end{itemize}
-
-In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
-
-<<eval=FALSE>>=
-setwd("yourworkingdirectory")
-# This sets the working directory (where R looks for files)
-getwd() # Double check your working directory
-@
-
-<<>>=
-datdir <- file.path("data") ## path
-@
-\end{frame}
-
-\begin{frame}[fragile]
 
 \frametitle{Ex.Lesson 1: Write you own function to create a map}
 \textbf{Write a function to visualise data and plots different variables}
@@ -378,7 +431,7 @@ datdir <- file.path("data") ## path
 \end{itemize}
 
 \medskip
-This will be a test to see if your R scripting levels are ok to continue the course in the coming months.
+\emph{This will be a test to see if your R scripting levels are ok to continue the course in the coming months.}
 
 \end{frame}
 
@@ -452,6 +505,7 @@ For more information about R please refer to the following links:
 \item  {Visit \url{http://www.r-project.org/} and check out the Manuals i.e an introductions to R}
 \item Overview of R functionality for spatial data analysis: \url{http://cran.r-project.org/web/views/Spatial.html}
 \item \url{http://gis.stackexchange.com/questions/45327/tutorials-to-handle-spatial-data-in-r}
+\item \href{http://pairach.com/2012/06/06/r-style-guide/}{More info about R code and style guide}
 \end{itemize}
 \end{frame}
 
