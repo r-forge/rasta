@@ -48,7 +48,7 @@ echo $contents; } ?>
 <li> <strong>Lesson 1:</strong> shape file kenya <a href="http://rasta.r-forge.r-project.org/kenpop89to99.csv">kenpop89to99.csv</a> </li>
 <li> <strong>Lesson 2:</strong> shape file kenya <a href="http://rasta.r-forge.r-project.org/kenyashape.zip">kenyashape.zip</a> </li>
 <li> <strong>Lesson 4:</strong> data set. More info here (Sytze) <a href="http://rasta.r-forge.r-project.org/kroonven.csv">kroonven.csv</a> </li>
-<li> <strong> Rasta </strong>package for windows (0.4 version). <a href="http://rasta.r-forge.r-project.org/rasta.zip">rasta.zip</a> </li>
+<li> <strong> Rasta </strong>package for windows. <a href="http://rasta.r-forge.r-project.org/rasta_0.7.zip">rasta_0.7.zip</a> </li>
 </ul> </p>
 
 <p> Contact: Jan.Verbesselt'@'wur.nl. </p>
