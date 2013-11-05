@@ -543,7 +543,7 @@ If you are concerned about always having a ''compile-able'' version of your code
 \subsection*{Exercise description}
 Write a function that calculate whether a given year is a leap year or not. If you put the function in a package, that will give you additional points. The function should behave as follows:\\*
 
-<<>>=
+<<echo=FALSE>>=
 is.leap <- function(x) {
   if (!class(x) == 'numeric') {
     stop('argument of class numeric expected')
