@@ -368,7 +368,8 @@ However you can read in virtually any type of text file. Type ?read.table in you
 % Let's read in a basic csv file. 
 
 <<>>=
-f <- system.file(file.path("extdata", "kenpop89to99.csv"), package ="rasta")
+f <- system.file(file.path("extdata", "kenpop89to99.csv"), 
+                 package ="rasta")
 mydat <- read.csv(f)
 @
 
