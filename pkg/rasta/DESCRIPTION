@@ -1,14 +1,14 @@
 Package: rasta
-Version: 0.8
-Date: 2013-10-17
+Version: 0.9
+Date: 2013-11-05
 Title: Reproducible and Applied Spatial and Temporal Analysis (RASTA)
 Authors@R: c(person(given = "Jan", family = "Verbesselt", role = c("aut", "cre"), email = "Jan.Verbesselt@wur.nl"))
 Author: Jan Verbesselt [aut, cre]
 Description: Functions, data sets, examples, demos, and vignettes for the Geo-scripting course at Wageningen University
 Depends: R (>= 2.15.0), raster, bitops, rgdal, sp, ggplot2, maptools, rasterVis, reshape2, rgeos, scales, spdep, RColorBrewer, randomForest, reshape, ggmap
-Imports: raster, zoo, strucchange
+Imports: raster
 License: GPL-2
-LazyLoad: no
+LazyLoad: yes
 LazyData: no
 Maintainer: Jan Verbesselt <Jan.Verbesselt@wur.nl>
 URL: http://rasta.R-Forge.R-project.org/
