@@ -231,7 +231,7 @@ In order to achieve these objectives, you should try to follow a few good practi
 \item Write short functions.
 \item	Make your functions generic and flexible, using control flow
 \item	Comment your code
-\item Follow the R style guide\footnote{The aim of having a formatted style guide is to increase readability of your code by others. In that regard, indentation, use of <- instead of = as assignment operator and placement of curly braces are of particular relevance when writing functions. Proper configuration of your script editor allows you to automatically implement some of these guidelines without having to think too much about it.} \url{http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml}
+\item Follow the R \href{http://google-styleguide.googlecode.com/svn/trunk/Rguide.xml}{style guide}\footnote{The aim of having a formatted style guide is to increase readability of your code by others. In that regard, indentation, use of <- instead of = as assignment operator and placement of curly braces are of particular relevance when writing functions. Proper configuration of your script editor allows you to automatically implement some of these guidelines without having to think too much about it.}
 \item	Document your functions
 \item	Build a package 
 \item Keep a TODO list
@@ -440,7 +440,7 @@ Note that R package structure and creation are not necessarily easy things to un
 \end{figure}
 
 The default basic structure of a package is as follows:\
-2 sub directories (R and man), NAMESPACE and DESCRIPTION files (Figure~\ref{package}). The \textbf{R directory} includes the package functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the \textbf{man directory}. These .Rd files are the functions documentation. \textbf{NAMESPACE} and \textbf{DESCRIPTION} files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalist package structure; more elaborate packages may include extra sub directories, such as data, demo or vignette.\\
+2 sub directories (R and man), NAMESPACE and DESCRIPTION files (Figure~\ref{package}). The \textbf{R directory} includes the functions of the package, usually each in a separate functionName.R file; Each one of these function should have an associated functionName.Rd file, stored in the \textbf{man directory}. These .Rd files are the functions documentation. \textbf{NAMESPACE} and \textbf{DESCRIPTION} files contain general information about the package (package metadata, dependencies, version number, etc). That is quite a minimalist package structure; more elaborate packages may include extra sub directories, such as data, demo or vignette.\\
 
 \subsubsection*{Useful tips for package creation}
 
@@ -543,7 +543,7 @@ If you are concerned about always having a ''compile-able'' version of your code
 \subsection*{Exercise description}
 Write a function that calculate whether a given year is a leap year or not. If you put the function in a package, that will give you additional points. The function should behave as follows:\\*
 
-<<echo=FALSE>>=
+<<>>=
 is.leap <- function(x) {
   if (!class(x) == 'numeric') {
     stop('argument of class numeric expected')
