@@ -249,8 +249,6 @@ legend("topright", legend=c("cropland", "forest", "wetland"), fill=cols, bg="whi
 
 (Note: there is a handy ``\code{progress="text"}" argument, which can be passed to many of the raster package functions and can help to monitor processing. Try passing this argument to the \code{rasterize()} command above).
 
-The legend in the plot above is obviously not ideal for these type of data (ie. values between 1.0 and 2.0 are meaningless). With \code{ggplot()} we make a more meaningful plot of factor (categorical) rasters, and reassign the original character names to the classes.
-
 Our goal in preprocessing these data is to have a table of values representing all layers (covariates) with \emph{known} values/classes. To do this, we will first need to create a version of our rasterBrick only representing the training pixels. Here the \code{mask()} function from the raster package will be very useful.
 
 <<masked_covariates, fig=FALSE>>=
