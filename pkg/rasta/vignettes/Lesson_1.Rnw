@@ -51,7 +51,7 @@ options(width = 80, prompt = "> ", continue = "+ ")
 \frametitle{Intro of the intro!}
 
 \begin{itemize}
-  	\item{The course is freshly developed based on needs from people how deal with spatial data}
+  	\item{The course is freshly developed based on needs from people who deal with spatial data}
 	\item{It is a new course, there is a certain flexibility to adjust the content}
 	\item{A team of R experts, Loic, Ben, Eliakim, Sytze, who use Geo-scripting languages every day helped to develop this course}
 	\item{Feedback is welcome and we are there to help you during this \emph{Geo-scripting} learning experience}
@@ -141,14 +141,23 @@ This course is fully written with scripting languages (i.e. R and Latex). What a
 \begin{itemize}
   \item{A scripting language (e.g. R and Python) can interpret and automate the execution of 
   tasks which could alternatively be executed one-by-one by a human operator}
-  \item{Different from like C/C++/Fortran since these are languages that need to be compiled first. \\ }
-  
-  \item{Compiling? To transform a program written in a high-level programming language from source code into object code. Programmers write programs in a form called source code. Source code must go through several steps before it becomes an executable program. The first step is to pass the source code through a compiler, which translates the high-level language instructions into object code.
+  \item{Different from like C/C++/Fortran since these are languages that need to be compiled first.}
+  \item{Compiling? Programmers write programs in a form called source code. Source code must go through several steps before it becomes an executable program. The first step is to pass the source code through a compiler, which translates the high-level language instructions into object code.
   }
-  \item{A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture}
-  
-  % insert compile figure
-  
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{What  is a scripting language?}
+
+\begin{figure}[htp!]
+  \centering
+  \fbox{\includegraphics[width=0.4\textwidth]{figs/COMPILE.jpg}}
+  \caption {Compiling a program}
+\end{figure}
+
+\begin{itemize}
+    \item{A scripting language is the glue, between different commands, functions, and objectives without the need to compile it for each OS/CPU Architecture}
 \end{itemize}
 \end{frame}
 
@@ -340,9 +349,32 @@ We will look at examples of these objects in the next sectionl
  If a package is already installed you load the package with the \verb+library()+ command. If you want to install a package you can use the \verb+install.packages()+ command (you have to provide the url of the CRAN mirror to download the package. 
  If you are using R Studio you can also just click on \textbf{Tools>Install Packages}, and type in the name(s) of the package you want to install. 
 
-Now install and load the rasta package:
+Now install and load the rasta package. Normally you can do it via:
 <<echo=TRUE, eval=FALSE>>=
 install.packages("rasta", repos="http://R-Forge.R-project.org")
+@
+
+Today we will download the rasta package from the home page of the "RASTA" website (\url{http://rasta.r-forge.r-project.org/}) and install it via the Rstudio interface. You can also use the following commands:
+
+<<echo=TRUE, eval=FALSE>>=
+download.file("http://rasta.r-forge.r-project.org/rasta_0.7.zip", 
+              file.path(datdir, "rasta_0.7.zip"))
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{R packages and the rasta package}
+
+Let's try the following steps:
+<<echo=TRUE, eval=FALSE>>=
+## check if all R package are up to date 
+update.packages(checkBuilt = TRUE, ask = FALSE)
+## check if all R package required for this course are there
+install.packages("raster", dependencies = TRUE)
+## install the rasta package
+install.packages(file.path(datdir, "rasta_0.7.zip"), repos = NULL)
+install.packages("reshape", dependencies=TRUE)
 @
 
 <<results=hide>>=
