@@ -465,8 +465,6 @@ for(i in 1:nlayers(covs)){
 }
 # convert rNA to an integer vector
 rNA <- getValues(rNA)
-# substitue the NA's for 0's
-rNA[is.na(rNA)] <- 0
 @
 
 We now have a vector indicating with a value of 1 where the NA's in the cov brick are. Now that we know where the 'original' NAs are located, we can go ahead and assign the cluster values to a raster. At these 'NA' locations, we will not assign any of the cluster values, instead assigning an NA.
@@ -494,7 +492,7 @@ plot(classes, legend=FALSE, col=c("dark green", "orange", "light blue"))
 \begin{center}
 \begin{figure}[!htp]
 \centering
-\includegraphics[width=0.6\textwidth]{Lesson-6_plot_kmeans}
+\includegraphics[width=0.6\textwidth]{Lesson_6-plot_kmeans}
 \caption{Unsupervised land cover classification resulting from k-means method. At this stage, the classes are undefined, so the colours are somewhat arbitrary.}
 \label{kmeansLC}
 \end{figure}
@@ -662,69 +660,7 @@ plot(forest, col="dark green", legend=FALSE)
 
 \section{Exercise}
 
-Perform another Random Forest classification with 6 classes (found in the lulcGewata raster dataset) using all (or some) of the bands used in this tutorial (b2, b3, b4, ndvi and vcf). This time, derive your own training data from the lulcGewata image provided with this package. This can be done interactively by creating polygons using the \code{drawExtent()} command
-
-<<exercise_guide, eval=FALSE, echo=FALSE>>=
-# load in the training dataset and LUT
-data(lulcGewata)
-data(LUTGewata)
-
-# plot lulcGewata with a meaningful legend (see LUTGewata)
-# make sure the classes correspond correctly!
-cols <- c("orange", "light green", "brown", "light pink", "dark green", "light blue")
-plot(lulcGewata, col=cols, legend=FALSE)
-legend("topright", legend=LUTGewata$Class, fill=cols)
-
-# draw an Spatialpolygons object in area purely represented by cropland
-# so, first plot the raster again
-plot(lulcGewata, col=cols, legend=FALSE)
-cropland <- drawPoly(sp=TRUE)
-# click on "Finish" in the top-right corner (if using Rstudio) when finished
-# this outputs an sp (SpatialPolygons) object with 1 row (feature)
-# if you want more training data for a particular class:
-# append another polygon onto the same object using gUnion() of the rgeos package
-cropland <- gUnion(cropland, drawPoly(sp=TRUE))
-
-# when you are finished with this class, be sure to set the coordinate reference system (CRS)
-projection(cropland) <- projection(lulcGewata)
-# and check
-projection(cropland)
-plot(lulcGewata); plot(cropland, add=TRUE)
-
-# convert it to a SpatialPolygonsDataFrame (ie. add a @data slot)
-cropland <- SpatialPolygonsDataFrame(cropland, data=data.frame(class="cropland"), match.ID=FALSE)
-
-# do the same for the other 5 classes...
-# you may have to zoom in first for (e.g.) coffee investment areas
-plot(lulcGewata, col=cols, legend=FALSE)
-e <- drawExtent() # zoom into a coffee area
-plot(lulcGewata, col=cols, legend=FALSE, ext=e)
-# now define a training polygon
-coffee <- drawPoly(sp=TRUE)
-projection(coffee) <- projection(lulcGewata)
-plot(lulcGewata); plot(coffee, add=TRUE)
-coffee <- SpatialPolygonsDataFrame(coffee, data=data.frame(class="coffee investment area"), match.ID=FALSE)
-
-# once all polygons have been drawn, fusing them into one SpatialPolygons object is problematic
-# because the Polygon ID's are not unique
-# use spChFIDs() from the sp package to solve this
-# e.g. for the cropland features
-cropland <- spChFIDs(cropland, "cropland")
-forest <- spChFIDs(forest, "forest")
-coffee <- spChFIDs(coffee, "coffee")
-# etc...
-
-# now they can be bound (2 at a time) as one object using spRbind (maptools)
-trainingPoly <- spRbind(cropland, forest)
-trainingPoly <- spRbind(trainingPoly, coffee)
-# etc...
-# check
-trainingPoly@data
-plot(lulcGewata); plot(trainingPoly, add=TRUE)
-
-### now proceed with the Random Forest classification using the Gewata covariates as shown above
-
-@
+Perform another Random Forest classification with 6 classes (found in the lulcGewata raster dataset) using all (or some) of the bands used in this tutorial (b2, b3, b4, ndvi and vcf). This time, derive your own training data from the lulcGewata image provided with this package. This can be done interactively by creating polygons using the \code{drawPoly()} command
 
 Your report on the results and accompanying code should include the following:
 \begin{itemize}
@@ -742,6 +678,86 @@ In this exercise, also address the following questions:
 \item Is the importance ranking of the input bands different in this case to the 3-class classification we did earlier? If so, how, and what has changed in this case?
 \item Can you say something about class separability? Hint: see \code{?zonal()} and try to derive mean and standard deviation of several of the input bands for each class. How do these values compare with each other? Are there any classes which show high overlap? Is this consistent with the confusion matrices you derived earlier?
 \end{enumerate}
+
+The following code should help to get you started with selecting training data and proceeding with the supervised classification:
+
+<<exercise_guide, eval=FALSE, echo=TRUE>>=
+# load in the training classes and Look-Up Table (LUT)
+data(lulcGewata)
+data(LUTGewata)
+@
+<<eval=FALSE>>=
+# plot lulcGewata with a meaningful legend (see LUTGewata)
+# make sure the classes correspond correctly!
+cols <- c("orange", "light green", "brown", "light pink", "dark green", "light blue")
+plot(lulcGewata, col=cols, legend=FALSE)
+legend("topright", legend=LUTGewata$Class, fill=cols)
+@
+<<eval=FALSE>>=
+# draw a SpatialPolygons object in area purely represented by cropland
+# Note that drawPoly() doesn't work once you have added a legend() to the plot
+# so, first plot the raster again without the legend
+plot(lulcGewata, col=cols, legend=FALSE)
+cropland <- drawPoly(sp=TRUE)
+# click on "Finish" in the top-right corner (if using Rstudio) when finished
+# this outputs an sp (SpatialPolygons) object with 1 row (feature)
+# if you want more training data for a particular class:
+# append another polygon onto the same object using gUnion() of the rgeos package
+cropland <- gUnion(cropland, drawPoly(sp=TRUE))
+@
+<<eval=FALSE>>=
+# when you are finished with this class, 
+# be sure to set the coordinate reference system (CRS)
+projection(cropland) <- projection(lulcGewata)
+# and check
+projection(cropland)
+plot(lulcGewata)
+plot(cropland, add=TRUE)
+@
+<<eval=FALSE>>=
+# convert it to a SpatialPolygonsDataFrame (ie. add a @data slot)
+cropland <- SpatialPolygonsDataFrame(cropland, data=data.frame(
+  class="cropland"), match.ID=FALSE)
+@
+<<eval=FALSE>>=
+# do the same for the other 5 classes...
+# you may have to zoom in first for (e.g.) coffee investment areas
+plot(lulcGewata, col=cols, legend=FALSE)
+e <- drawExtent() # zoom into a coffee area
+plot(lulcGewata, col=cols, legend=FALSE, ext=e)
+# now define a training polygon
+coffee <- drawPoly(sp=TRUE)
+projection(coffee) <- projection(lulcGewata)
+# check
+plot(lulcGewata)
+plot(coffee, add=TRUE)
+# convert to SpatialPolygonsDataFrame
+coffee <- SpatialPolygonsDataFrame(coffee, data=data.frame(
+  class="coffee investment area"), match.ID=FALSE)
+@
+<<eval=FALSE>>=
+# once all polygons have been drawn, 
+# fusing them into one SpatialPolygons object is problematic,
+# because the Polygon ID's are not unique
+# use spChFIDs() from the sp package to solve this
+# e.g. for the cropland features
+cropland <- spChFIDs(cropland, "cropland")
+forest <- spChFIDs(forest, "forest")
+coffee <- spChFIDs(coffee, "coffee")
+# etc...
+@
+<<eval=FALSE>>=
+# now they can be bound (2 at a time) as one object using spRbind (maptools)
+trainingPoly <- spRbind(cropland, forest)
+trainingPoly <- spRbind(trainingPoly, coffee)
+# etc...
+# check
+trainingPoly@data
+plot(lulcGewata)
+plot(trainingPoly, add=TRUE)
+### now proceed with the Random Forest classification 
+### using the Gewata covariates as shown above
+@
 
 % \bibliographystyle{model5-names}
 % \bibliography{refs}
