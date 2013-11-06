@@ -543,36 +543,31 @@ If you are concerned about always having a ''compile-able'' version of your code
 \subsection*{Exercise description}
 Write a function that calculate whether a given year is a leap year or not. If you put the function in a package, that will give you additional points. The function should behave as follows:\\*
 
-<<echo=FALSE>>=
-is.leap <- function(x) {
-  if (!class(x) == 'numeric') {
-    stop('argument of class numeric expected')
-  }
-  if (x > 1582) {
-    if (x %% 400 == 0) {
-      a <- TRUE
-    } else if (x %% 100 == 0) {
-      a <- FALSE
-    } else if (x %% 4 == 0) {
-      a <- TRUE
-    } else {
-      a <- FALSE
-    }
-  } else {
-    a <- sprintf('%d is out of the valid range', x)
-  }
-  return(a)
-}
-@
-
-<<>>=
-is.leap(2000)
-is.leap(1581)
-is.leap(2002)
-
-#is.leap('john') should return an error 
-#error: argument of class numeric expected
-@
+\begin{Schunk}
+\begin{Sinput}
+> is.leap(2000)
+\end{Sinput}
+\begin{Soutput}
+[1] TRUE
+\end{Soutput}
+\begin{Sinput}
+> is.leap(1581)
+\end{Sinput}
+\begin{Soutput}
+[1] "1581 is out of the valid range"
+\end{Soutput}
+\begin{Sinput}
+> is.leap(2002)
+\end{Sinput}
+\begin{Soutput}
+[1] FALSE
+\end{Soutput}
+\begin{Sinput}
+> 
+> #is.leap('john') should return an error 
+> #error: argument of class numeric expected
+\end{Sinput}
+\end{Schunk}
 
 
 
