@@ -78,6 +78,9 @@ install_bitbucket(repo='vcf', username='dutri001')
   \item Global adminstrative areas: \url{http://www.gadm.org/}
   \item See the MODIS package to download MODIS data. See a very \href{http://stevemosher.wordpress.com/modis-tutorial/}{good tutorial}. If you can demonstrate that you have used the MODIS package to address as clear challenge then that would be a good example project.
   \item MODIS data for different locations around the world can also be downloaded via the following \href{http://daac.ornl.gov/cgi-bin/MODIS/GR_col5_1/mod_viz.html}{MODIS Land Subset tool}
+  \item ASTER Digital Elevation Models (DEMs): \url{http://asterweb.jpl.nasa.gov/gdem.asp}
+  \item SRTM DEM: \url{http://srtm.usgs.gov/index.php}
+  \item The HydroSHEDS dataset is a global hydrological database developed by the WWF Conservation Science Programme, combining data from the SRTM with river network data to construct watershed boundaries, flow networks, etc. Hydrological data are freely available for direct download in a variety of formats. Homepage: \url{http://hydrosheds.cr.usgs.gov/}, and see \url{http://hydrosheds.cr.usgs.gov/dataavail.php} for the available datasets.
   
 \end{itemize}
 
