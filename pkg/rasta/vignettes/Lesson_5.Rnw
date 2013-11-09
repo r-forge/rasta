@@ -397,16 +397,48 @@ r <- raster(sds$SDS4gdal[1])
 \section{Packages you should know about}
 The newly released \href{https://r-forge.r-project.org/projects/gdalutils/}{gdalUtils} package should provide interesting wrappers facilitating the use of gdal functions from within R.
 
-\section{Exercise}
+\section{Exercise: write a compositing function}
 \subsection*{Context}
-Idea of exercise, using a second image of taravao, that I will provide, taken at a different date, also cloudy, write a compositing function.
 Taravao2 is a Landsat 8 image covering the same area than taravao, but acquired at a different date. We saw earlier that taravao has residual clouds; the same is true for taravao2. However, since the clouds are not at the same location on the two images, it should be possible to create a composite image, maximizing the number of observations.
 
 \subsection*{Expected output}
-Using the two taravao Landsat 8 images as example datasets (taravao2 can be loaded using the \code{data()} command), write a mean value compositing function. The function should accepts 2 typical Landsat 8 \code{RasterBrick} or \code{RasterStack} objects - containing 9 bands and band 9 being the QA layer - and return an 8 layers \code{RasterStack} or \code{RasterBrick} object. In case of cloud occurence at both dates, pixel value should be NA, if both dates are cloud free, the mean value will be returned.  
+Using the two taravao Landsat 8 images as example datasets (taravao2 can be loaded using the \code{data()} command), write a mean value compositing function. The function should accepts 2 typical Landsat 8 \code{RasterBrick} or \code{RasterStack} objects - containing 9 bands and band 9 being the QA layer - and return an 8 layers \code{RasterStack} or \code{RasterBrick} object. In case of cloud occurence at both dates, pixel value should be NA, if both dates are cloud free, the mean value will be returned.
 
+\subsection*{Hints}
+There are many ways to create such function, one fast way would be to:
+\begin{itemize}
+  \item Generate the two cloud masks
+  \item Remove band 9 from both RasterStack objects
+  \item Replace cloud contaminated pixels by NAs
+  \item Write a micro function that performs the averaging, as described in the exercise definition (take a look at the \code{na.rm=} argument in the \code{mean()} function).
+  \item Apply the function to the RasterStack objects using \code{calc()} or \code{overlay()}. Depending on how you wrote the it, it is possible that \code{overlay()} complains about the function not being vectorized. One quick way to vectorize a function that has multiple input arguments is by using \code{mapply()}. See the example below.
+<<eval=FALSE>>=
+# Considering a non vectorised function, with 4 input arguments (a, b, c, d)
+# called RandomFunction()
+# The vectorized version (VRandomFunction()) can be created as follows
+VRandomFunction <- function(a, b, c, d) {
+  out <- mapply(FUN=RandomFunction, a, b, c, d)
+  return(out)
+}
+@
+  \item Wrap all that into a clean, nicely written and documented function.
+\end{itemize}
 
-
+\subsection*{How to submit}
+You should submit the function via GitHub. Either put the function file in a sub-directory of your ''GeoScriptingExercises'' repository, or in a new repository (i.e.: ''Exercise5''). Send the clone url of that repository to me.
+In addition, add a few lines to run the function and visualize the results at the end of the function file, such as:
+<<eval=FALSE>>=
+# Load the required libraries
+library(rasta)
+# Import the example data
+data(taravao)
+data(taravao2)
+# Run the compositing function
+taravaoComposit <- ComposeLandsat(taravao, taravao2)
+# Visualize the results
+plotRGB(taravaoComposit, 4, 5, 3)
+@
+And finally, do not forget to put your name at the top of the function file.
 \bibliographystyle{model5-names}
 \bibliography{refs}
 
