@@ -438,7 +438,15 @@ taravaoComposit <- ComposeLandsat(taravao, taravao2)
 # Visualize the results
 plotRGB(taravaoComposit, 4, 5, 3)
 @
-And finally, do not forget to put your name at the top of the function file.
+And finally, do not forget to put your name at the top of the function file. The resulting composit is depicted in Figure~\ref{composit}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figs/taravao_composit.png}
+\caption{Result of an average value composit using to dates for the taravao area, the band combination used is 4, 5, 3 (Landsat 8)}
+\label{composit}
+\end{figure}
+
 \bibliographystyle{model5-names}
 \bibliography{refs}
 
