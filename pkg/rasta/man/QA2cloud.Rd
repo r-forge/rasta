@@ -29,7 +29,7 @@ numeric. Either 0 or 1. 1 corresponding to presence of cloud and 0 absence.
 \url{http://landsat.usgs.gov/landsat8.php}
 }
 \author{
-Lo\"{i}c Dutrieux
+Loïc Dutrieux
 }
 \note{
 %%  ~~further notes~~
