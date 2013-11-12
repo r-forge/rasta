@@ -40,7 +40,7 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Lesson 5: Introduction to raster based analysis in R}
-\author{Lo\"{i}c Dutrieux, Ben deVries, Jan Verbesselt}
+\author{Lo\"{i}c Dutrieux, Ben DeVries, Jan Verbesselt}
 
 \maketitle
 
