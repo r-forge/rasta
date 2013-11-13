@@ -42,11 +42,11 @@
 The learning objectives for this lecture are:
 \begin{itemize}
 \item explore the raster package and related packages used for typical raster analyses
-\item learn several approaches to visualizing raster data
-\item become acquainted with Landsat data
+\item visualize and summarize raster data using the rasterVis and ggplot packages
+\item neighbourhood functions using \code{focal()}
 \item carry out a supervised classification (random forest) on a series of raster layers
+\item construct a raster sieve using the \code{clump()} function
 \item work with thematic rasters
-\item construct a raster sieve using the \code{focal()} function
 \end{itemize}
 
 \section{Raster and related packages}
@@ -65,15 +65,12 @@ library(ggplot2)
 library(rasterVis)
 @
 
-\section{The Landsat archive}
 
-Since being released to the public, the Landsat data archive has become an invaluable tool for environmental monitoring. With a historical archive reaching back to the 1970's, the release of these data has resulted in a spur of time series based methods. In this tutorial, we will work with time series data from the Landsat 7 Enhanced Thematic Mapper (ETM+) sensor.
+\section{Exploring raster data}
 
-\section{Manipulating raster data}
+\subsection*{Introduction to Landsat}
 
-\subsection*{Exploring a Landsat scene}
-
-Landsat scenes are delivered via the USGS as a number of image layers representing the different bands captured by the sensors. In the case of the Landsat 7 Enhanced Thematic Mapper (ETM+) sensor, the bands are shown in Figure \ref{landsatBands}. Using different combination of these bands can be useful in describing land features and change processes.
+Since being released to the public, the Landsat data archive has become an invaluable tool for environmental monitoring. With a historical archive reaching back to the 1970's, the release of these data has resulted in a spur of time series based methods. In this tutorial, we will work with time series data from the Landsat 7 Enhanced Thematic Mapper (ETM+) sensor. Landsat scenes are delivered via the USGS as a number of image layers representing the different bands captured by the sensors. In the case of the Landsat 7 Enhanced Thematic Mapper (ETM+) sensor, the bands are shown in Figure \ref{landsatBands}. Using different combination of these bands can be useful in describing land features and change processes.
 
 \begin{figure}[!htp]
 \centering
@@ -84,7 +81,7 @@ Landsat scenes are delivered via the USGS as a number of image layers representi
 
 Part of a landsat scene, including bands 2-4 are included as part of the rasta package. These data have been processed using the LEDAPS framework\footnote{http://ledaps.nascom.nasa.gov/}, so the values contained in this dataset represent surface reflectance, scaled by 10000 (ie. divide by 10000 to get a reflectance value between 0 and 1).
 
-We will begin exploring these data simply by visualizing them (more methods for data exploration will be covered in Lesson 7).
+We will begin exploring these data simply by visualizing them.
 
 <<explore_data, fig=FALSE, results=hide>>=
 # load in the data
@@ -95,27 +92,31 @@ data(GewataB4)
 GewataB2
 # some basic statistics using cellStats()
 cellStats(GewataB2, stat=max)
-# ...is equivalent to:
+cellStats(GewataB2, stat=mean)
+# This is equivalent to:
 maxValue(GewataB2)
 # what is the maximum value of all three bands?
 max(c(maxValue(GewataB2), maxValue(GewataB3), maxValue(GewataB4)))
-
+# summary() is useful function for a quick overview
+summary(GewataB2)
 # plot the histograms of all bands
 hist(GewataB2)
 hist(GewataB3)
 hist(GewataB4)
+# put the 3 bands into a rasterBrick object to summarize together
+gewata <- brick(GewataB2, GewataB3, GewataB4)
+# 3 histograms in one window (automatic, if a rasterBrick is supplied)
+hist(gewata)
 @
 
-We can improve these plots by adjusting the axis scale, bin size, etc., but the rasterVis package that has enhanced plotting capabilities which make it easier to make more attractive plots. First, to make the comparison easier, we will make a rasterBrick object from these three layers.
+When we plot the histogram of the rasterBrick, the scales of the axes and the bin sizes are not equivalent, which could be problematic. This can be solved by adjusting these paramters in \code{hist()}, which would take some extra work and consideration. Alternatively, the rasterVis package has enhanced plotting capabilities which make it easier to make more attractive plots with these considerations in mind.
 
 <<histogram, fig=FALSE>>=
-library(rasterVis)
-gewata <- brick(GewataB2, GewataB3, GewataB4)
 # view all histograms together with rasterVis
 histogram(gewata)
 @
 
-The rasterVis package has several other raster plotting types inherited from the lattice pacakge. For multispectral data, one plot type which is particularly useful for data exploration is the scatterplot matrix, called by the \code{splom()} function.
+The rasterVis package has several other raster plotting types inherited from the lattice package. For multispectral data, one plot type which is particularly useful for data exploration is the scatterplot matrix, called by the \code{splom()} function.
 
 <<spplom, fig=TRUE, include=FALSE>>=
 splom(gewata)
@@ -130,19 +131,19 @@ splom(gewata)
 
 Calling \code{splom()} on a rasterBrick reveals potential correlations between the layers themselves(Figure \ref{scatterplotmatrix}). In the case of bands 2-4 of the gewata subset, we can see that band 2 and 3 (in the visual part of the EM spectrum) are highly correlated, while band 4 contains significant non-redundant information. Given what we know about the location of these bands along the EM spectrum (Figure \ref{landsatBands}), how could these scatterplots be explained? ETM+ band 4 (nearly equivalent to band 5 in the Landsat 8 OLI sensor) is situated in the near infrared (NIR) region of the EM spectrum and is often used to described vegetation-related features.
 
-The rasterVis package will be demonstrated in more detail in this tutorial the section dealing with raster time series.
+\subsection*{Raster algebra (revisited)}
 
-\subsection*{Computing new rasters: Raster algebra}
+In the previous section, we observed a strong correlation between two of the Landsat bands of the gewata subset, but a very different distribution of values in band 4 (NIR). This distribution stems from the fact that vegetation reflects very highly in the NIR range, compared to the visual range of the EM spectrum. A commonly used metric for assessing vegetation dynamics, the normalized difference vegetation index (NDVI), explained in Lesson 5, takes advantage of this fact and is computed from Landsat bands 3 (visible red) and 4 (near infra-red). 
 
-In the previous section, we observed a strong correlation between two of the Landsat bands of the gewata subset, but a very different distribution of values in band 4 (NIR). This distribution stems from the fact that vegetation reflects very highly in the NIR range, compared to the visual range of the EM spectrum. A commonly used metric for assessing vegetation dynamics, the normalized difference vegetation index (NDVI), takes advantage of this fact and is computed from Landsat bands 3 (red; R) and 4 (NIR). In Lesson 5, we explored several ways to calculate NDVI, using raster algebra, \code{calc()} or \code{overlay()}. 
+In Lesson 5, we explored several ways to calculate NDVI, using direct raster algebra, \code{calc()} or \code{overlay()}. Since we will be using NDVI again later in this tutorial, let's calculated it again and store it in our workspace using \code{overlay()}.
 
 <<ndvi>>=
 ndvi <- overlay(GewataB4, GewataB3, fun=function(x,y){(x-y)/(x+y)})
 @
 
-One advantage of the \code{overlay()} function is the fact that the result can be written immediately to file by including the argument \code{filename="..."}, thus saving memory (especially important when working with large datasets).
+Aside from the advantages of \code{calc()} and \code{overlay()} regarding memory usage, an additional advantage of these functions is the fact that the result can be written immediately to file by including the \code{filename="..."} argument, which will allow you to write your results to file immediately, after which you can reload in subsequent sessions without having to repeat your analysis.
 
-Plotting our new raster, we can immediately see how useful the NDVI metric is for identifying land features. Use the interactive \code{drawExtent()} function to zoom into some of the features to inspect them more closely.
+Plotting our new NDVI raster, we can immediately see how useful the NDVI metric is for identifying land features. Use the interactive \code{drawExtent()} function to zoom into some of the features to inspect them more closely.
 
 <<drawextent, eval=FALSE>>=
 # first, plot the raster
@@ -152,41 +153,93 @@ plot(ndvi)
 e <- drawExtent()
 # now click 2 points on the plot window
 # these represent the top-right and bottom-left corner of your extent
+# this creates an object of the 'extent' class
+class(e)
+print(e)
+# an extent object can be used for a variety of functions,
+# like crop() and plot()
 # now plot ndvi again, but only the extent you defined interactively
 plot(ndvi, ext=e)
+# alternatively, we can create a new raster with this revised extent
+ndviCrop <- crop(ndvi, e)
+# look at the attributes of the new raster
+ndviCrop
+plot(ndviCrop)
+# remove from the workspace
+rm(ndviCrop)
 @
+
+\subsection*{Neighbourhood functions}
+
+Neighbourhood or ``Moving Window" functions in the raster package are carried out using the \code{focal()} function. In the help function (\code{?focal()}) you can find a number of examples of filters and their associated arguments. Applying a simple 3x3 mean filter on our ndvi raster is done as follows.
+
+<<ndviFocalMean, eval=FALSE>>=
+# to save time, try on a small subset
+# first, define a small extent using drawExtent()
+plot(ndvi)
+e <- drawExtent()
+# make a test raster by cropping
+ndviTest <- crop(ndvi, e)
+# define a 3x3 matrix of equal weights
+w <- matrix(1/9, nc=3, nr=3)
+print(w)
+sum(w) # should be 1
+# pass this matrix to focal()
+ndviMean <- focal(ndviTest, w=w)
+# plot the result compared to original
+opar <- par(mfrow=c(1,2))
+plot(ndviTest, main="NDVI")
+plot(ndviMean, main="NDVI with 3x3 mean filter")
+par(opar)
+@
+
+The focal() function can be used for a variety of purposes, including other data filters
+such as median, Laplacian, Sobel, etc. More complex weight matrices can also be computed,
+such as a Gaussian using the \code{focalWeight()} function. These methods will not be covered in
+this tutorial. Check out the documentation at \code{?focal()} for more information.
 
 \section{Classifying raster data}
 
-One of the most important tasks in analysis of remote sensing image analysis is image classification. In classifying the image, we take the information contained in the various bands (possibly including other synthetic bands such as NDVI or principle components). In this tutorial we will explore two approaches for image classification: unsupervised (k-means) and supervised (random forest) classification.
+One of the most important tasks in analysis of remote sensing image analysis is image classification. In classifying the image, we take the information contained in the various bands (possibly including other synthetic bands such as NDVI or principle components). In this tutorial we will explore two approaches for image classification: supervised (random forest) classification and unsupervised (k-means).
 
 \subsection*{Supervised classification: Random Forest\footnote{This section was written using code contributed by Valerio Avitabile.}}
 
-The Random Forest classification algorithm is an ensemble learning method that is used for both classification and regression. In this study, we will use the algorithm to derive land cover classes given a set of training data. Random Forest builds a number of classification trees, and the final class assigned is based on the class with the maximum instances among the final set ('forest') of classes\footnote{For a more complete description of the Random Forests classification method, see \url{http://stat-www.berkeley.edu/users/breiman/RandomForests/cc\textunderscore home.htm}.
-}.
+The Random Forest classification algorithm is an ensemble learning method that is used for both classification and regression. In our case, we will use the method for classification purposes. Here, the random forest method takes random subsets from a training dataset and constructs classification trees using each of these subsets. Trees consist of ``branches" and ``leaves". Branches represent nodes of the decision trees, which are often thresholds defined for the measured (known) variables in the dataset. Leaves are the class labels assigned at the termini of the trees. Sampling many subsets at random will result in many trees being built. Classes are then assigned based on classes assigned by all of these trees based on a majority rule, as if each class assigned by a decision tree were considered to be a ``vote". Figure \ref{RandomForestDemo} gives a simple demonstration of how the random forest method works in principle\footnote{For a more complete description of the Random Forests classification method, see \url{http://stat-www.berkeley.edu/users/breiman/RandomForests/cc\textunderscore home.htm}. For a ``friendlier" introduction, see the presentation at \url{http://www.slideshare.net/0xdata/jan-vitek-distributedrandomforest522013}.}
 
-One major advantage of the Random Forest method is the fact that an 'Out of the Box' (OOB) error estimate and an estimate of variable performace are performed. For each classification tree assembled, a fraction of the training data are left out and used to compute the error for each tree. In addition an importance score is computed for each variable in two forms: the mean decrease in accuracy for each variable, and the Gini impurity criterion.
+\begin{figure}[!htp]
+\centering
+\includegraphics[width=0.6\textwidth]{figs/randomForestDescription.png}
+\caption{Schematic showing how the Random Forest method constructs classification trees from random subsets of a training dataset. Each tree determines the labels assigned based on the training dataset. Once all trees are assembled, classes are assigned to unknown pixels based on the class which receives the majority of votes based on all the decision trees constructed.}
+\label{RandomForestDemo}
+\end{figure}
+
+One major advantage of the Random Forest method is the fact that an 'Out of the Bag' (OOB) error estimate and an estimate of variable performance are performed. For each classification tree assembled, a fraction of the training data are left out and used to compute the error for each tree by predicting the class associated with that value and comparing with the already known class. This process results in a confusion matrix, which we will explore in our analysis. In addition an importance score is computed for each variable in two forms: the mean decrease in accuracy for each variable, and the Gini impurity criterion, which will also be explored in our analysis.
 
 We should first prepare the data on which the classification will be done. So far, we have prepared three bands from a ETM+ image in 2001 (bands 2, 3 and 4) as a rasterBrick, and have also calculated NDVI. In addition, there is a Vegetation Continuous Field (VCF) product available for the same period (2000)\footnote{For more information on the Landsat VCF product, see \url{http://glcf.umd.edu/data/landsatTreecover/}.}. This product is also based on Landsat ETM+ data, and represents an estimate of tree cover (in \%). Since this layer could also be useful in classifying land cover types, we will also include it as a potential covariate in the random forest classification.
 
 <<vcfGewata, fig=FALSE>>=
-# load the data
+# load the data and check it out
 data(vcfGewata)
+vcfGewata
 plot(vcfGewata)
-histogram(vcfGewata) # or 'hist(vcfGewata)'
+summary(vcfGewata)
+hist(vcfGewata)
 @
 
 Note that in the vcfGewata rasterLayer there are some values much greater than 100, which are flags for water, cloud or cloud shadow pixels. To avoid these layers, we can assign a value of NA to these pixels so they are not used in the classification.
 
 <<vcfGewata2, fig=FALSE>>=
 vcfGewata[vcfGewata > 100] <- NA
+# look at revised summary stats
+summary(vcfGewata)
 plot(vcfGewata)
-histogram(vcfGewata)
+hist(vcfGewata)
 @
 
-To perform the classification in R, it is best to assemble all covariate layers into one rasterBrick object. In this case, we can simply append these new layers (NDVI and VCF) to our existing rasterBrick (currently consisting of bands 2, 3, and 4). But first, let's rescale the NDVI layer by 10000 (just as the reflectance bands 2, 3, and 4 have been scaled) and store it as an integer raster.
+To perform the classification in R, it is best to assemble all covariate layers (ie. those layers contaning predictor variable values) into one rasterBrick object. In this case, we can simply append these new layers (NDVI and VCF) to our existing rasterBrick (currently consisting of bands 2, 3, and 4). But first, let's rescale the NDVI layer by 10000 (just as the reflectance bands 2, 3, and 4 have been scaled) and store it as an integer raster. In Lesson 5 we encountered different data types for rasters, so we will not go into more detail here.
 
 <<covariants, fig=FALSE>>=
+# multiply all values by 10000
 ndvi <- calc(ndvi, fun = function(x) floor(x*10000))
 # change the data type
 # see ?dataType for more info
@@ -203,8 +256,6 @@ For this exercise, we will do a very simple classification for 2001 using three 
 <<trainingPoly, fig=FALSE, results=hide>>=
 # load the training polygons
 data(trainingPoly)
-# inspect the data
-trainingPoly@data
 # superimpose training polygons onto ndvi plot
 plot(ndvi)
 plot(trainingPoly, add = TRUE)
@@ -349,6 +400,7 @@ valuetable <- na.omit(valuetable)
 # covariates (x) are found in columns 1 to 5 of valuetable
 # training classes (y) are found in the 'class' column of valuetable
 # caution: this step takes fairly long!
+# but can be shortened by setting importance=FALSE
 library(randomForest)
 modelRF <- randomForest(x=valuetable[,c(1:5)], y=valuetable$class,
                         importance = TRUE)
@@ -370,6 +422,7 @@ The resulting object from the \code{randomForest()} function is a specialized ob
 
 <<inspect_RFmodel, results=hide>>=
 # inspect the structure and element names of the resulting model
+modelRF
 class(modelRF)
 str(modelRF)
 names(modelRF)
@@ -421,7 +474,7 @@ legend("bottomright", legend=c("cropland", "forest", "wetland"), fill=cols, bg="
 \label{RandomForestLC}
 \end{figure}
 
-Note that the \code{predict()} function also takes arguments that can be passed to \code{writeRaster()} (eg. \code{filename = ``..."}, so it would be a good idea to write to file as you perform this step (rather than keeping all output in memory).
+Note that the \code{predict()} function also takes arguments that can be passed to \code{writeRaster()} (eg. \code{filename = "..."}, so it would be a good idea to write to file as you perform this step (rather than keeping all output in memory).
 
 \subsection*{Unsupervised classification: k-means\footnote{This section will not be included in the lecture.}}
 
@@ -502,7 +555,7 @@ These classes are much more difficult to interpret than those resulting from the
 
 \subsection*{Applying a raster sieve}
 
-Although the land cover raster we created with the Random Forest method above is limited in the number of thematic classes it has, and we observed some confusion between wetland and cropland classes, it could be useful for constructing a forest mask. To do so, we have to fuse (and remove) non-forest classes, and then clean up the remaining pixels using focal algebra to apply a sieve.
+Although the land cover raster we created with the Random Forest method above is limited in the number of thematic classes it has, and we observed some confusion between wetland and cropland classes, it could be useful for constructing a forest mask. To do so, we have to fuse (and remove) non-forest classes, and then clean up the remaining pixels by apply a sieve. To do this, we will make use of the \code{clump()} function in the raster package.
 
 <<formask, fig=FALSE>>=
 # Make an NA-value raster based on the LC raster attributes
@@ -515,35 +568,42 @@ plot(formask, col="dark green", legend = FALSE)
 \begin{figure}[!htp]
   \centering
   \includegraphics[width=0.6\textwidth]{figs/rasterSieves.png}
-  \caption{Application of a sieve on a forest mask (left top and bottom). The first sieve (centre) defines 'neighbour' pixels as being either adjacent or diagonal. The second sieve (right) defines 'neighbour' pixels as only those lying adjacent to the centre pixel. In the first sieve, the top example results in an NA being assigned to the centre pixel, and the original value being kept in the bottom example. In the second sieve, both examples result in an NA being assigned to the centre pixel.}
+  \caption{Application of a sieve on a forest mask. In the Queen's case, neighbours in all 8 directions are considered to be adjacent. In the Rook's case, only neighbours in the 4 NESW directions are considered adjacent, and diagonal neighbours are not considered.}
   \label{sieveExample}
 \end{figure}
 
-We now have a forest mask that can be used to isolate forest pixels for further analysis. For some applications, however, we may only be interested in larger forest areas. We may especially want to remove single forest pixels, as they may be a result of errors, or may not fit our definition of 'forest'. In this section, we will construct 2 types of sieves to remove these types of pixels, following 2 definitions of 'island' pixels: (1) pixels with absolutely no neighbours; and (2) pixels with no adjacent neighbours (ie. ignoring diagonal neighbours). A demonstration is shown in Figure \ref{sieveExample}.
+We now have a forest mask that can be used to isolate forest pixels for further analysis. For some applications, however, we may only be interested in larger forest areas. We may especially want to remove single forest pixels, as they may be a result of errors, or may not fit our definition of 'forest'. In this section, we will construct 2 types of sieves to remove these types of pixels, following 2 definitions of ``adjacency". In the first approach, the so-called ``Queen's Case", neighbours in all 8 directions are considered to be adjacent. If any pixel cell has no neighbours in any of these 8 directions, we will remove that pixel by assigning an NA value. First, we will use the \code{clump()} function in the raster package to identify clumps of raster cells. This function arbitrarily assigns an ID to these clumps.
 
-To remove these pixel 'islands', we will use the \code{focal()} function of the raster package, which computes values based on values of neighbouring pixels. The first task is to construct a mask with the \code{focal()} function, which will be used to 'clean' up the forest mask we have just produced.
-
-<<sievemask, results=hide, fig=FALSE>>=
-# sum of all neighbourhood pixels in formask
-sievemask <- focal(formask, w=3, fun=sum, na.rm=TRUE)
-sievemask
-histogram(sievemask)
+<<clump, results=hide, fig=FALSE>>=
+# Group raster cells into clumps based on the Queen's Case
+forestclumps <- clump(formask, directions=8)
+plot(forestclumps)
 @
 
-We now have a mask whose values are the sum of neighbourhood weights (each equal to 1/9, based on a 3X3 window). To make this more comparable with the 2nd sieve (ignoring diagonals), we should multiply these values by 9 (resulting in whole numbers). 
+When we inspect the frequency table with \code{freq()}, we can see the number of raster cells included in each of these clump IDs.
 
-<<sievemask_normalize, results=hide, fig=FALSE>>=
-sievemask <- sievemask * 9
-histogram(sievemask)
+<<clumpCount, results=hide, fig=FALSE>>=
+# assign freqency table to a matrix
+clumpFreq <- freq(forestclumps)
+head(clumpFreq)
+tail(clumpFreq)
 @
 
-Now, in cases where there are no neighbours (ie. the 'island' pixels), this sum will be equal to 1 exactly. In cases with one or more neighbours, the sum will be greater than 1, up to a maximum of 9 (ie. if the pixel is completely surrounded by non-NA pixels). To apply the sieve and remove 'island' pixels, we want to select for only cases where sievemask == 1 and remove those from the original raster.
+We can use the ``count" column of this frequency table to select clump ID's with only 1 pixel - these are the pixel ``islands" that we want to eventually remove from our original forest mask.
 
-<<final_sieve, fig=TRUE, include=FALSE>>=
-# copy the original forest mask
+<<final_sieve, fig=TRUE, include=FALSE, results=hide>>=
+# Coerce freq table to data.frame
+clumpFreq <- as.data.frame(clumpFreq)
+# which rows of the data.frame are only represented by one cell?
+which(clumpFreq$count==1)
+# which values do these correspond to?
+clumpFreq$value[which(clumpFreq$count==1)]
+# put these into a vector of clump ID's to be removed
+excludeID <- clumpFreq$value[which(clumpFreq$count==1)]
+# make a new forest mask to be sieved
 formaskSieve <- formask
-# assign NA to pixels where the sievemask == 1
-formaskSieve[sievemask==1] <- NA
+# assign NA to all clumps whose IDs are found in excludeID
+formaskSieve[forestclumps %in% excludeID] <- NA
 # zoom in to a small extent to check the results
 # Note: you can define your own zoom by using e <- drawExtent()
 e <- extent(c(811744.8, 812764.3, 849997.8, 850920.3))
@@ -556,33 +616,24 @@ par(opar) # reset plotting window
 \begin{figure}[!htp]
 \centering
 \includegraphics[width=0.6\textwidth]{Lesson_6-final_sieve}
-\caption{Zoom of a forest mask before (left) and after (right) application of a sieve.}
+\caption{Zoom of a forest mask before (left) and after (right) application of a sieve using the Queen's Case condition.}
 \label{sieve}
 \end{figure}
 \end{center}
 
-We have successfully removed all 'island' pixels from the forest mask using the \code{focal()} function. Suppose we define 'island' pixels as those have no immediate neighbours, \emph{not} considering diagonal neighbours. In that case, we would have to adjust the weight argument ('w') in \code{focal()}, and instead define our own 3X3 matrix which omits diagnoal pixels by assigning a zero-weight to these pixels.
+We have successfully removed all 'island' pixels from the forest mask using the \code{clump()} function. We can adjust our sieve criteria to only only directly adjacent (NESW) neighbours: the so-called ``Rook's Case". To accomplish this, simply repeat the code above, but supply the argument \code{directions=4} when calling \code{clump()}. The results of this type of sieve is shown in \ref{sieveDiagonal}.
 
-<<sievemask_nodiag, results=hide>>=
-# define a weights matrix
-w <- rbind(c(0, 1, 0),
-           c(1, 1, 1),
-           c(0, 1, 0))
-print(w)
-# alternatively:
-w <- matrix(c(0, 1, 0, 1, 1, 1, 0, 1, 0), nrow=3)
-
-# sum of all neighbouring pixels in formask, except for diagonals
-sievemask <- focal(formask, w=w, fun=sum, na.rm=TRUE)
-@
-
-Applying the new sieve as above should give the following results shown in \ref{sieveDiagonal}.
-
-<<final_sieve_nodiag, fig=TRUE, include=FALSE, echo=FALSE>>=
-# copy the original forest mask
+<<final_sieve_nodiag, fig=TRUE, include=FALSE, echo=FALSE, results=hide>>=
+# Group raster cells into clumps based on the Queen's Case
+forestclumps <- clump(formask, directions=4)
+clumpFreq <- freq(forestclumps)
+# Coerce freq table to data.frame
+clumpFreq <- as.data.frame(clumpFreq)
+excludeID <- clumpFreq$value[which(clumpFreq$count==1)]
+# make a new forest mask to be sieved
 formaskSieve <- formask
-# assign NA to pixels where the sievemask == 1/9
-formaskSieve[sievemask==1] <- NA
+# assign NA to all clumps whose IDs are found in excludeID
+formaskSieve[forestclumps %in% excludeID] <- NA
 e <- extent(c(811744.8, 812764.3, 849997.8, 850920.3))
 opar <- par(mfrow = c(1, 2))
 plot(formask, ext=e, col="dark green", legend=FALSE)
@@ -594,14 +645,12 @@ par(opar)
 \begin{figure}[!htp]
 \centering
 \includegraphics[width=0.6\textwidth]{Lesson_6-final_sieve_nodiag}
-\caption{Zoom of a forest mask before (left) and after (right) application of a sieve, without consideration for diagonal neighbours.}
+\caption{Zoom of a forest mask before (left) and after (right) application of a sieve using the Rook's Case condition.}
 \label{sieveDiagonal}
 \end{figure}
 \end{center}
 
-In this case, not only pixels with absolutely no neighbours have been removed, but also those pixels with only diagonal neighbours as well. The second case could be considered as a more 'conservative' sieve.
-
-The \code{focal()} function can be used for a variety of purposes, including other data filters such as median, Laplacian, Sobel, etc. More complex weight matrices can also be computed, such as a Gaussian using the \code{focalWeight()} function. These methods will not be covered in this tutorial. Check out the documentation at \code{?focal()} for more information.
+We could take this approach further and apply a minimum mapping unit (MMU) to our forest mask. How could you adjust the above sieve to remove all forest pixels with area below 0.5 hectares? Consider the fact that Landsat pixels are 30m by 30m, and that one hectare is equal to 10000m\textsuperscript{2}.
 
 \subsection*{Working with thematic rasters}
 
