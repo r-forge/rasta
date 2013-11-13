@@ -34,7 +34,7 @@
 \SweaveOpts{concordance=TRUE}
 
 \title{Raster Analysis}
-\author{Ben DeVries, Jan Verbesselt, Lo\"{i}c Dutrieux}
+\author{Ben DeVries, Jan Verbesselt, Lo\"{i}c Dutrieux, Valerio Avitabile}
 
 \maketitle
 
@@ -202,7 +202,7 @@ this tutorial. Check out the documentation at \code{?focal()} for more informati
 
 One of the most important tasks in analysis of remote sensing image analysis is image classification. In classifying the image, we take the information contained in the various bands (possibly including other synthetic bands such as NDVI or principle components). In this tutorial we will explore two approaches for image classification: supervised (random forest) classification and unsupervised (k-means).
 
-\subsection*{Supervised classification: Random Forest\footnote{This section was written using code contributed by Valerio Avitabile.}}
+\subsection*{Supervised classification: Random Forest}
 
 The Random Forest classification algorithm is an ensemble learning method that is used for both classification and regression. In our case, we will use the method for classification purposes. Here, the random forest method takes random subsets from a training dataset and constructs classification trees using each of these subsets. Trees consist of ``branches" and ``leaves". Branches represent nodes of the decision trees, which are often thresholds defined for the measured (known) variables in the dataset. Leaves are the class labels assigned at the termini of the trees. Sampling many subsets at random will result in many trees being built. Classes are then assigned based on classes assigned by all of these trees based on a majority rule, as if each class assigned by a decision tree were considered to be a ``vote". Figure \ref{RandomForestDemo} gives a simple demonstration of how the random forest method works in principle\footnote{For a more complete description of the Random Forests classification method, see \url{http://stat-www.berkeley.edu/users/breiman/RandomForests/cc\textunderscore home.htm}. For a ``friendlier" introduction, see the presentation at \url{http://www.slideshare.net/0xdata/jan-vitek-distributedrandomforest522013}.}
 
