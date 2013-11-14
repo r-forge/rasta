@@ -278,6 +278,7 @@ datdir <- file.path("data") ## path
 
 \begin{frame}[fragile]
 \frametitle{Custom Functions}
+%% explain the basic comments of a function better
 It is hard to unleash the full potential of R without writing your own functions. Luckily it's very easy to do. Here are some trivial examples:
 
 <<echo=TRUE, results=hide>>=
