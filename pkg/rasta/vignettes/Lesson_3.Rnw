@@ -43,8 +43,7 @@ options(width = 80, prompt = ">", continue = "+ ")
 \maketitle
 
 \begin{abstract}
-This is an introduction to the course Applied Geo-Scripting where we will explore the potential of R and libraries which enable reading, writing, analysis, and visualisation of spatial data.
-
+Today we will explore the potential of R and the relevant libraries which enable reading, writing, analysis, and visualisation of spatial data. The objective of today is to show what short of spatial analysis can be done using a script and give you a better idea of what is possible. Today is more a tutorial style of lesson as a preparation for next weeks lessons on vector and raster data analysis.
 \end{abstract}
 
 \section{Today's learning objectives}
@@ -53,63 +52,75 @@ This is an introduction to the course Applied Geo-Scripting where we will explor
 	\item{Read, write, and visualize spatial data (vector/raster) using a script}
 	\item{Find libraries which offer spatial data handling functions}
 	\item{Learn to include functions from a library in your script}
+  \item{Spatially join points and polygon's}
 \end{itemize}
+\clearpage
 
 \section{Set your working directory and load your libraries}
 \subsection{Set the working directory}
 Let's do some basic set up first. 
 
 \begin{itemize}
-	\item{Create a folder which will be your working directory e.g. \emph{Lesson2}}
+	\item{Create a folder which will be your working directory e.g. \emph{lesson3}}
 	\item{Create an R script within that folder}
-	\item{Set your working directory to the \emph{Lesson2} folder}
+	\item{Set your working directory to the \emph{lesson3} folder}
 	\item{Create a $data$ folder within your working directory}
 \end{itemize}
 
 In the code block below type in the file path to where your data is being held and then (if you want) use the setwd() (set working directory) command to give R a default location to look for data files.
 
 <<eval=FALSE>>=
-setwd("yourworkingdirectory")
-#This sets the working directory (where R looks for files)
-#getwd() 
-# Double check your working directory
+setwd("lesson3")
+getwd() 
 @
 
 <<eval=TRUE>>=
-datdir <- file.path("data") ## path
-@
-
-\subsection{Load libraries}
-Next we will load a series of R packages that will give the functions we need to complete all the exercises in lesson 1 and 2. For this exercise all of the packages should (hopefully) be already installed on your machine (?). 
-We will load them below using the library() command. 
-I also included some comments describing how we use each of the packages in the exercises.
-
-<<loadlibraries, message=FALSE>>=
-#----Packages for Reading/Writing/Manipulating Spatial Data---
-library(rgdal) # reading shapefiles and raster data
-library(rgeos)
-library(maptools)
-library(spdep)   # useful spatial stat functions
-library(spatstat) # functions for generating random points
-library(raster) 
-#---Packages for Data Visualization and Manipulation---
-library(ggplot2)
-library(reshape2)
-library(scales)
+datdir <- file.path("data")
+datdir <- "data"
 @
 \clearpage
 
+\subsection{Load libraries}
+By loading the \emph{rasta} package, a series of R packages are automatically loaded that will provide the functions we need to complete this exercise. For this exercise all of the packages should (hopefully) be already installed on your machine. We will load them below using the library() command. 
+
+<<>>=
+library(rasta)
+@
+
+Below the packages are listed that are automatically loaded (see Packages tab in Rstudio). 
+We included some comments describing how we use each of the packages in the exercises.
+
+<<message=FALSE>>=
+## Packages for Reading/Writing/Manipulating Spatial Data
+library(rgdal) # reading shapefiles and raster data
+library(rgeos) # vector manipulations
+library(maptools) # mapping
+library(spdep)   # useful spatial stat functions
+library(spatstat) # functions for generating random points
+library(raster) # raster data analysis 
+## Packages for Data Visualization and Manipulation
+library(ggplot2) # plotting
+library(reshape2) # preparing your data
+library(scales) 
+@
+\textbf{What does the scales package do?}
+\clearpage
+
 \section{Read, plot, and explore spatial data}
-
 \subsection{Read in a shapefile}
-The most flexible way to read in a shapefile is by using the \verb+readOGR+ command. This is the only option that will also read in the .prj file associated with the shapefile. NCEAS has a useful summary of the various ways to read in a shapefile: \url{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}
-I recommend always using \verb+readOGR()+.
+The most flexible way to read in a shapefile is by using the \verb+readOGR+ command. This is the only option that will also read in the \href{http://en.wikipedia.org/wiki/Shapefile}{.prj} file associated with the shapefile. NCEAS has a useful summary of the \href{http://www.nceas.ucsb.edu/scicomp/usecases/ReadWriteESRIShapeFiles}{various ways to read in a shapefile}. We recommend always using \verb+readOGR()+. Read OGR can be used for almost any vector data format. 
+To read in a shapefile, you enter two arguments:
 
-Read OGR can be used for almost any vector data format. To read in a shapefile, you enter two arguments:
 \begin{itemize}
 \item dsn: the directory containing the shapefile (even if this is already your working directory)
 \item layer: the name of the shapefile, without the file extension
 \end{itemize}
+
+<<eval=FALSE>>=
+?readOGR
+@
+
+Let's download the file, unzip, and read it in into R:
 
 <<eval=FALSE>>=
 download.file("http://rasta.r-forge.r-project.org/kenyashape.zip",  
@@ -118,14 +129,14 @@ unzip(file.path(datdir, "kenyashape.zip"), exdir = datdir)
 kenya <- readOGR(dsn = datdir, layer = "kenya")
 @
 
+\textbf{What is the projection of this shape file?}
+
 \clearpage
 \subsection{Plotting the data}
 Plotting is easy, use the \verb+plot()+ command:
 <<eval=FALSE>>=
 plot(kenya)
 @
-
-Obviously there are more options to dress up your plot and make a proper map/graphic. A common method is to use \verb+spplot()+ from the sp package. However I prefer to use the functions available in the ggplot2 package as I think they are more flexible and intuitive. We will address maps and graphics later in the class. For now, let us move onto reading in some tabular data and merging that data to our shapefile (similar to the join operation in ArcGIS).
 
 <<kenya, echo=FALSE, fig=TRUE, include=FALSE>>=
 library(rasta)
@@ -139,21 +150,20 @@ plot(kenya)
 \caption{Adminstrative boundaries of Kenya}
 \end{figure}
 
-Here is an example for downloading of administrative boundaries for any country.
-
+Obviously there are more options to dress up your plot and make a proper map/graphic. A common method is to use \verb+spplot()+ from the sp package. However, functions available in the \textbf{ggplot2} package are very intuitive and produce excellent maps. We will address maps and graphics later in the class. For now, let us move onto reading in some tabular data and merging that data to our shapefile (similar to the join operation in ArcGIS).
 \clearpage
-\subsection{Exploring the data within the vector file}
 
+\subsection{Exploring the data within the vector file}
 We can explore some basic aspects of the data using \verb+summary()+ and \verb+str()+. Summary works on almost all R objects but returns different results depending on the type of object. For example if the object is the result of a linear regression then summary will give you the coefficient estimates, standard errors, t-stats, $R^2$, et cetera.
 
-<<exploredata>>=
+<<results=hide>>=
 summary(kenya)
-str(kenya, 2) ## 2 is the max. level shown of the kenya object
+str(kenya,2)
 @
 
 As mentioned above, the \verb+summary()+ command works on virtually all R objects. In this case it gives some basic information about the projection, coordinates, and data contained in our shapefile
 
-The \verb+str()+ or structure command tells us how R is actually storing and organizing our shapefile. This is a useful way to explore complex objects in R. When we use \verb+str()+ on a spatial polygon object, it tells us the object has five 'slots':
+The \verb+str()+ or structure command tells us how R is actually storing and organizing our shapefile. This is a useful way to explore complex objects in R. When we use \verb+str()+ on a spatial polygon object, it tells us the object has five ``slots":
 \begin{enumerate}
 \item \emph{data}: This holds the data.frame
 \item \emph{polygons}: This holds the coordinates of the polygons
@@ -161,33 +171,39 @@ The \verb+str()+ or structure command tells us how R is actually storing and org
 \item \emph{bbox}: The coordinates of the bounding box (edges of the shape file)
 \item \emph{proj4string}: A character string describing the projection system
 \end{enumerate}
-
+\clearpage
 The only one we want to worry about is data, because this is where the data.frame() associated with our spatial object is stored. 
 We access slots using the @ sign.
 
-<<accessdata>>=
-#--------------------------ACCESS THE SHAPEFILE DATA------------------------------
-dsdat <- as(kenya, "data.frame")  # extract the data into a regular data.frame
+<<>>=
+## ACCESS THE SHAPEFILE DATA
+dsdat <- as(kenya, "data.frame")
+# extract the data into a regular data.frame
 head(dsdat)
-kenya$new <- 1:nrow(dsdat) # add a new colunm, just like adding data to a data.frame
+kenya$new <- 1:nrow(dsdat) 
+# add a new colunm, just like adding data to a data.frame
 head(kenya@data)
 @
+\clearpage
 
 \section{Read in a .csv file and join it to the shapefile}
 \subsection{Read in a .csv file}
 First lets read in a \emph{.csv} file using \verb+read.csv()+
 
-<<readcsv>>=
-#--------------------------READ AND EXPLORE A CSV------------------------------
+<<results=hide>>=
+## READ AND EXPLORE A CSV
 filepath <- system.file("extdata/kenpop89to99.csv", package ="rasta")
 d <- read.csv(filepath)
 @
 
-Before we merge the csv file to our shapefile, let's do some basic cleaning. 
-The csv file has some excess columns and rows. Let's get rid of them. 
+The data is also available from \url{http://rasta.r-forge.r-project.org/}. \textbf{How can we download the data from the website and read in it into R?}.
+
+\clearpage
+
+Before we merge the csv file to our shapefile, let's do some basic cleaning. The csv file has some excess columns and rows. Let's get rid of them. 
 We access rows and columns by using square brackets [,]. 
 
-Here are some examples using are data.frame 'd':
+Here are some examples using are data.frame $d$:
 \begin{itemize}
 \item d[1,] first row, all columns
 \item d[,1] first column all rows
@@ -195,50 +211,86 @@ Here are some examples using are data.frame 'd':
 \item d[,1:5] columns 1 through 5 (also works with rows)
 \item d[,c(1,4,5)] columns 1,4 and 5 (also works with rows)
 \item d\verb+$+variable same as above, but returns the column as a vector
-\item d[d\verb+$+variable>10,] rows from all columns that correspond where the values in 'variable' are greater than 10
+\item d[d\verb+$+variable>10,] rows from all columns that correspond where the values in `variable' are greater than 10
 \end{itemize}
 
-Hopefully you get the idea. See the R cheat sheet: \url{http://cran.r-project.org/doc/contrib/Short-refcard.pdf} for more information.
-Now we extract only the columns we we want and then use the unique() command to get rid of duplicate rows.
+Hopefully you get the idea. See the R cheat sheet: \url{http://cran.r-project.org/doc/contrib/Short-refcard.pdf} for more information. Now we extract only the columns we we want and then use the unique() command to get rid of duplicate rows.
+\clearpage
 
-<<csvclean>>=
-#--------------------------EXTRACT COLUMNS FROM CSV------------------------------
-d <- d[,c("ip89DId","PopChg","BrateChg","Y89Pop","Y99Pop")] 
+Let's practice:
+<<results=hide>>=
+## EXTRACT COLUMNS FROM CSV
+names(d)
+d <- d[,c("ip89DId", "PopChg", "BrateChg", "Y89Pop", "Y99Pop")] 
 #Grab only the colunms we want
 names(d)
-#str(d)
+str(d)
 nrow(d)
 d <- unique(d)  #get rid of duplicate rows
 nrow(d) #note we now have less rows
 @
+\clearpage
 
-\subsection{Join the csv file to our Shapefile}
+\subsection{Join the csv file to our shapefile}
 In R there a variety of options available for joining data sets. 
 The most simple and intuitive is the \verb+merge()+ command (see ?merge for details).
 Merge takes two data.frames and matches them based on common attributes in columns. 
-If the user does not specify the name(s) of the columns  then merge will just look for common column names and perform the join on those. 
-However with spatial objects the process is a little more tricky. 
-Unfortunately merge automatically re-orders the new merged data.frame based on the common columns. This will not work for a spatial object as the associated shapes (points, lines, or polygons) would have to be reordered as well. There are a variety of ways around this and I will show a simple one below. 
+If the user does not specify the name(s) of the columns  then merge will just look for common column names and perform the join on those. \\
 
-First I will demonstrate the basic merge() function. Then I will show one method for merging tabular to spatial data. 
-<<tablejoin>>=
-#----------------EXPLORE MERGE AND DO A TABLE JOIN------------------------------
-#--------------------First a basic Merge Just to Demonstrate-------------
+However with spatial objects the process is a little more tricky.
+
+Unfortunately merge automatically re-orders the new merged data.frame based on the common columns. This will not work for a spatial object as the associated shapes (points, lines, or polygons) would have to be reordered as well. There are a variety of ways around this and we will show a simple one below. 
+
+First we demonstrate the basic merge() function. 
+Then we will show one method for merging tabular to spatial data. 
+
+<<>>=
+## EXPLORE MERGE AND DO A TABLE JOIN
+#First a basic Merge Just to Demonstrate
 d2 <- kenya@data
+names(d)
+names(d2)
 d3 <- merge(d,d2) 
 #They have common colunm names so we don't have to specify what to join on
 head(d3)
 d4 <- merge(d,kenya) #This will produce the same result.
 head(d4)
-#--------------Now lets do the Table Join: Join csv data to our Shapefile-----
-#--We can do the join in one line by using the match() function
-ds1 <- kenya #make a copy so we can demonstrate 2 ways of doing the join
+@
+\clearpage
 
+Now lets do the Table Join: Join csv data to our Shapefile
+We can do the join in one line by using the match() function.
+
+<<eval=FALSE>>=
+?match
+@
+
+<<>>=
+ds1 <- kenya ## take a copy as backup
+str(as(kenya,"data.frame"))
+str(d)
+@
+
+Let's do the matching:
+<<>>=
 kenya@data <- data.frame(as(kenya,"data.frame"),
                     d[match(kenya@data[,"ip89DId"], d[,"ip89DId"]),])
 @
 
-<<eval=FALSE>>=
+<<>>=
+match(kenya@data[,"ip89DId"], d[,"ip89DId"])
+## kenya@data[,"ip89DId"]%in%d[,"ip89DId"]
+@
+
+<<>>=
+names(ds1)
+names(kenya)
+head(kenya)
+@
+
+Note also that we have duplicated the join field `ip89DId'. We can delete it afterwards but it's a nice way to double check and make sure our join worked correctly. More information can be found \href{http://stackoverflow.com/questions/3650636/how-to-attach-a-simple-data-frame-to-a-spatialpolygondataframe-in-r}{here}.
+
+<<eval=FALSE, echo=FALSE>>=
 #---Alternativley we can do this :
 #This is the preferred method but will only work if kenya and d have 
 # the same number of rows, and the row names are identical and in the same order
@@ -246,34 +298,35 @@ row.names(d) <- d$ip89DId
 row.names(ds1) <- as.character(ds1$ip89DId)
 d <- d[order(d$ip89DId),]
 ds1 <- spCbind(ds1,d)
-
 head(kenya@data)
 @
 
-Note that the values from our csv are not in the data attributes of the shapefile. Note also that we have duplicated the join field `ip89DId'. 
-We can delete it afterwards but it's a nice way to double check and make sure our join worked correctly. 
-I will go over the details of this approach in class and you can also see an explanation here: 
-\url{http://stackoverflow.com/questions/3650636/how-to-attach-a-simple-data-frame-to-a-spatialpolygondataframe-in-r}
-
+\clearpage
 \section{Create random points and extract as a text file}
 
 We are going to do a point in polygon spatial join. However before we do that we are going to generate some random points. We will use the function \verb+runifpoint()+ from the spatstat package. This function creates N points drawn from a spatial uniform distribution (complete spatial randomness) within a given bounding box. The bounding box can be in a variety of forms but the most straightforward is simply a four element vector with \emph{xmin} (the minimum x coordinate), \emph{xmax}, \emph{ymin}, and \emph{ymax}. In the code below we will extract this box from our Kenya data set, convert it to a vector, generate the points, and then plot the points on top of the Kenya map. 
 
-<<ranpoints>>=
-#--------------------------GENERATE RANDOM POINTS------------------------------
-win <- bbox(kenya) #the bounding box around the Kenya dataset
+<<results=hide>>=
+## GENERATE RANDOM POINTS
+win <- bbox(kenya) 
+#the bounding box around the Kenya dataset
 win
-win <- t(win) #transpose the bounding box matrix
+win <- t(win) 
+#transpose the bounding box matrix
 win
-win <- as.vector(win) #convert to a vector for input into runifpoint()
+win <- as.vector(win) 
+#convert to a vector for input into runifpoint()
 win
-dran1 <- runifpoint(100, win = as.vector(t(bbox(kenya)))) #create 100 random points
+dran1 <- runifpoint(100, win = as.vector(t(bbox(kenya)))) 
+#create 100 random points
 @
 
-<<alternative>>=
+<<>>=
 win <- extent(kenya)
 dran2 <- runifpoint(n = 100, win = as.vector(win))
 @
+
+\clearpage
 
 <<rndp_kenya, echo=TRUE, fig=TRUE, include=FALSE>>=
 plot(kenya)
@@ -287,10 +340,11 @@ plot(dran2, add = TRUE, col = "blue", pch = 19, cex = 0.5)
 \caption{Random points within the Kenya shape file}
 \end{figure}
 
+\clearpage
 Now that we have created some random points, we will extract the x coordinates (longitude), y coordinates (latitude), and then simulate some values to go with them. 
 
-<<converttocoordinatestextfile>>=
-#--------------------------CONVERT RANDOM POINTS TO DATA.FRAME------------------
+<<>>=
+##CONVERT RANDOM POINTS TO DATA.FRAME
 dp <- as.data.frame(dran1) 
 #This creates a simple data frame with 2 colunms, x and y
 head(dp)
@@ -299,52 +353,56 @@ dp$values<-rnorm(100,5,10)
 #generates 100 values from a Normal distribution with mean 5, and sd-10
 head(dp)
 @
+\clearpage
 
 \section{Do a point in polygon spatial join}
-In the last exercise we generated some random points along with some random values. Now we will read that data in, convert it to a shapefile (or a SpatialPointsDataFrame object) and then do a point in polygon spatial join. The command for converting coordinates to spatial points is \emph{SpatialPointsDataFrame()}
+Now we will convert the $data.frame$ to a $SpatialPointsDataFrame$ object and then do a point in polygon spatial join. 
+The command for converting coordinates to spatial points is \emph{SpatialPointsDataFrame()}
 
 <<>>=
-#--------------------CONVERT RANDOM POINTS TO SPATIAL POINTS DATAFRAME---
+## CONVERT RANDOM POINTS TO SPATIAL POINTS DATAFRAME
 dsp <- SpatialPointsDataFrame(coords = dp[, c("x","y")], 
 	data = data.frame("values" = dp$values))
 summary(dsp)
+@
 
-#Since the Data was Generated from a source with same projection as 
-#the Kenya data, we will go ahead and define the projection"
+Since the Data was Generated from a source with same projection as the Kenya data, we will go ahead and define the projection:
+<<>>=
 dsp@proj4string <- kenya@proj4string
 @
+\clearpage
+
 Now that we have created some points and defined their projection, we are ready to do a point in polygon spatial join. We will use the \verb+over()+ command (short for overlay()).
 
-In the over() command we feed it a spatial polygon object (ds), a spatial points object (dsp), and tell it what function we want to use to aggregate the spatial point up. In this case we will use the mean (but we could use any function or write our own). The result will give us a data.frame, and we will then put the resulting aggregated values back into the data.frame() associated with ds (ds@data).
+In the over() command we feed it a spatial polygon object (ds), a spatial points object (dsp), and tell it what function we want to use to aggregate the spatial point up. In this case we will use the $mean$ (but we could use any function or write our own). The result will give us a data.frame, and we will then put the resulting aggregated values back into the data.frame() associated with ds (ds@data).
 
 See ?over() for more information.
 
 <<>>=
-#--------------------------POINT IN POLY JOIN------------------------------
+## POINT IN POLY JOIN
 #The data frame tells us for each point the index of the polygon it falls into
 dsdat <- over(kenya, dsp, fn = mean)
 head(dsdat) 
-
 inds <- row.names(dsdat) 
-#get the row names of dsdat so that we can put the data back into ds
+#get the row names of dsdat so that we can put the data back into the shape file
 head(inds)
+@
 
-str(kenya@data)
+Use the row names from dsdata to add the aggregated point values to the data of the Kenya shape file:
+
+<<>>=
+names(kenya@data)
 kenya@data[inds, "pntvals"] <- dsdat 
-#use the row names from dsdata to add the aggregated point values to ds@data
+@
+<<>>=
 head(kenya@data)
 @
 
-\section{Do a pixel in polygon spatial join}
+\section{Cropping a raster using a shape file}
 
-\emph{This is an optional section and we will provide other pixel in polygon spatial join in lesson 7}
-
-In this section we will explore another common spatial join operation. In this case you have raster data that you want to aggregate up to the level of the polygons. A common example is that you have a surface of observed or interpolated temperature measurements and you want to find out what the average (or sum, max, min, et cetera) temperature is for each polygon (which could represent states, counties, et cetera). 
-
-\emph{Note: It is highly recommended to look at the resolution of the pixel compared to the polygon size. The weighting is very important when pixels are large compared to the polygon.} % (or ask them how they would deal with large pixels before introducing the weighted average option)
+% In this section we will explore another common spatial join operation. In this case you have raster data that you want to aggregate up to the level of the polygons. A common example is that you have a surface of observed or interpolated temperature measurements and you want to find out what the average (or sum, max, min, et cetera) temperature is for each polygon (which could represent states, counties, et cetera). 
 
 <<raster,eval=TRUE, fig=TRUE, include=FALSE>>=
-#--------------------------READ AND CROP A RASTER--
 library(rasta)
 filepath <- system.file("extdata", "anom.2000.03.tiff", package ="rasta")
 g <- raster(filepath)
@@ -353,7 +411,7 @@ plot(kenya, add = TRUE) # plot kenya on top to get some sense of the extent
 @
 
 <<crop,eval=TRUE, fig=TRUE, include=FALSE>>=
-#------Crop the Raster Dataset to the Extent of the Kenya Shapefile
+## Crop the Raster Dataset to the Extent of the Kenya Shapefile
 gc <- crop(g, kenya) #clip the raster to the extent of the shapefile
 #Then test again to make sure they line up
 plot(gc)
@@ -372,22 +430,25 @@ plot(kenya, add = TRUE)
 \caption{Kenian temperature anomaly for March 2003}
 \end{figure}
 
-In the last step we read in a raster file, cropped it to the extent of the Kenya data (just to cut down on the file size and demonstrate that function). Now we will aggregate the pixel values up the polygon values using the \verb+extract()+ function. 
+% In the last step we read in a raster file, cropped it to the extent of the Kenya data (just to cut down on the file size and demonstrate that function). Now we will aggregate the pixel values up the polygon values using the \verb+extract()+ function. 
+% 
+% <<rasterextract, eval=FALSE>>=
+% #--------------------------PIXEL IN POLY SPATIAL JOIN------------------------------
+% #Unweighted- only assigns grid to district if centroid is in that district
+% kenya@data$precip <- extract(gc, kenya, fun = mean, weights=FALSE) 
+% @
+% Weighted (more accurate, but slower) weights aggregation by the amount of the grid cell that falls within the district boundary:
+% 
+% <<eval=FALSE, echo =FALSE>>=
+% kenya@data$precip_wght <- extract(gc, kenya, fun = mean, weights = TRUE) 
+% #If you want to see the actual values and the weights associated with them do this:
+% #rastweight <- extract(gc, kenya, weights = TRUE)
+% @
+% Now that we've added all this data to our shapefile, we'll write it out as a new shapefile and then load it in to make some maps in the next exercise.
+% 
+% \emph{Note: It is highly recommended to look at the resolution of the pixel compared to the polygon size. The weighting is very important when pixels are large compared to the polygon.} % (or ask them how they would deal with large pixels before introducing the weighted average option)
 
-<<rasterextract, eval=FALSE>>=
-#--------------------------PIXEL IN POLY SPATIAL JOIN------------------------------
-#Unweighted- only assigns grid to district if centroid is in that district
-kenya@data$precip <- extract(gc, kenya, fun = mean, weights=FALSE) 
-@
-Weighted (more accurate, but slower) weights aggregation by the amount of the grid cell that falls within the district boundary:
-
-<<eval=FALSE, echo =FALSE>>=
-kenya@data$precip_wght <- extract(gc, kenya, fun = mean, weights = TRUE) 
-#If you want to see the actual values and the weights associated with them do this:
-#rastweight <- extract(gc, kenya, weights = TRUE)
-@
-Now that we've added all this data to our shapefile, we'll write it out as a new shapefile and then load it in to make some maps in the next exercise.
-
+\clearpage
 \section{Make maps with ggplot2()}
 If you have not already done so, load ggplot2 and some related packages.
 For more info on the ggplot2 and the grammar of graphics see the resources at \url{http://had.co.nz/ggplot2/}.
@@ -398,22 +459,24 @@ The `gg' in the ggplot2 is short for \emph{The Grammar of Graphics} which refere
 The ggplot2() package separates spatial data into 2 elements: (1) the data.frame and 2) the spatial coordinates. If you want to make a map from a shapefile you first have to use the fortify() command which converts the shapefile to a format readable by ggplot2:
 
 <<fortify>>=
-#------------------PREP SPATIAL DATA FOR GGPLOT WITH FORTIFY()------------
-pds <- fortify(kenya, region="ip89DId") #convert to form readable by ggplot2
+##  PREP SPATIAL DATA FOR GGPLOT WITH FORTIFY()
+pds <- fortify(kenya, region="ip89DId") 
+#convert to form readable by ggplot2
 pds$ip89DId <- as.integer(pds$id)
 head(pds)
 @
+
+\clearpage
 
 Now, we will build the map step by step using ggplot2. 
 We could do it all in one line, but it's easier to do it one step at a time so you can see how the different elements combine to make the final graphic. 
 In the code below we will first create the basic layer using the ggplot command, and then we customize to it.
 
 <<gg1, fig=TRUE, include=FALSE>>=
-#--------------------------MAKE A BASIC MAP------------------------------
+#MAKE A BASIC MAP
 p1 <- ggplot(d)
 p1 <- p1 + geom_map(aes(fill = PopChg, map_id = ip89DId), map = pds) 
 p1 <- p1 + expand_limits(x = pds$long, y = pds$lat) 
-#this is sometimes necessary to keep from throwin an error
 p1 <- p1 + coord_equal() #this keeps the map from having that 'squished' look 
 p1
 @
@@ -427,8 +490,8 @@ p1
 Now we have a basic map, let's make some tweaks to it.
 
 <<gg2, fig=TRUE, include=FALSE>>=
-#---------------------CHANGE THE COLOR SCHEME, TWEAK THE LEGEND------------
-#---Change the Colour Scheme-----
+#CHANGE THE COLOR SCHEME, TWEAK THE LEGEND
+#Change the Colour Scheme
 p1 <- p1 + scale_fill_gradient(name="Population \nChange", 
               low ="wheat", high = "steelblue") 
 #to set break points, enter in breaks=c(...,..)
@@ -442,10 +505,11 @@ p1
 \caption{ We Changed the Color Scale and Gave the Legend a Proper Name}
 \end{figure}
 
+\clearpage
 Now we will get rid of all the unnecessary information in the background.
 <<gg3,fig=TRUE,include=FALSE>>=
-#-----------------------EDIT THE BACKGROUND------------------------------
-#-----Get Rid of the Background-----
+#EDIT THE BACKGROUND
+#Get Rid of the Background
 #Blank Grid, Background,Axis,and Tic Marks
 bGrid <- theme(panel.grid = element_blank())
 bBack <- theme(panel.background = element_blank())
@@ -462,11 +526,13 @@ p1
 \caption{We got rid of all the unneccessary background material}
 \end{figure}
 
+\clearpage
+
 Now let's label the polygon names and data values.
 <<gg4,fig=TRUE, include=FALSE>>=
-#--------------------------ADD SOME LABELS--------------------------------------
-#--------Add Some Polygon labels------
-#-Polygon Labels
+#ADD SOME LABELS
+#Add Some Polygon labels
+#Polygon Labels
 cens <- as.data.frame(coordinates(kenya)) 
 #extract the coordinates for centroid of each polygon
 cens$Region <- kenya$ip89DName
@@ -484,7 +550,7 @@ p1
 \end{figure}
 
 <<gg5,fig=TRUE, include=FALSE>>=
-#-----Add Some value Labels------------
+#Add Some value Labels
 pdlab <- merge(cens,d) #Merge the centroids without data
 head(pdlab) #We will use this to label the polygons with their data values
 p1 <- p1 + geom_text(data = pdlab, 
@@ -533,7 +599,7 @@ p2 <- p2 + facet_wrap(~variable, ncol=1) #have only 1 colunm of panels
 Finally we can use the same options we used above to make our final map.
 
 <<fgg3, fig=TRUE, include=FALSE>>=
-#--------------------------MORE PANEL MAP TWEAKS------------------------------
+##MORE PANEL MAP TWEAKS
 # We can add all the other tweaks as before
 p2 <- p2 + scale_fill_gradient(name="Population", low ="wheat", high = "steelblue") 
 #to set break points, enter in
@@ -544,7 +610,7 @@ p2 <- p2 + theme(panel.border=element_rect(fill=NA))
 # with "strip.text.x"
 p2 <- p2 + theme(strip.background=element_blank(), strip.text.x = element_text(size=12))
 p2
-#===============================================================================
+
 @
 
 \begin{figure}[!htp]
@@ -554,16 +620,17 @@ p2
 \end{figure}
 
 \clearpage
-\section{Excercise lesson 2}
+\section{Excercise lesson 3}
 
-Provide a clear, reproducible, and documented script:
+Provide a clear, reproducible, and documented script where:
 
 \begin{itemize}
 \item the raster (temperature anomaly) is sampled (in a random sample of 30 pixels), 
-\item the random points are then visualised on top of the raster (try in ggplot)
-\item derive the median or standard deviation of all the temperature values of the sampled points
+\item the random points are then visualised on top of the raster
+\item derive the median or standard deviation of all the temperature values of the sampled points (hint: see $?extract$ within the $raster$ package)
 \item add the derived e.g. median to the plot as a text label
-\item upload the code (reproducible!) to your github account and send the link to me.
+\item upload the code (reproducible!) to your github account
+\item Add your name, date, and description of what the script does
 \end{itemize}
 
 <<ex, eval=FALSE, echo=FALSE>>=
