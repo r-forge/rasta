@@ -43,7 +43,7 @@ The learning objectives for this lecture are:
 \begin{itemize}
 \item explore the raster package and related packages used for typical raster analyses
 \item visualize and summarize raster data using the rasterVis and ggplot packages
-\item neighbourhood functions using \code{focal()}
+\item neighbourhood functions using the \code{focal()} function
 \item carry out a supervised classification (random forest) on a series of raster layers
 \item construct a raster sieve using the \code{clump()} function
 \item work with thematic rasters
@@ -713,20 +713,23 @@ Perform another Random Forest classification with 6 classes (found in the lulcGe
 
 Your report on the results and accompanying code should include the following:
 \begin{itemize}
-\item a plot of the original lulcGewata raster with a meaningful legend (ie. classes as characters (strings)!)
+\item a plot of the original lulcGewata raster with a meaningful legend (ie. classes as characters)
 \item a plot of your training polygons
+\item a summary of the resulting randomForest model object
 \item the resulting thematic map with meaningful legend (as above)
-\item the output OOB confusion matrix with accuracy per class
+\item the output OOB confusion matrix with accuracy per class (with correct row and column headings)
 \item the variable importance ranks (mean accuracy decrease and mean Gini coefficient decrease)
-\item your own confusion matrix derived from an overlay of the original lulcGewata raster with your own LULC raster and resulting accuracy statistics.
+\item \textbf{Extra points (if you have time)}: your own confusion matrix derived from an overlay of the original lulcGewata raster with your own LULC raster and resulting accuracy statistics. How do the two confusion matrices compare with each other?
 \end{itemize}
 
 In this exercise, also address the following questions:
 \begin{enumerate}
 \item Which classes have the highest accuracy? Lowest?
 \item Is the importance ranking of the input bands different in this case to the 3-class classification we did earlier? If so, how, and what has changed in this case?
-\item Can you say something about class separability? Hint: see \code{?zonal()} and try to derive mean and standard deviation of several of the input bands for each class. How do these values compare with each other? Are there any classes which show high overlap? Is this consistent with the confusion matrices you derived earlier?
+\item Can you say something about class separability? Produce a series of facet\textunderscore wrap plots using \code{ggplot()} to compare the land cover classes. Are there any classes which show high overlap? Is this consistent with the confusion matrix derived as part of your Random Forest model?
 \end{enumerate}
+
+You can address these questions directly in your script by inserting comments (preceded by a \#) throughout your script and then submit the exercise as one file.
 
 The following code should help to get you started with selecting training data and proceeding with the supervised classification:
 
@@ -805,7 +808,7 @@ trainingPoly@data
 plot(lulcGewata)
 plot(trainingPoly, add=TRUE)
 ### now proceed with the Random Forest classification 
-### using the Gewata covariates as shown above
+### using the Gewata covariates as done earlier in the exercise
 @
 
 % \bibliographystyle{model5-names}
