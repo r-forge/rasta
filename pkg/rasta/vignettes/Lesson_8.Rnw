@@ -50,8 +50,8 @@ A description of the assignment required for the applied geo-scripting course.
 \begin{itemize}
 	\item{Apply the learned knowledge to solve a real-world problem}
 	\item{Use libraries which offer spatial data handling functions}
-	\item{Develop new functions if needed that can help you}
-  \item{Download, import, and prepare your own data set}
+	\item{Develop new functions that can help you and keep your script clear and efficient}
+  	\item{Analyse new data sets e.g. download, import, and prepare your own data set}
 \end{itemize}
 
 \section{The assigment}
@@ -60,8 +60,8 @@ Below, the different steps for the assignment are described:
 \begin{itemize}
   \item{Identify an interesting question which you could answer using applied geo-scripting skills. You are welcome to use the data sets that we have used during this course but we recommend you to also look at other publicly available data sets listed below.}
 	\item{Describe your project in a paragraph where you explain your question (why?), methodology (how?) and data set your are planning to use (1 page max.). Before starting with your project, the description needs to be approved by one of the lecturers of the geo-scripting course.}
-  \item{See \url{http://goo.gl/HTtND8} for details about the planning and availability of PC rooms}
-  \item{The deadline is 6/12/2013}
+  \item{See \url{http://goo.gl/HTtND8} for details about the planning and availability of PC rooms. You have 2.5 weeks to work on the scripting project.}
+  \item{The deadline is 6/12/2013. See below for submission details (Section \ref{sec:reporting}).}
 \end{itemize}
 
 \section{Publicly available data sets}
@@ -76,7 +76,7 @@ install_bitbucket(repo='vcf', username='dutri001')
   \item Rainfall data: \href{http://disc.sci.gsfc.nasa.gov/precipitation/documentation/TRMM_README/TRMM_3B43_readme.shtml}{TRMM Rainfall data}
   \item MAP library: \url{http://www.maplibrary.org}
   \item Global adminstrative areas: \url{http://www.gadm.org/}
-  \item See the MODIS package to download MODIS data. See a very \href{http://stevemosher.wordpress.com/modis-tutorial/}{good tutorial}. If you can demonstrate that you have used the MODIS package to address as clear challenge then that would be a good example project.
+  \item See the MODIS package to download MODIS data (see a \href{http://stevemosher.wordpress.com/modis-tutorial/}{tutorial} here).
   \item MODIS data for different locations around the world can also be downloaded via the following \href{http://daac.ornl.gov/cgi-bin/MODIS/GR_col5_1/mod_viz.html}{MODIS Land Subset tool}
   \item ASTER Digital Elevation Models (DEMs): \url{http://asterweb.jpl.nasa.gov/gdem.asp}
   \item SRTM DEM: \url{http://srtm.usgs.gov/index.php}
@@ -89,18 +89,21 @@ install_bitbucket(repo='vcf', username='dutri001')
 For example:
 \begin{itemize}
   \item If you illustrate that you are able to download MODIS data via the  \href{http://stevemosher.wordpress.com/modis-tutorial/}{MODIS package} and for example are able to detect change between to image, for a specific country and describe what the change means then that would be a nice project.
+  
   \item The Landsat VCF product seems well suited for a variety of landscape ecology topics. For instance one could investigate wildlife corridors in the Netherlands or forest/habitat fragmentation at the municipality level using Landsat VCF data as the initial data source. Such results, if you are able to produce them could be related, at least visually, to many other variables that might be available on the internet (population density, regional investments in nature conservation programs, etc).
-  \item ... to be added
 \end{itemize}
 
 
-\section{Reporting}
+\section{Reporting} \label{sec:reporting}
 
 \begin{itemize}
-  \item{Provide a reproducible script via your GitHub account to us via e-mail. The reproducible script should be well documented, and should be able to (a) download the data, (b) import the data in R, (c) process and analyse to solve your question, (d) visualise the results}
-  \item{Provide a clear scientific report, e.g. as a short word document containing your project description, results (maps, plots, tables) and a conclusion (max. 5 pages). Focus on the main results. Key is that you illustrate that you have applied the knowledge learned during the course to solve an real life problem.}
+  \item{Provide a reproducible script via your GitHub account via a new repository (e.g. called ``\textbf{assignmentfirstname}"). The reproducible script has to be well documented, and able to (a) download and read the data, (b) process and analyse to solve your question, (c) and visualise the results}. A suggestion for organise your script and keep them readable. See this great blog post by Prof. Rob Hyndman: \url{http://robjhyndman.com/hyndsight/organization-and-r/}.
+ 
+  \item{Provide a clear scientific report, e.g. as a short word document containing your project description (abstract, introduction and objectives, methodology, results and conclusion (max. 3 pages). Focus on your most important results. Key is that you illustrate that you have applied the knowledge learned during the course using a scripting language to solve a real life problem. Add this document to your git repository.}
 \end{itemize}
 
+\section{Handy webpages}
+\url{http://robjhyndman.com/hyndsight/finding-an-r-function/}
 
 \bibliographystyle{model5-names}
 \bibliography{refs}
